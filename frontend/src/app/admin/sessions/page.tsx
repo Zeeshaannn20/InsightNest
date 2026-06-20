@@ -14,7 +14,8 @@ export default function AdminSessionsPage() {
   // Google Calendar Integration states
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
   const [checkingGoogle, setCheckingGoogle] = useState(true);
-  const [googleAuthUrl, setGoogleAuthUrl] = useState("http://localhost:5001/api/auth/google");
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5001";
+  const [googleAuthUrl, setGoogleAuthUrl] = useState(`${backendUrl}/api/auth/google`);
 
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,7 +46,7 @@ export default function AdminSessionsPage() {
     supabase.auth.getSession().then(({ data: { session } }: { data: { session: any } }) => {
       if (session?.access_token) {
         const origin = window.location.origin;
-        setGoogleAuthUrl(`http://localhost:5001/api/auth/google?token=${session.access_token}&origin=${origin}`);
+        setGoogleAuthUrl(`${backendUrl}/api/auth/google?token=${session.access_token}&origin=${origin}`);
       }
     });
 
@@ -76,7 +77,7 @@ export default function AdminSessionsPage() {
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
 
-      const res = await fetch("http://localhost:5001/api/admin/google-status", {
+      const res = await fetch(`${backendUrl}/api/admin/google-status`, {
         headers: {
           Authorization: token ? `Bearer ${token}` : ""
         }
@@ -131,7 +132,7 @@ export default function AdminSessionsPage() {
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
 
-      const res = await fetch("http://localhost:5001/api/admin/sessions/create", {
+      const res = await fetch(`${backendUrl}/api/admin/sessions/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -17,6 +17,10 @@ const allowedOrigins = [
   "http://localhost:3003"
 ];
 
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
 app.use(
   cors({
     origin: (origin, callback) => {
