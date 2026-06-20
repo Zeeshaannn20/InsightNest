@@ -53,7 +53,7 @@ export function useRealtimeChat({ courseId, enabled = true }: UseRealtimeChatOpt
             table: "chat_messages",
             filter: `course_id=eq.${courseId}`,
           },
-          async (payload) => {
+          async (payload: any) => {
             // Fetch the full message with sender profile
             const { data } = await supabase
               .from("chat_messages")

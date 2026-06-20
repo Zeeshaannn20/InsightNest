@@ -72,7 +72,7 @@ export function useAuth() {
     getSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (event: any, session: any) => {
         if (session?.user) {
           const profile = await fetchProfile(session.user.id);
           if (mounted) {

@@ -77,7 +77,7 @@ export default function DashboardPage() {
             `)
             .eq("course_id", courseId);
 
-          const pending = assignmentsData?.filter(a => !a.submissions || a.submissions.length === 0) || [];
+          const pending = assignmentsData?.filter((a: any) => !a.submissions || a.submissions.length === 0) || [];
 
           setStats({
             courseTitle: (enrollmentData.course as any)?.title || "Unknown Course",

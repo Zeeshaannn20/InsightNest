@@ -27,7 +27,7 @@ export default function StudentCoursesPage() {
       if (!error && data) {
         // Fetch progress for each
         const withProgress = await Promise.all(
-          data.map(async (e) => {
+          data.map(async (e: any) => {
             const { data: progress } = await supabase.rpc("calculate_progress", {
               p_student_id: profile.id,
               p_course_id: e.course_id

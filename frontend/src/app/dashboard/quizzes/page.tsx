@@ -23,7 +23,7 @@ export default function StudentQuizzesPage() {
         .eq("student_id", profile.id);
 
       if (enrollments && enrollments.length > 0) {
-        const courseIds = enrollments.map(e => e.course_id);
+        const courseIds = enrollments.map((e: any) => e.course_id);
         
         const { data: quizzesData } = await supabase
           .from("quizzes")
@@ -39,11 +39,11 @@ export default function StudentQuizzesPage() {
             .select("*")
             .eq("student_id", profile.id);
             
-          const resultMap = new Map(resultsData?.map(r => [r.quiz_id, r]) || []);
+          const resultsMap = new Map(resultsData?.map((r: QuizResult) => [r.quiz_id, r]) || []);
           
-          const combined = quizzesData.map(q => ({
+          const combined = quizzesData.map((q: any) => ({
             ...q,
-            result: resultMap.get(q.id)
+            result: resultsMap.get(q.id)
           })) as unknown as QuizWithResult[];
           
           setQuizzes(combined);

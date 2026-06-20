@@ -21,7 +21,7 @@ export default function StudentLivePage() {
         .eq("student_id", profile.id);
 
       if (enrollments && enrollments.length > 0) {
-        const courseIds = enrollments.map(e => e.course_id);
+        const courseIds = enrollments.map((e: any) => e.course_id);
         
         const { data } = await supabase
           .from("live_sessions")
