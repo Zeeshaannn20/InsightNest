@@ -1,26 +1,14 @@
 {
-  "name": "insightnest",
-  "version": "0.1.0",
+  "name": "insightnest-monorepo",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
-  },
-  "dependencies": {
-    "next": "16.2.9",
-    "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "install:all": "npm install --prefix frontend && npm install --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev": "npx concurrently -k -p \"[{name}]\" -n \"Backend,Frontend\" -c \"yellow.bold,cyan.bold\" \"npm run dev:backend\" \"npm run dev:frontend\""
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.9",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "concurrently": "^8.2.2"
   }
 }

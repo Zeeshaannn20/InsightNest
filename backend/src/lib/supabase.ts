@@ -1,0 +1,22 @@
+import { createClient } from "@supabase/supabase-js";
+
+export function getSupabaseClient(token?: string) {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error("Missing Supabase environment variables (SUPABASE_URL or SUPABASE_ANON_KEY).");
+  }
+
+  if (token) {
+    return createClient(supabaseUrl, supabaseAnonKey, {
+      global: {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    });
+  }
+
+  return createClient(supabaseUrl, supabaseAnonKey);
+}
