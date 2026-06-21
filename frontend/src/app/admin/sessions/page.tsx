@@ -210,6 +210,25 @@ export default function AdminSessionsPage() {
     setAssignmentDeadlineTime("23:59");
   };
 
+  const handleDeleteSession = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this session?")) return;
+    
+    setError(null);
+    setSuccessMsg(null);
+    
+    const { error } = await supabase
+      .from("live_sessions")
+      .delete()
+      .eq("id", id);
+      
+    if (error) {
+      setError("Failed to delete session: " + error.message);
+    } else {
+      setSuccessMsg("Session deleted successfully.");
+      fetchSessions();
+    }
+  };
+
   return (
     <div className="p-8 max-w-7xl mx-auto animate-fade-in">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
@@ -272,18 +291,19 @@ export default function AdminSessionsPage() {
                 <th className="px-6 py-4 font-semibold">Date & Time</th>
                 <th className="px-6 py-4 font-semibold">Google Meet</th>
                 <th className="px-6 py-4 font-semibold">Status</th>
+                <th className="px-6 py-4 font-semibold text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/20">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-on-surface-variant">
+                  <td colSpan={6} className="px-6 py-8 text-center text-on-surface-variant">
                     <span className="material-symbols-outlined animate-spin text-3xl">progress_activity</span>
                   </td>
                 </tr>
               ) : sessions.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-on-surface-variant">
+                  <td colSpan={6} className="px-6 py-8 text-center text-on-surface-variant">
                     No live sessions found.
                   </td>
                 </tr>
@@ -325,6 +345,15 @@ export default function AdminSessionsPage() {
                       }`}>
                         {session.status.toUpperCase()}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <button 
+                        onClick={() => handleDeleteSession(session.id)}
+                        className="text-error hover:text-error/80 p-2 rounded-lg hover:bg-error-container/20 transition-colors"
+                        title="Delete session"
+                      >
+                        <span className="material-symbols-outlined text-[20px]">delete</span>
+                      </button>
                     </td>
                   </tr>
                 ))
