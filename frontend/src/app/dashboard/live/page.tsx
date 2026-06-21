@@ -104,16 +104,12 @@ export default function StudentLivePage() {
                   </div>
                   
                   <div>
-                    {session.status === 'live' ? (
+                    {session.status === 'live' || session.status === 'scheduled' ? (
                       <button 
                         onClick={() => handleJoinClass(session.id, session.meet_link)}
-                        className="bg-red-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-red-700 transition-colors shadow-sm w-full sm:w-auto flex items-center justify-center gap-2"
+                        className={`${session.status === 'live' ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-primary-container text-on-primary hover:bg-primary-container/90'} px-6 py-2.5 rounded-xl font-bold text-sm transition-colors shadow-sm w-full sm:w-auto flex items-center justify-center gap-2`}
                       >
-                        <span className="material-symbols-outlined">videocam</span> Join Class
-                      </button>
-                    ) : session.status === 'scheduled' ? (
-                      <button disabled className="bg-surface-container-high text-on-surface px-6 py-2.5 rounded-xl font-bold text-sm cursor-not-allowed w-full sm:w-auto text-center">
-                        Scheduled
+                        <span className="material-symbols-outlined">videocam</span> {session.status === 'live' ? 'Join Live Class' : 'Join Meet'}
                       </button>
                     ) : (
                       <button disabled className="bg-green-100 text-green-700 px-6 py-2.5 rounded-xl font-bold text-sm cursor-not-allowed w-full sm:w-auto text-center">
