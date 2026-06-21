@@ -43,7 +43,7 @@ export default function CourseViewerPage({ params }: { params: { id: string } })
         .order("sort_order", { ascending: true });
 
       if (mData) {
-        mData.forEach((m) => {
+        mData.forEach((m: any) => {
           m.lessons.sort((a: any, b: any) => a.sort_order - b.sort_order);
         });
         setModules(mData);
