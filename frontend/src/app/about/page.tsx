@@ -146,7 +146,7 @@ export default function AboutPage() {
             <ul className="space-y-3 text-sm">
               <li><Link href="/about" className="hover:text-secondary transition-colors">About Us</Link></li>
               <li><Link href="/privacy" className="hover:text-secondary transition-colors">Privacy Policy</Link></li>
-              <li><a href="#" className="hover:text-secondary transition-colors">Terms of Service</a></li>
+              <li><Link href="/terms" className="hover:text-secondary transition-colors">Terms of Service</Link></li>
             </ul>
           </div>
         </div>
