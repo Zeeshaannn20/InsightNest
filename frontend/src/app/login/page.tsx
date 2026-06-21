@@ -138,7 +138,7 @@ function LoginContent() {
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                     className="w-full pl-12 pr-4 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all text-on-surface"
-                    placeholder="zeeshan1820hussain@gmail.com"
+                    placeholder="Enter your email"
                   />
                 </div>
               </div>
