@@ -54,7 +54,7 @@ export default function Sidebar({ variant = "student" }: SidebarProps) {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col h-full py-margin-desktop fixed left-0 top-0 w-sidebar-width bg-primary-container z-50">
+      <aside className="hidden md:flex flex-col h-full py-margin-desktop fixed left-0 top-0 w-sidebar-width bg-surface-container-lowest border-r border-outline-variant/30 z-50">
         {/* Logo */}
         <div className="px-8 mb-6">
           <Link href="/" className="flex items-center">
@@ -72,8 +72,8 @@ export default function Sidebar({ variant = "student" }: SidebarProps) {
                 href={item.href}
                 className={`flex items-center gap-3 px-4 py-3 rounded-r-xl text-label-lg transition-all duration-200 group relative ${
                   active
-                    ? "bg-secondary text-on-secondary rounded-l-xl"
-                    : "text-on-primary-container hover:bg-white/5 hover:text-on-primary"
+                    ? "bg-secondary text-on-secondary rounded-l-xl shadow-sm"
+                    : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
                 }`}
               >
                 {active && (
@@ -120,23 +120,23 @@ export default function Sidebar({ variant = "student" }: SidebarProps) {
 
         {/* Profile Info */}
         <div className="px-6 mb-4">
-          <Link href={variant === "student" ? "/dashboard/profile" : "/instructor/profile"} className="flex items-center gap-3 py-3 border-t border-white/10 hover:bg-white/5 rounded-lg transition-colors group cursor-pointer px-2 -mx-2">
-            <div className="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden shrink-0">
-              <span className="text-on-secondary-container font-semibold text-sm">
+          <Link href={variant === "student" ? "/dashboard/profile" : "/instructor/profile"} className="flex items-center gap-3 py-3 border-t border-outline-variant/30 hover:bg-surface-container rounded-lg transition-colors group cursor-pointer px-2 -mx-2">
+            <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center overflow-hidden shrink-0">
+              <span className="text-secondary font-semibold text-sm">
                 {profile?.full_name?.charAt(0).toUpperCase() || "U"}
               </span>
             </div>
             <div className="overflow-hidden">
-              <p className="text-on-primary text-sm font-semibold truncate group-hover:text-secondary-container transition-colors">{profile?.full_name || "User"}</p>
-              <p className="text-on-primary-container text-xs truncate capitalize">{profile?.role || "student"}</p>
+              <p className="text-primary-container text-sm font-semibold truncate group-hover:text-primary transition-colors">{profile?.full_name || "User"}</p>
+              <p className="text-on-surface-variant text-xs truncate capitalize">{profile?.role || "student"}</p>
             </div>
           </Link>
         </div>
 
         {/* Bottom links */}
-        <div className="px-6 py-4 border-t border-white/10 space-y-1">
-          <button onClick={signOut} className="flex items-center gap-3 px-3 py-2 text-on-primary-container text-sm hover:text-error transition-colors w-full text-left">
-            <span className="material-symbols-outlined text-xl">logout</span>
+        <div className="px-6 py-4 border-t border-outline-variant/30 space-y-1">
+          <button onClick={signOut} className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-error bg-error/10 hover:bg-error/20 transition-colors w-full">
+            <span className="material-symbols-outlined text-[20px]">logout</span>
             Sign Out
           </button>
         </div>
