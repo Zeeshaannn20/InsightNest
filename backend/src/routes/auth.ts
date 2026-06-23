@@ -35,7 +35,12 @@ router.get("/google", async (req: Request, res: Response) => {
     process.env.GOOGLE_REDIRECT_URI
   );
 
-  const scopes = ["https://www.googleapis.com/auth/calendar.events"];
+  const scopes = [
+    "https://www.googleapis.com/auth/calendar.events",
+    "openid",
+    "email",
+    "profile"
+  ];
 
   // Store token server-side and use a random state ID in the URL
   const stateId = randomUUID();
@@ -104,21 +109,71 @@ router.get("/google/callback", async (req: Request, res: Response) => {
       tokenPayload.refresh_token = tokens.refresh_token;
     }
 
+    // Try to extract Google email from id_token
+    let googleEmail: string | null = null;
+    if (tokens.id_token) {
+      try {
+        const payloadBase64 = tokens.id_token.split(".")[1];
+        if (payloadBase64) {
+          const payload = JSON.parse(
+            Buffer.from(payloadBase64, "base64").toString("utf-8")
+          );
+          googleEmail = payload.email || null;
+        }
+      } catch (err) {
+        console.error("Failed to decode Google id_token:", err);
+      }
+    }
+
+    // Fallback: fetch token info from Google API if id_token was missing or parsing failed
+    if (!googleEmail && tokens.access_token) {
+      try {
+        const tokenInfo = await oauth2Client.getTokenInfo(tokens.access_token);
+        googleEmail = tokenInfo.email || null;
+      } catch (err) {
+        console.error("Failed to fetch token info from Google:", err);
+      }
+    }
+
+    if (!googleEmail) {
+      return res.redirect(`${origin}/admin/sessions?error=${encodeURIComponent("Failed to retrieve Google email address during authentication.")}`);
+    }
+
+    if (googleEmail.toLowerCase() !== "zeeshan1820hussain@gmail.com") {
+      return res.redirect(`${origin}/admin/sessions?error=${encodeURIComponent("Forbidden: Only zeeshan1820hussain@gmail.com is authorized to connect Google Calendar.")}`);
+    }
+
     // Store tokens in user_google_tokens. Since client is authenticated as the user, RLS is satisfied.
-    const { error: dbError } = await supabase
+    let { error: dbError } = await supabase
       .from("user_google_tokens")
-      .upsert(tokenPayload);
+      .upsert({
+        ...tokenPayload,
+        ...(googleEmail ? { google_email: googleEmail } : {})
+      });
+
+    // Fallback if the google_email column does not exist on the remote database yet
+    if (dbError && googleEmail) {
+      console.warn("Attempt to save google_email failed (column may not exist). Falling back...", dbError.message);
+      const { error: fallbackError } = await supabase
+        .from("user_google_tokens")
+        .upsert(tokenPayload);
+      dbError = fallbackError;
+    }
 
     if (dbError) {
       console.error("Database storage error for Google tokens:", dbError);
-      return res.status(500).json({ error: `Failed to store credentials: ${dbError.message}` });
+      return res.redirect(`${origin}/admin/sessions?error=${encodeURIComponent(`Failed to store credentials: ${dbError.message}`)}`);
     }
 
     // Redirect user back to frontend sessions page
     res.redirect(`${origin}/admin/sessions?connected=true`);
   } catch (error: any) {
     console.error("OAuth callback exchange failed:", error);
-    res.status(500).json({ error: `Failed to authenticate with Google: ${error.message}` });
+    const stateParam = req.query.state as string;
+    // Attempt state lookup to find correct origin, fallback to environment url or default port
+    const stateData = stateParam ? oauthStateStore.get(stateParam) : null;
+    const origin = stateData?.origin || process.env.FRONTEND_URL || "http://localhost:3000";
+    res.redirect(`${origin}/admin/sessions?error=${encodeURIComponent(`Failed to authenticate with Google: ${error.message}`)}`);
   }
 });
 

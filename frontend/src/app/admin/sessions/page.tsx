@@ -14,6 +14,7 @@ export default function AdminSessionsPage() {
   // Google Calendar Integration states
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
   const [checkingGoogle, setCheckingGoogle] = useState(true);
+  const [googleEmail, setGoogleEmail] = useState<string | null>(null);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5001";
   const [googleAuthUrl, setGoogleAuthUrl] = useState(`${backendUrl}/api/auth/google`);
 
@@ -56,6 +57,10 @@ export default function AdminSessionsPage() {
       setSuccessMsg("Successfully connected Google Calendar!");
       // Clean URL params
       window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (params.get("error")) {
+      setError(params.get("error"));
+      // Clean URL params
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
 
@@ -85,6 +90,7 @@ export default function AdminSessionsPage() {
       const data = await res.json();
       if (res.ok) {
         setIsGoogleConnected(data.isConnected);
+        setGoogleEmail(data.googleEmail || session?.user?.email || null);
       }
     } catch (err) {
       console.error("Error checking Google status:", err);
@@ -244,7 +250,7 @@ export default function AdminSessionsPage() {
           ) : isGoogleConnected ? (
             <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-sm font-medium">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-              <span>Google Connected</span>
+              <span>Google Connected {googleEmail && `(${googleEmail})`}</span>
             </div>
           ) : (
             <a
@@ -324,7 +330,7 @@ export default function AdminSessionsPage() {
                     <td className="px-6 py-4">
                       {session.meet_link ? (
                         <a
-                          href={session.meet_link}
+                          href={googleEmail ? `${session.meet_link}${session.meet_link.includes('?') ? '&' : '?'}authuser=${encodeURIComponent(googleEmail)}` : session.meet_link}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-xs font-semibold hover:bg-blue-100 transition-colors"

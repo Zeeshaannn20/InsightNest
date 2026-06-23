@@ -58,9 +58,9 @@ router.get("/google-status", async (req: Request, res: Response) => {
     const token = (req as any).token;
     const supabase = getSupabaseClient(token);
 
-    const { count, error } = await supabase
+    const { data, error } = await supabase
       .from("user_google_tokens")
-      .select("*", { count: "exact", head: true })
+      .select("*")
       .eq("user_id", user.id);
 
     if (error) {
@@ -68,7 +68,11 @@ router.get("/google-status", async (req: Request, res: Response) => {
       return res.status(500).json({ error: error.message });
     }
 
-    res.json({ isConnected: count !== null && count > 0 });
+    const row = data && data[0];
+    res.json({ 
+      isConnected: !!row,
+      googleEmail: row ? (row.google_email || null) : null
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
