@@ -236,6 +236,17 @@ export interface ActivityLog {
   user?: Profile;
 }
 
+export interface RecordedLecture {
+  id: string;
+  course_id: string;
+  title: string;
+  youtube_url: string;
+  duration_minutes: number;
+  created_at: string;
+  // Joined
+  course?: Course;
+}
+
 // ============================================================
 // Utility Types
 // ============================================================

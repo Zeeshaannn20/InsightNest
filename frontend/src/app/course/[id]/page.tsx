@@ -17,6 +17,7 @@ interface ChatMessage {
 export default function CourseViewerPage({ params }: { params: { id: string } }) {
   const [course, setCourse] = useState<any>(null);
   const [modules, setModules] = useState<any[]>([]);
+  const [recordings, setRecordings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState("description");
@@ -25,6 +26,32 @@ export default function CourseViewerPage({ params }: { params: { id: string } })
   const [newMessage, setNewMessage] = useState("");
   const chatEndRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
+
+  const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
+  const [activeVideoTitle, setActiveVideoTitle] = useState<string | null>(null);
+
+  // Helper to extract YouTube video ID and format embed URL
+  const getYouTubeEmbedUrl = (url: string): string | null => {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    const videoId = (match && match[2].length === 11) ? match[2] : null;
+    if (!videoId) return null;
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+  };
+
+  const handlePlayVideo = (url: string | null, title: string) => {
+    if (!url) return;
+    const embedUrl = getYouTubeEmbedUrl(url);
+    if (embedUrl) {
+      setActiveVideoUrl(embedUrl);
+      setActiveVideoTitle(title);
+    } else {
+      // Fallback for direct video links or raw URLs
+      setActiveVideoUrl(url);
+      setActiveVideoTitle(title);
+    }
+  };
 
   useEffect(() => {
     async function fetchCourseData() {
@@ -48,6 +75,17 @@ export default function CourseViewerPage({ params }: { params: { id: string } })
         });
         setModules(mData);
       }
+
+      const { data: recData } = await supabase
+        .from("recorded_lectures")
+        .select("*")
+        .eq("course_id", params.id)
+        .order("created_at", { ascending: true });
+
+      if (recData) {
+        setRecordings(recData);
+      }
+
       setLoading(false);
     }
     fetchCourseData();
@@ -140,12 +178,21 @@ export default function CourseViewerPage({ params }: { params: { id: string } })
           <section className="w-full lg:w-[70%] flex flex-col bg-background overflow-y-auto custom-scrollbar">
             
             {/* Video Container */}
-            <div className="aspect-video bg-on-background relative w-full flex-shrink-0 flex items-center justify-center border-b border-outline-variant/20">
-               {/* No video playing initially */}
-               <div className="text-center text-outline">
-                 <span className="material-symbols-outlined text-6xl mb-2">video_library</span>
-                 <p>Select a lesson from the syllabus to start learning.</p>
-               </div>
+            <div className="aspect-video bg-black relative w-full flex-shrink-0 flex items-center justify-center border-b border-outline-variant/20">
+              {activeVideoUrl ? (
+                <iframe
+                  src={activeVideoUrl}
+                  title={activeVideoTitle || "Lecture Video"}
+                  className="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                ></iframe>
+              ) : (
+                <div className="text-center text-outline">
+                  <span className="material-symbols-outlined text-6xl mb-2">video_library</span>
+                  <p>Select a lesson from the syllabus or a recording to start learning.</p>
+                </div>
+              )}
             </div>
 
             {/* Video Metadata */}
@@ -191,7 +238,34 @@ export default function CourseViewerPage({ params }: { params: { id: string } })
 
               {activeTab === "recordings" && (
                 <div className="space-y-4 animate-fade-in text-on-surface-variant">
-                  <p>No class recordings available yet.</p>
+                  {recordings.length === 0 ? (
+                    <div className="py-8 text-center border border-dashed border-outline-variant/40 rounded-xl bg-surface-container-low/20">
+                      <span className="material-symbols-outlined text-4xl text-on-surface-variant/40 mb-1">movie</span>
+                      <p className="text-sm">No class recordings available yet.</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {recordings.map((rec) => (
+                        <button
+                          key={rec.id}
+                          onClick={() => handlePlayVideo(rec.youtube_url, rec.title)}
+                          className="flex items-start gap-4 p-4 rounded-xl border border-outline-variant/30 hover:border-secondary hover:bg-surface-container/30 text-left transition-all group w-full cursor-pointer"
+                        >
+                          <div className="w-12 h-12 rounded-lg bg-red-100 flex items-center justify-center text-red-600 shrink-0 group-hover:scale-105 transition-transform">
+                            <span className="material-symbols-outlined text-2xl">play_circle</span>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h4 className="font-bold text-primary-container group-hover:text-secondary transition-colors text-sm line-clamp-1">
+                              {rec.title}
+                            </h4>
+                            <p className="text-xs text-on-surface-variant mt-1">
+                              Duration: {rec.duration_minutes || 0} mins
+                            </p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -247,15 +321,36 @@ export default function CourseViewerPage({ params }: { params: { id: string } })
                       
                       {mod.isOpen && (
                         <div className="pb-2 animate-slide-down">
-                          {mod.lessons?.map((lesson: any) => (
-                            <a href="#" key={lesson.id} className="flex items-center gap-3 px-6 py-3 hover:bg-surface-container/30 transition-colors">
-                              <span className="material-symbols-outlined text-outline text-[20px]">play_circle</span>
-                              <div className="flex-1">
-                                <p className="text-sm text-on-surface">{lesson.title}</p>
-                                <p className="text-xs text-outline">{lesson.duration_minutes || 0} mins</p>
-                              </div>
-                            </a>
-                          ))}
+                          {mod.lessons?.map((lesson: any) => {
+                            const isPlayable = lesson.type === "video" || lesson.type === "recording" || lesson.content_url;
+                            return (
+                              <button
+                                key={lesson.id}
+                                disabled={!isPlayable}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  if (lesson.content_url) {
+                                    handlePlayVideo(lesson.content_url, lesson.title);
+                                  }
+                                }}
+                                className={`w-full flex items-center gap-3 px-6 py-3 hover:bg-surface-container/30 transition-colors text-left ${
+                                  !isPlayable ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
+                                }`}
+                              >
+                                <span className="material-symbols-outlined text-outline text-[20px]">
+                                  {lesson.type === "pdf" ? "picture_as_pdf" : 
+                                   lesson.type === "notes" ? "description" : 
+                                   "play_circle"}
+                                </span>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm text-on-surface truncate">{lesson.title}</p>
+                                  <p className="text-xs text-outline">
+                                    {lesson.type.toUpperCase()} {lesson.duration_minutes ? `• ${lesson.duration_minutes} mins` : ""}
+                                  </p>
+                                </div>
+                              </button>
+                            );
+                          })}
                           {(!mod.lessons || mod.lessons.length === 0) && (
                             <div className="px-6 py-3 text-xs text-outline">No lessons in this module.</div>
                           )}
