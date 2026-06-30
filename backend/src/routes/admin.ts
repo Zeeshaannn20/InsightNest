@@ -78,6 +78,29 @@ router.get("/google-status", async (req: Request, res: Response) => {
   }
 });
 
+// POST /api/admin/google-disconnect
+router.post("/google-disconnect", async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+    const token = (req as any).token;
+    const supabase = getSupabaseClient(token);
+
+    const { error } = await supabase
+      .from("user_google_tokens")
+      .delete()
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("Failed to disconnect Google Calendar:", error);
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({ success: true });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // POST /api/admin/sessions/create
 router.post("/sessions/create", async (req: Request, res: Response) => {
   try {
@@ -115,6 +138,17 @@ router.post("/sessions/create", async (req: Request, res: Response) => {
         });
       } catch (meetErr: any) {
         console.error("Google Meet Generation error:", meetErr);
+        if (meetErr.message && (meetErr.message.includes("invalid_grant") || meetErr.code === "invalid_grant")) {
+          console.warn("invalid_grant detected. Automatically deleting user_google_tokens.");
+          try {
+            await supabase
+              .from("user_google_tokens")
+              .delete()
+              .eq("user_id", user.id);
+          } catch (dbDelErr) {
+            console.error("Failed to auto-delete invalid tokens:", dbDelErr);
+          }
+        }
         return res.status(400).json({
           error: `Google Meet link generation failed: ${meetErr.message}. Ensure your Google Calendar is connected.`
         });

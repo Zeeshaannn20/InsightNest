@@ -10,6 +10,7 @@ export default function DashboardPage() {
   const { profile, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
+    courseId: "" as string,
     courseTitle: "No Active Courses",
     progress: 0,
     nextLesson: null as any,
@@ -80,6 +81,7 @@ export default function DashboardPage() {
           const pending = assignmentsData?.filter((a: any) => !a.submissions || a.submissions.length === 0) || [];
 
           setStats({
+            courseId: courseId,
             courseTitle: (enrollmentData.course as any)?.title || "Unknown Course",
             progress: progressData || 0,
             nextLesson: nextLessonData?.lessons?.[0] || null,
@@ -157,7 +159,7 @@ export default function DashboardPage() {
             <h2 className="text-2xl font-bold text-primary-container leading-tight">{stats.courseTitle}</h2>
             
             <div className="flex gap-3 pt-4">
-              <Link href="/course/1" className="bg-secondary text-on-secondary px-6 py-3 rounded-xl font-bold text-sm hover:bg-secondary/90 transition-all shadow-md btn-press flex items-center gap-2">
+              <Link href={stats.courseId ? `/course/${stats.courseId}` : "/dashboard/courses"} className="bg-secondary text-on-secondary px-6 py-3 rounded-xl font-bold text-sm hover:bg-secondary/90 transition-all shadow-md btn-press flex items-center gap-2">
                 <span className="material-symbols-outlined text-lg">play_circle</span> Go to Course
               </Link>
             </div>

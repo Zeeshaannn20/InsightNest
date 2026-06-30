@@ -2,7 +2,7 @@
 
 import Sidebar from "@/components/Sidebar";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, use } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 interface ChatMessage {
@@ -14,7 +14,8 @@ interface ChatMessage {
   reply?: string;
 }
 
-export default function CourseViewerPage({ params }: { params: { id: string } }) {
+export default function CourseViewerPage({ params }: { params: Promise<{ id: string }> }) {
+  const id = use(params);
   const [course, setCourse] = useState<any>(null);
   const [modules, setModules] = useState<any[]>([]);
   const [recordings, setRecordings] = useState<any[]>([]);
@@ -58,7 +59,7 @@ export default function CourseViewerPage({ params }: { params: { id: string } })
       const { data: cData } = await supabase
         .from("courses")
         .select(`*, profiles(full_name)`)
-        .eq("id", params.id)
+        .eq("id", id)
         .single();
 
       if (cData) setCourse(cData);
@@ -66,7 +67,7 @@ export default function CourseViewerPage({ params }: { params: { id: string } })
       const { data: mData } = await supabase
         .from("modules")
         .select(`*, lessons(*)`)
-        .eq("course_id", params.id)
+        .eq("course_id", id)
         .order("sort_order", { ascending: true });
 
       if (mData) {
@@ -79,7 +80,7 @@ export default function CourseViewerPage({ params }: { params: { id: string } })
       const { data: recData } = await supabase
         .from("recorded_lectures")
         .select("*")
-        .eq("course_id", params.id)
+        .eq("course_id", id)
         .order("created_at", { ascending: true });
 
       if (recData) {
@@ -89,18 +90,18 @@ export default function CourseViewerPage({ params }: { params: { id: string } })
       setLoading(false);
     }
     fetchCourseData();
-  }, [params.id, supabase]);
+  }, [id, supabase]);
 
   useEffect(() => {
     // Load real-time chat messages from Supabase in the future.
     // For now, start empty instead of the fake mock messages.
-    const stored = localStorage.getItem(`lms_chat_${params.id}`);
+    const stored = localStorage.getItem(`lms_chat_${id}`);
     if (stored) {
       setChatMessages(JSON.parse(stored));
     } else {
       setChatMessages([]);
     }
-  }, [params.id]);
+  }, [id]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -119,7 +120,7 @@ export default function CourseViewerPage({ params }: { params: { id: string } })
     };
 
     const updated = [...chatMessages, msg];
-    localStorage.setItem(`lms_chat_${params.id}`, JSON.stringify(updated));
+    localStorage.setItem(`lms_chat_${id}`, JSON.stringify(updated));
     setChatMessages(updated);
     setNewMessage("");
   };

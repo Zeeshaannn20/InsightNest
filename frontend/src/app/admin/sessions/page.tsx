@@ -98,6 +98,35 @@ export default function AdminSessionsPage() {
     setCheckingGoogle(false);
   };
 
+  const handleDisconnectGoogle = async () => {
+    if (!confirm("Are you sure you want to disconnect Google Calendar? This will prevent generating Google Meet links for new sessions.")) {
+      return;
+    }
+    setError(null);
+    setSuccessMsg(null);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      const res = await fetch(`${backendUrl}/api/admin/google-disconnect`, {
+        method: "POST",
+        headers: {
+          Authorization: token ? `Bearer ${token}` : ""
+        }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setIsGoogleConnected(false);
+        setGoogleEmail(null);
+        setSuccessMsg("Successfully disconnected Google Calendar.");
+      } else {
+        throw new Error(data.error || "Failed to disconnect Google Calendar");
+      }
+    } catch (err: any) {
+      setError(err instanceof Error ? err.message : "An error occurred while disconnecting Google Calendar.");
+    }
+  };
+
   const fetchSessions = async () => {
     setLoading(true);
     const { data, error } = await supabase
@@ -196,6 +225,7 @@ export default function AdminSessionsPage() {
       fetchSessions();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "An unknown error occurred");
+      checkGoogleStatus();
     } finally {
       setSubmitting(false);
     }
@@ -248,9 +278,19 @@ export default function AdminSessionsPage() {
           {checkingGoogle ? (
             <div className="h-10 w-44 bg-surface-container-low rounded-xl animate-pulse" />
           ) : isGoogleConnected ? (
-            <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-sm font-medium">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-              <span>Google Connected {googleEmail && `(${googleEmail})`}</span>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-sm font-medium">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                <span>Google Connected {googleEmail && `(${googleEmail})`}</span>
+              </div>
+              <button
+                onClick={handleDisconnectGoogle}
+                className="flex items-center gap-1.5 px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-xl text-sm font-medium transition-all shadow-sm"
+                title="Disconnect Google Calendar"
+              >
+                <span className="material-symbols-outlined text-base">link_off</span>
+                <span>Disconnect</span>
+              </button>
             </div>
           ) : (
             <a
