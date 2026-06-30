@@ -15,7 +15,7 @@ interface ChatMessage {
 }
 
 export default function CourseViewerPage({ params }: { params: Promise<{ id: string }> }) {
-  const id = use(params);
+  const { id } = use(params);
   const [course, setCourse] = useState<any>(null);
   const [modules, setModules] = useState<any[]>([]);
   const [recordings, setRecordings] = useState<any[]>([]);
