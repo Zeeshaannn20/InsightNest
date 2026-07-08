@@ -361,69 +361,6 @@ export default function DataAnalystCoursePage() {
           </div>
         </section>
 
-        {/* Instructor / Mentor Section — TODO: Replace with real bios */}
-        <section className="py-24 bg-surface">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-extrabold text-primary-container mb-4">Meet Your Instructors</h2>
-              <p className="text-on-surface-variant max-w-2xl mx-auto text-lg">Learn from practitioners who work with these tools every day.</p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              {/* TODO: Replace with real instructor data — name, photo URL, title, credentials, bio */}
-              <div className="bg-surface-container-lowest p-8 rounded-3xl border border-outline-variant/30 shadow-card flex flex-col items-center text-center">
-                <div className="w-24 h-24 rounded-full bg-surface-container-high flex items-center justify-center mb-4">
-                  <span className="material-symbols-outlined text-4xl text-outline">person</span>
-                </div>
-                <h3 className="text-lg font-bold text-primary-container mb-1">{/* TODO */} Instructor Name</h3>
-                <p className="text-sm text-secondary font-semibold mb-3">{/* TODO */} Title &amp; Company</p>
-                <p className="text-sm text-on-surface-variant leading-relaxed">{/* TODO */} Brief bio — years of experience, notable projects, relevant certifications (e.g., Microsoft Certified, PMP). Keep to 2-3 sentences.</p>
-              </div>
-
-              {/* TODO: Add a second instructor if applicable, or remove this card */}
-              <div className="bg-surface-container-lowest p-8 rounded-3xl border border-outline-variant/30 shadow-card flex flex-col items-center text-center">
-                <div className="w-24 h-24 rounded-full bg-surface-container-high flex items-center justify-center mb-4">
-                  <span className="material-symbols-outlined text-4xl text-outline">person</span>
-                </div>
-                <h3 className="text-lg font-bold text-primary-container mb-1">{/* TODO */} Instructor Name</h3>
-                <p className="text-sm text-secondary font-semibold mb-3">{/* TODO */} Title &amp; Company</p>
-                <p className="text-sm text-on-surface-variant leading-relaxed">{/* TODO */} Brief bio — years of experience, notable projects, relevant certifications. Keep to 2-3 sentences.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Testimonials Section — TODO: Replace with real testimonials */}
-        <section className="py-24 bg-surface-container-low border-y border-outline-variant/20">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-extrabold text-primary-container mb-4">What Graduates Say</h2>
-              <p className="text-on-surface-variant max-w-2xl mx-auto text-lg">Hear from people who completed the bootcamp and landed data roles.</p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              {/* TODO: Replace each card with a real testimonial — name, role/company, photo, quote */}
-              {[
-                { name: "TODO: Graduate Name", role: "TODO: Current Role at Company", quote: "TODO: 2-3 sentence testimonial about their experience — what they learned, how the bootcamp helped them get hired, and what stood out." },
-                { name: "TODO: Graduate Name", role: "TODO: Current Role at Company", quote: "TODO: 2-3 sentence testimonial focusing on the AI-augmented approach and how it gave them an edge in interviews." },
-                { name: "TODO: Graduate Name", role: "TODO: Current Role at Company", quote: "TODO: 2-3 sentence testimonial about the portfolio projects and how employers responded to them." }
-              ].map((testimonial, i) => (
-                <div key={i} className="bg-surface-container-lowest p-8 rounded-3xl border border-outline-variant/30 shadow-card flex flex-col">
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center flex-shrink-0">
-                      <span className="material-symbols-outlined text-xl text-outline">person</span>
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-on-surface text-sm">{testimonial.name}</h4>
-                      <p className="text-xs text-secondary">{testimonial.role}</p>
-                    </div>
-                  </div>
-                  <p className="text-sm text-on-surface-variant leading-relaxed italic">&ldquo;{testimonial.quote}&rdquo;</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* Enrollment Section — Admissions Closed */}
         <section id="enrollment" className="py-24 bg-surface">
