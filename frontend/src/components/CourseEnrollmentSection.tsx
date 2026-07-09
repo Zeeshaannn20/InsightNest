@@ -85,7 +85,8 @@ export default function CourseEnrollmentSection({ courseSlug }: CourseEnrollment
     setWaitlistLoading(true);
     
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001'}/api/enrollment/waitlist`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5001';
+      const response = await fetch(`${apiUrl}/api/enrollment/waitlist`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -242,7 +243,7 @@ export default function CourseEnrollmentSection({ courseSlug }: CourseEnrollment
                       Complete your payment via Razorpay. You will instantly receive dashboard access and a welcome email.
                     </p>
                   </div>
-                  <RazorpayButton courseId={course.id} courseTitle={course.title} pricePaise={course.price_paise} />
+                  <RazorpayButton courseId={course.id} courseTitle={course.title} courseSlug={courseSlug} pricePaise={course.price_paise} />
                   <div className="flex items-center gap-2 justify-center text-xs text-on-surface-variant mt-4">
                     <span className="material-symbols-outlined text-sm">lock</span> Secure 128-bit SSL Checkout
                   </div>

@@ -7,18 +7,19 @@ import { useAuth } from "@/lib/hooks/useAuth";
 interface RazorpayButtonProps {
   courseId: string;
   courseTitle: string;
+  courseSlug: string;
   pricePaise: number;
   disabled?: boolean;
 }
 
-export default function RazorpayButton({ courseId, courseTitle, pricePaise, disabled }: RazorpayButtonProps) {
+export default function RazorpayButton({ courseId, courseTitle, courseSlug, pricePaise, disabled }: RazorpayButtonProps) {
   const [loading, setLoading] = useState(false);
   const { session, profile } = useAuth();
   const router = useRouter();
 
   const handlePayment = async () => {
     if (!session) {
-      router.push(`/login?redirect=/courses/${courseId}`);
+      router.push(`/login?redirect=/courses/${courseSlug}`);
       return;
     }
 
@@ -34,7 +35,8 @@ export default function RazorpayButton({ courseId, courseTitle, pricePaise, disa
       }
 
       // 2. Create Order on Backend
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001'}/api/enrollment/create-order`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5001';
+      const response = await fetch(`${apiUrl}/api/enrollment/create-order`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -66,9 +68,34 @@ export default function RazorpayButton({ courseId, courseTitle, pricePaise, disa
         theme: {
           color: "#2563eb"
         },
-        handler: function (response: any) {
-          // Success handler - Webhook handles the actual DB insertion securely
-          router.push("/dashboard?success=true");
+        handler: async function (response: any) {
+          try {
+            // Verify payment signature asynchronously
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5001';
+            const verifyRes = await fetch(`${apiUrl}/api/enrollment/verify-payment`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${session.access_token}`
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature
+              })
+            });
+
+            if (!verifyRes.ok) {
+              alert("Payment verification failed. If money was deducted, please contact support.");
+              return;
+            }
+
+            // Success handler - Webhook handles the actual DB insertion securely
+            router.push("/dashboard?success=true");
+          } catch (err) {
+            console.error("Verification error:", err);
+            router.push("/dashboard?success=true"); // Fallback to webhook processing
+          }
         }
       };
 
