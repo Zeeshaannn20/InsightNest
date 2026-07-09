@@ -109,6 +109,38 @@ export default function DashboardPage() {
     );
   }
 
+  if (!stats.courseId) {
+    return (
+      <div className="animate-fade-in space-y-6">
+        <header className="flex md:hidden justify-between items-center mb-8">
+          <Logo variant="img2" className="h-14 w-auto" />
+        </header>
+
+        <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-primary-container mb-1 tracking-tight">Welcome, {profile?.full_name?.split(" ")[0]}!</h1>
+            <p className="text-on-surface-variant text-base">
+              You haven't enrolled in any courses yet.
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-surface-container-lowest rounded-3xl p-12 text-center border-2 border-outline-variant/30 shadow-sm max-w-3xl mx-auto mt-12">
+          <div className="w-24 h-24 bg-secondary/10 text-secondary rounded-full flex items-center justify-center mx-auto mb-6">
+            <span className="material-symbols-outlined text-5xl">school</span>
+          </div>
+          <h2 className="text-2xl font-bold text-primary-container mb-4">Start Your Journey</h2>
+          <p className="text-on-surface-variant mb-8 max-w-md mx-auto">
+            Browse our catalog of AI-powered data analytics courses and accelerate your career.
+          </p>
+          <Link href="/#courses" className="bg-secondary text-on-secondary px-8 py-3.5 rounded-xl font-bold text-lg hover:bg-secondary/90 transition-all btn-press shadow-md inline-flex items-center gap-2">
+            Browse Courses <span className="material-symbols-outlined text-xl">arrow_forward</span>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="animate-fade-in space-y-6">
       {/* Mobile Header */}

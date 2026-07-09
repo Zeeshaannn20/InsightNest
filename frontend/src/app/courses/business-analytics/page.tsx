@@ -3,28 +3,10 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Logo from "@/components/Logo";
+import CourseEnrollmentSection from "@/components/CourseEnrollmentSection";
 
 export default function BusinessAnalyticsCoursePage() {
   const observerRef = useRef<IntersectionObserver | null>(null);
-
-  // Waitlist form state
-  const [waitlistEmail, setWaitlistEmail] = useState("");
-  const [waitlistSubmitted, setWaitlistSubmitted] = useState(false);
-  const [waitlistLoading, setWaitlistLoading] = useState(false);
-
-  const handleWaitlist = (e: React.FormEvent) => {
-    e.preventDefault();
-    setWaitlistLoading(true);
-    setTimeout(() => {
-      setWaitlistLoading(false);
-      setWaitlistSubmitted(true);
-      // TODO: Wire this to a real backend endpoint (e.g., Supabase table or email service).
-      // Currently stubbed with localStorage.
-      const entries = JSON.parse(localStorage.getItem("ba_waitlist") || "[]");
-      entries.push({ email: waitlistEmail, date: new Date().toISOString() });
-      localStorage.setItem("ba_waitlist", JSON.stringify(entries));
-    }, 1000);
-  };
 
   useEffect(() => {
     observerRef.current = new IntersectionObserver((entries) => {
@@ -390,65 +372,8 @@ export default function BusinessAnalyticsCoursePage() {
           </div>
         </section>
 
-        {/* Enrollment Section — Waitlist Only */}
-        <section id="enrollment" className="py-24 bg-surface-container-low border-y border-outline-variant/20">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 bg-surface-variant text-on-surface-variant px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
-                <span className="material-symbols-outlined text-sm">hourglass_empty</span>
-                Launching Soon
-              </div>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-primary-container mb-4">Join the Waitlist</h2>
-              <p className="text-on-surface-variant max-w-2xl mx-auto text-lg">
-                Enrollments are opening soon. Register your interest below to be notified first.
-              </p>
-            </div>
-            
-            <div className="max-w-xl mx-auto bg-surface-container-lowest p-8 md:p-12 rounded-3xl border-2 border-outline-variant/50 shadow-elevated">
-               {waitlistSubmitted ? (
-                  <div className="text-center py-6 space-y-6 animate-scale-in">
-                    <div className="w-20 h-20 bg-secondary/10 text-secondary rounded-full flex items-center justify-center mx-auto">
-                      <span className="material-symbols-outlined text-5xl">check_circle</span>
-                    </div>
-                    <div>
-                      <h4 className="text-2xl font-bold text-primary-container mb-2">You are on the Waitlist!</h4>
-                      <p className="text-sm text-on-surface-variant leading-relaxed">
-                        We will notify you at <strong>{waitlistEmail}</strong> as soon as enrollments open.
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    <form onSubmit={handleWaitlist} className="space-y-4">
-                      <div className="space-y-1.5 text-left">
-                        <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant">Email Address</label>
-                        <input
-                          type="email"
-                          required
-                          value={waitlistEmail}
-                          onChange={(e) => setWaitlistEmail(e.target.value)}
-                          className="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 text-sm transition-all"
-                          placeholder="john@example.com"
-                        />
-                      </div>
-
-                      <button
-                        type="submit"
-                        disabled={waitlistLoading}
-                        className="w-full bg-secondary text-on-secondary py-3.5 rounded-xl font-bold hover:bg-secondary/90 transition-all btn-press shadow-md flex items-center justify-center"
-                      >
-                        {waitlistLoading ? (
-                          <span className="material-symbols-outlined animate-spin text-lg">progress_activity</span>
-                        ) : (
-                          "Notify Me When Admissions Open"
-                        )}
-                      </button>
-                    </form>
-                  </div>
-                )}
-            </div>
-          </div>
-        </section>
+        {/* Enrollment Section (Dynamic) */}
+        <CourseEnrollmentSection courseSlug="business-analytics" />
 
       </main>
 

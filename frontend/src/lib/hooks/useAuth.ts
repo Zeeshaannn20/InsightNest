@@ -3,9 +3,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile, UserRole } from "@/lib/types/database";
-import type { User } from "@supabase/supabase-js";
+import type { Session, User } from "@supabase/supabase-js";
 
 interface AuthState {
+  session: Session | null;
   user: User | null;
   profile: Profile | null;
   role: UserRole | null;
@@ -15,6 +16,7 @@ interface AuthState {
 
 export function useAuth() {
   const [state, setState] = useState<AuthState>({
+    session: null,
     user: null,
     profile: null,
     role: null,
@@ -54,6 +56,7 @@ export function useAuth() {
           const profile = await fetchProfile(session.user.id);
           if (mounted) {
             setState({
+              session,
               user: session.user,
               profile,
               role: profile?.role || null,
@@ -62,7 +65,7 @@ export function useAuth() {
             });
           }
         } else {
-          if (mounted) setState({ user: null, profile: null, role: null, loading: false, error: null });
+          if (mounted) setState({ session: null, user: null, profile: null, role: null, loading: false, error: null });
         }
       } catch (err) {
         if (mounted) setState(s => ({ ...s, loading: false, error: "Failed to fetch session" }));
@@ -77,6 +80,7 @@ export function useAuth() {
           const profile = await fetchProfile(session.user.id);
           if (mounted) {
             setState({
+              session,
               user: session.user,
               profile,
               role: profile?.role || null,
@@ -85,7 +89,7 @@ export function useAuth() {
             });
           }
         } else {
-          if (mounted) setState({ user: null, profile: null, role: null, loading: false, error: null });
+          if (mounted) setState({ session: null, user: null, profile: null, role: null, loading: false, error: null });
         }
       }
     );
@@ -98,7 +102,7 @@ export function useAuth() {
 
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
-    setState({ user: null, profile: null, role: null, loading: false, error: null });
+    setState({ session: null, user: null, profile: null, role: null, loading: false, error: null });
   }, [supabase]);
 
   return {

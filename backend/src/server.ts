@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRouter from "./routes/auth";
 import adminRouter from "./routes/admin";
+import enrollmentRouter from "./routes/enrollment";
 
 dotenv.config();
 
@@ -56,6 +57,7 @@ app.get("/health", (req, res) => {
 // Routes
 app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/enrollment", enrollmentRouter);
 
 app.listen(PORT, () => {
   console.log(`[InsightNest Backend] Server is running on http://localhost:${PORT}`);

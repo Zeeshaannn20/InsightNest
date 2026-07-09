@@ -191,4 +191,93 @@ router.post("/sessions/create", async (req: Request, res: Response) => {
   }
 });
 
+// POST /api/admin/grant-access
+router.post("/grant-access", async (req: Request, res: Response) => {
+  try {
+    const { studentEmail, courseId } = req.body;
+
+    if (!studentEmail || !courseId) {
+      return res.status(400).json({ error: "studentEmail and courseId are required" });
+    }
+
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      return res.status(500).json({ error: "Missing Supabase Service Role configuration" });
+    }
+
+    const { createClient } = require("@supabase/supabase-js");
+    const supabaseAdmin = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
+
+    // 1. Check if user exists, else invite
+    let userId: string;
+    
+    // In production, you would probably search by email or use an RPC if listUsers is too large,
+    // but for this MVP, we'll use listUsers since we just need to find the user.
+    // Better: just try to invite, if it fails because they exist, get them.
+    // However inviteUserByEmail is clean. Let's just create user directly if not found.
+    const { data: users, error: searchError } = await supabaseAdmin.auth.admin.listUsers();
+    
+    if (searchError) {
+      return res.status(500).json({ error: searchError.message });
+    }
+
+    const existingUser = users.users.find((u: any) => u.email === studentEmail);
+
+    if (existingUser) {
+      userId = existingUser.id;
+    } else {
+      // Create via magic link invite
+      const { data: inviteData, error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(studentEmail);
+      if (inviteError || !inviteData.user) {
+        return res.status(500).json({ error: inviteError?.message || "Failed to invite user" });
+      }
+      userId = inviteData.user.id;
+    }
+
+    // 2. Ensure profile exists and is active
+    const { data: profile } = await supabaseAdmin.from("profiles").select("id").eq("id", userId).single();
+    if (!profile) {
+      await supabaseAdmin.from("profiles").insert({
+        id: userId,
+        full_name: studentEmail.split("@")[0],
+        role: "student",
+        is_active: true
+      });
+    } else {
+      await supabaseAdmin.from("profiles").update({ is_active: true }).eq("id", userId);
+    }
+
+    // 3. Insert Enrollment (idempotent due to unique constraint)
+    const { data: enrollment, error: enrollError } = await supabaseAdmin
+      .from("enrollments")
+      .upsert({
+        student_id: userId,
+        course_id: courseId,
+        source: "manual",
+        status: "active",
+        enrolled_at: new Date().toISOString()
+      }, {
+        onConflict: 'student_id, course_id'
+      })
+      .select()
+      .single();
+
+    if (enrollError) {
+      return res.status(500).json({ error: enrollError.message });
+    }
+
+    res.json({
+      success: true,
+      message: existingUser ? "Access granted to existing user" : "User invited and access granted",
+      user_id: userId
+    });
+
+  } catch (error: any) {
+    console.error("Admin grant error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;
