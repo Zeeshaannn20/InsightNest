@@ -6,7 +6,8 @@ import { getSupabaseClient } from "../lib/supabase";
 import { createClient } from "@supabase/supabase-js";
 
 const router = Router();
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Don't crash the server if Resend key is missing; gracefully degrade
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 // Middleware to authenticate user using Supabase Bearer token
 async function authenticateUser(req: Request, res: Response, next: () => void) {
@@ -96,6 +97,37 @@ router.post("/create-order", authenticateUser, async (req: Request, res: Respons
   } catch (error: any) {
     console.error("Create order error:", error);
     res.status(500).json({ error: error.message });
+  }
+});
+
+// POST /api/enrollment/verify-payment
+// Verifies the checkout signature asynchronously. Does NOT grant access (webhook does that).
+router.post("/verify-payment", authenticateUser, async (req: Request, res: Response) => {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({ error: "Missing payment details" });
+    }
+
+    const secret = process.env.RAZORPAY_KEY_SECRET;
+    if (!secret) {
+      return res.status(500).json({ error: "Payment verification misconfigured" });
+    }
+
+    const generated_signature = crypto
+      .createHmac("sha256", secret)
+      .update(razorpay_order_id + "|" + razorpay_payment_id)
+      .digest("hex");
+
+    if (generated_signature === razorpay_signature) {
+      return res.json({ success: true, message: "Signature verified" });
+    } else {
+      return res.status(400).json({ error: "Invalid signature" });
+    }
+  } catch (error: any) {
+    console.error("Payment verification error:", error);
+    return res.status(500).json({ error: error.message });
   }
 });
 
@@ -193,23 +225,27 @@ router.post("/razorpay-webhook", async (req: Request, res: Response) => {
 
         const courseTitle = courseData?.title || "your new course";
 
-        try {
-          await resend.emails.send({
-            from: "InsightNest <hello@insightnest.in>",
-            to: userData.user.email,
-            subject: `Welcome to ${courseTitle}!`,
-            html: `
-              <h2>Payment Successful</h2>
-              <p>Welcome to <strong>${courseTitle}</strong>!</p>
-              <p>Your payment of ₹${(payment.amount / 100).toFixed(2)} has been received (Receipt: ${payment.id}).</p>
-              <p>You now have full access to your student dashboard.</p>
-              <br/>
-              <a href="https://insightnest.in/login" style="background:#2563eb;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;display:inline-block;font-weight:bold;">Log in to Dashboard</a>
-            `,
-          });
-        } catch (emailErr) {
-          console.error("Failed to send welcome email:", emailErr);
-          // Don't fail the webhook if email fails
+        if (resend) {
+          try {
+            await resend.emails.send({
+              from: "InsightNest <hello@insightnest.in>",
+              to: userData.user.email,
+              subject: `Welcome to ${courseTitle}!`,
+              html: `
+                <h2>Payment Successful</h2>
+                <p>Welcome to <strong>${courseTitle}</strong>!</p>
+                <p>Your payment of ₹${(payment.amount / 100).toFixed(2)} has been received (Receipt: ${payment.id}).</p>
+                <p>You now have full access to your student dashboard.</p>
+                <br/>
+                <a href="https://insightnest.in/login" style="background:#2563eb;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;display:inline-block;font-weight:bold;">Log in to Dashboard</a>
+              `,
+            });
+          } catch (emailErr) {
+            console.error("Failed to send welcome email:", emailErr);
+            // Don't fail the webhook if email fails
+          }
+        } else {
+          console.warn("RESEND_API_KEY is not set. Skipping welcome email.");
         }
       }
 
