@@ -96,7 +96,7 @@ export default function DataAnalystCoursePage() {
               <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-secondary text-base">schedule</span> 4 Weeks</span>
               <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-secondary text-base">videocam</span> Live Sessions</span>
               <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-secondary text-base">folder_open</span> 4 Projects</span>
-              <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-secondary text-base">payments</span> &#x20B9;1,999</span>
+              <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-secondary text-base">payments</span> <span className="line-through text-outline mr-1">&#x20B9;5,999</span> &#x20B9;2,999</span>
             </div>
           </div>
         </section>
@@ -281,7 +281,7 @@ export default function DataAnalystCoursePage() {
             <div className="mt-20">
               <div className="text-center mb-12 text-balance">
                 <h3 className="text-3xl font-bold text-primary-container">Why This Bootcamp Delivers Outsized Value</h3>
-                <p className="text-on-surface-variant mt-2 text-base">Here&#x2019;s what &#x20B9;1,999 gets you — and why graduates say it&#x2019;s the best investment they&#x2019;ve made in their careers.</p>
+                <p className="text-on-surface-variant mt-2 text-base">Here&#x2019;s what &#x20B9;2,999 gets you — and why graduates say it&#x2019;s the best investment they&#x2019;ve made in their careers.</p>
               </div>
 
               <div className="grid md:grid-cols-3 gap-8">
@@ -393,7 +393,10 @@ export default function DataAnalystCoursePage() {
                   
                   <div className="bg-surface rounded-2xl p-6 border border-outline-variant/30 mb-6 text-center">
                     <span className="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-1">Course Fee</span>
-                    <span className="text-4xl font-extrabold text-primary-container">&#x20B9;1,999</span>
+                    <div className="flex items-center justify-center">
+                      <span className="text-2xl line-through text-outline mr-3">&#x20B9;5,999</span>
+                      <span className="text-4xl font-extrabold text-primary-container">&#x20B9;2,999</span>
+                    </div>
                     <span className="text-outline text-xs block mt-1">One-time payment for full 4-week access</span>
                   </div>
                   
@@ -489,7 +492,7 @@ export default function DataAnalystCoursePage() {
                 { q: "What is the refund policy?", a: "TODO: Fill in your refund policy here \u2014 e.g., \u2018Full refund within 7 days of cohort start if you\u2019ve attended fewer than 2 sessions. No refunds after that.\u2019 Confirm and replace this placeholder." },
                 { q: "What software or tools do I need?", a: "You\u2019ll need a laptop or desktop with a stable internet connection. All tools used in the bootcamp \u2014 Excel (or Google Sheets), Python (via free cloud notebooks), Power BI Desktop (free), and Microsoft Fabric (trial account) \u2014 are either free or provided. We\u2019ll walk you through setup in the first session." },
                 { q: "How much time should I commit per week?", a: "Plan for 15-20 hours per week. This includes live sessions (roughly 6-8 hours), hands-on project work, and review. The bootcamp is intensive by design \u2014 4 weeks of focused effort replaces months of self-study." },
-                { q: "What happens after I\u2019m selected?", a: "Once your application is reviewed and accepted, you\u2019ll receive an email invitation with a payment link (\u20B91,999 one-time). After payment, you\u2019ll get access to the student dashboard where you can view the schedule, join live sessions, submit projects, and track your progress." },
+                { q: "What happens after I\u2019m selected?", a: "Once your application is reviewed and accepted, you\u2019ll receive an email invitation with a payment link (\u20B92,999 one-time). After payment, you\u2019ll get access to the student dashboard where you can view the schedule, join live sessions, submit projects, and track your progress." },
                 { q: "What payment methods do you accept?", a: "TODO: Confirm and list accepted payment methods \u2014 e.g., UPI, credit/debit cards, net banking, Razorpay, etc. Replace this placeholder with your actual payment options." }
               ].map((faq, i) => (
                 <details key={i} className="group bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-sm overflow-hidden">

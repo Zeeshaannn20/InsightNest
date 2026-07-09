@@ -277,8 +277,9 @@ export default function LandingPage() {
             {/* Price + CTA */}
             <div className="max-w-xl mx-auto text-center bg-surface-container-lowest p-8 md:p-10 rounded-3xl border-2 border-secondary shadow-elevated reveal-on-scroll">
               <span className="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-2">Course Fee</span>
-              <div className="mb-2">
-                <span className="text-4xl font-extrabold text-primary-container">₹1,999</span>
+              <div className="mb-2 flex items-center justify-center">
+                <span className="text-2xl line-through text-outline mr-3">₹5,999</span>
+                <span className="text-4xl font-extrabold text-primary-container">₹2,999</span>
               </div>
               <p className="text-sm text-on-surface-variant mb-6">One-time payment · Certification + Interview Prep included</p>
               <a
