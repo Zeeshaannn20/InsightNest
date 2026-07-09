@@ -391,7 +391,7 @@ export default function LandingPage() {
                     </div>
                   </div>
                   
-                  <h3 className="text-2xl font-bold text-outline mb-3">Business Analyst Fundamentals</h3>
+                  <h3 className="text-2xl font-bold text-outline mb-3">Business Analytics</h3>
                   <p className="text-sm text-outline font-semibold mb-4">Mastering Business Intelligence and Strategy</p>
                   
                   <p className="text-sm text-on-surface-variant leading-relaxed mb-6">
@@ -404,7 +404,7 @@ export default function LandingPage() {
                   <div className="flex items-center justify-between">
                     <div className="text-sm font-semibold text-outline">Duration TBD</div>
                     <Link href="/courses/business-analytics" className="bg-secondary text-on-secondary px-5 py-2 rounded-full font-semibold hover:bg-secondary/90 transition-all btn-press shadow-sm text-sm">
-                      View Details
+                      Join Waitlist
                     </Link>
                   </div>
                 </div>

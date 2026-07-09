@@ -35,7 +35,7 @@ export async function updateSession(request: NextRequest) {
   // Protect paths based on role
   const isAdminPath = pathname.startsWith("/admin");
   const isInstructorPath = pathname.startsWith("/instructor");
-  const isStudentPath = pathname.startsWith("/dashboard") || pathname.startsWith("/course");
+  const isStudentPath = pathname.startsWith("/dashboard") || pathname.startsWith("/course/");
   const isAuthPage = pathname.startsWith("/login") || pathname.startsWith("/signup");
 
   if (!user && (isAdminPath || isInstructorPath || isStudentPath)) {

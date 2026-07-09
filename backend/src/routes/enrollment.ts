@@ -224,4 +224,28 @@ router.post("/razorpay-webhook", async (req: Request, res: Response) => {
   res.status(200).json({ success: true, message: "Event ignored" });
 });
 
+// POST /api/enrollment/waitlist
+// Public endpoint to capture waitlist emails
+router.post("/waitlist", async (req: Request, res: Response) => {
+  const { email, course_slug } = req.body;
+  if (!email || !course_slug) {
+    return res.status(400).json({ error: "Email and course_slug are required" });
+  }
+
+  try {
+    // STUB: The waitlist table doesn't exist in the database yet.
+    // So we just log it and simulate a successful insertion.
+    // In the future, this would use the service role key to insert into a 'waitlist' table.
+    console.log(`[WAITLIST STUB] Captured waitlist entry: ${email} for course ${course_slug}`);
+    
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    res.json({ success: true, message: "Added to waitlist" });
+  } catch (error) {
+    console.error("Waitlist error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 export default router;

@@ -37,17 +37,30 @@ export default function CourseEnrollmentSection({ courseSlug }: CourseEnrollment
     fetchCourse();
   }, [courseSlug, supabase]);
 
-  const handleWaitlist = (e: React.FormEvent) => {
+  const handleWaitlist = async (e: React.FormEvent) => {
     e.preventDefault();
     setWaitlistLoading(true);
-    setTimeout(() => {
+    
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001'}/api/enrollment/waitlist`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: waitlistEmail, course_slug: courseSlug }),
+      });
+
+      if (response.ok) {
+        setWaitlistSubmitted(true);
+      } else {
+        alert("Failed to join waitlist. Please try again.");
+      }
+    } catch (error) {
+      console.error("Waitlist submission failed:", error);
+      alert("Something went wrong. Please try again.");
+    } finally {
       setWaitlistLoading(false);
-      setWaitlistSubmitted(true);
-      // Stub: in a real app, send to an endpoint or insert to a waitlist table
-      const entries = JSON.parse(localStorage.getItem(`${courseSlug}_waitlist`) || "[]");
-      entries.push({ email: waitlistEmail, date: new Date().toISOString() });
-      localStorage.setItem(`${courseSlug}_waitlist`, JSON.stringify(entries));
-    }, 1000);
+    }
   };
 
   if (loading) {
