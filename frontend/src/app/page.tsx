@@ -402,9 +402,9 @@ export default function LandingPage() {
                 <div className="mt-6 pt-6 border-t border-outline-variant/20">
                   <div className="flex items-center justify-between">
                     <div className="text-sm font-semibold text-outline">Duration TBD</div>
-                    <button disabled className="bg-surface-variant text-on-surface-variant/70 px-5 py-2 rounded-full font-semibold cursor-not-allowed text-sm">
-                      Coming Soon
-                    </button>
+                    <Link href="/courses/business-analytics" className="bg-secondary text-on-secondary px-5 py-2 rounded-full font-semibold hover:bg-secondary/90 transition-all btn-press shadow-sm text-sm">
+                      View Details
+                    </Link>
                   </div>
                 </div>
               </div>
