@@ -10,6 +10,12 @@ interface CourseEnrollmentSectionProps {
   courseSlug: string;
 }
 
+// Fallback data for when Supabase is unavailable or migration hasn't run
+const COURSE_FALLBACKS: Record<string, { title: string; price_paise: number; status: string; duration_weeks: number }> = {
+  "data-analyst": { title: "GenAI Data Analyst Accelerator", price_paise: 299900, status: "open", duration_weeks: 4 },
+  "business-analytics": { title: "Business Analyst Fundamentals", price_paise: 299900, status: "coming_soon", duration_weeks: 4 },
+};
+
 export default function CourseEnrollmentSection({ courseSlug }: CourseEnrollmentSectionProps) {
   const [loading, setLoading] = useState(true);
   const [course, setCourse] = useState<any>(null);
@@ -34,7 +40,13 @@ export default function CourseEnrollmentSection({ courseSlug }: CourseEnrollment
         .eq("slug", courseSlug)
         .single();
       
-      if (!courseError && courseData) {
+      if (courseError || !courseData) {
+        console.warn("Falling back to local course data due to DB error:", courseError);
+        const fallback = COURSE_FALLBACKS[courseSlug];
+        if (fallback) {
+          setCourse(fallback);
+        }
+      } else {
         setCourse(courseData);
         
         // 2. Only check per-user enrollment if the course is OPEN
