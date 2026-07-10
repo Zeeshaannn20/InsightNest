@@ -188,26 +188,24 @@ export default function CourseEnrollmentSection({ courseSlug }: CourseEnrollment
               )}
               
               {isOpen && (
-                <div className="space-y-4">
-                  <div className="bg-secondary/5 rounded-2xl p-5 border border-secondary/20 text-left">
-                    <h4 className="font-bold text-secondary text-sm mb-1.5 flex items-center gap-2">
-                      <span className="material-symbols-outlined text-base">schedule</span> Class Timings &amp; Live Schedule
-                    </h4>
-                    <p className="text-xs text-on-surface-variant leading-relaxed">
-                      All lectures are conducted live. Exact class timings and links will be announced by the instructor in the portal prior to each session.
-                    </p>
-                  </div>
-                  
-                  <div className="bg-green-500/5 rounded-2xl p-5 border border-green-500/20 text-left">
-                    <h4 className="font-bold text-green-700 text-sm mb-1.5 flex items-center gap-2">
-                      <span className="material-symbols-outlined text-base">workspace_premium</span> Official Certification Included
-                    </h4>
-                    <p className="text-xs text-on-surface-variant leading-relaxed">
-                      Earn a verified, industry-recognized certificate upon successful completion of the course to showcase your new skills on LinkedIn and your resume.
-                    </p>
-                  </div>
+                <div className="bg-secondary/5 rounded-2xl p-5 border border-secondary/20 text-left mb-4">
+                  <h4 className="font-bold text-secondary text-sm mb-1.5 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-base">schedule</span> Class Timings &amp; Live Schedule
+                  </h4>
+                  <p className="text-xs text-on-surface-variant leading-relaxed">
+                    All lectures are conducted live. Exact class timings and links will be announced by the instructor in the portal prior to each session.
+                  </p>
                 </div>
               )}
+
+              <div className="bg-green-500/5 rounded-2xl p-5 border border-green-500/20 text-left">
+                <h4 className="font-bold text-green-700 text-sm mb-1.5 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-base">workspace_premium</span> Official Certification Included
+                </h4>
+                <p className="text-xs text-on-surface-variant leading-relaxed">
+                  Earn a verified, industry-recognized certificate upon successful completion of the course to showcase your new skills on LinkedIn and your resume.
+                </p>
+              </div>
             </div>
 
             {/* Already Enrolled — login link (only for open/closed) */}
