@@ -4,16 +4,33 @@
 -- ============================================================
 -- 1. COURSES
 -- ============================================================
+ALTER TABLE public.courses DROP CONSTRAINT IF EXISTS courses_status_check;
+
 ALTER TABLE public.courses
 ADD COLUMN IF NOT EXISTS slug TEXT UNIQUE,
 ADD COLUMN IF NOT EXISTS price_paise INTEGER,
-ADD COLUMN IF NOT EXISTS currency TEXT DEFAULT 'INR',
-ADD COLUMN IF NOT EXISTS status TEXT CHECK (status IN ('open', 'closed', 'coming_soon')) DEFAULT 'coming_soon';
+ADD COLUMN IF NOT EXISTS currency TEXT DEFAULT 'INR';
+
+-- We alter the column if it already exists, or add it if it doesn't
+DO $$ 
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='courses' AND column_name='status') THEN
+    ALTER TABLE public.courses ADD COLUMN status TEXT;
+  END IF;
+END $$;
+
+ALTER TABLE public.courses
+ADD CONSTRAINT courses_status_check CHECK (status IN ('open', 'closed', 'coming_soon', 'draft', 'published', 'archived'));
+ALTER TABLE public.courses ALTER COLUMN status SET DEFAULT 'coming_soon';
 
 -- Update existing course (Data Analyst)
 UPDATE public.courses
 SET slug = 'data-analyst', price_paise = 299900, status = 'closed', is_published = true
-WHERE title ILIKE '%data analyst%' OR title ILIKE '%data analytics%';
+WHERE id = (
+  SELECT id FROM public.courses 
+  WHERE title ILIKE '%data analyst%' OR title ILIKE '%data analytics%' 
+  ORDER BY created_at ASC LIMIT 1
+);
 
 -- Insert the Business Analytics course (if it doesn't exist)
 INSERT INTO public.courses (title, description, slug, price_paise, currency, status, is_published, duration_weeks)

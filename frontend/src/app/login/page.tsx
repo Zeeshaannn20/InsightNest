@@ -55,7 +55,9 @@ function LoginContent() {
       }
 
       if (!profile.is_active) {
-        setError("Your account is not yet activated. Please contact admin.");
+        setError(
+          "Your account is awaiting approval. We'll email you as soon as it's activated."
+        );
         await supabase.auth.signOut();
         setLoading(false);
         return;
@@ -125,7 +127,13 @@ function LoginContent() {
           {/* LOGIN FORM */}
           <div className="animate-fade-in">
             <h2 className="text-3xl font-bold text-primary-container mb-2">Welcome Back</h2>
-            <p className="text-on-surface-variant mb-8">Sign in with your email to continue.</p>
+            <p className="text-on-surface-variant mb-8">
+              Sign in with your email, or{" "}
+              <Link href="/signup" className="text-secondary font-semibold hover:underline">
+                create an account
+              </Link>
+              .
+            </p>
 
             <form onSubmit={handleLogin} className="space-y-5">
               <div className="space-y-1.5">

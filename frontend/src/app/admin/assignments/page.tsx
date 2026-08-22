@@ -16,7 +16,6 @@ export default function AdminAssignmentsPage() {
   const [courseId, setCourseId] = useState("");
   const [title, setTitle] = useState("");
   const [instructions, setInstructions] = useState("");
-  const [maxMarks, setMaxMarks] = useState(100);
   const [deadline, setDeadline] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -46,10 +45,11 @@ export default function AdminAssignmentsPage() {
   };
 
   const fetchCourses = async () => {
+    // All courses, including drafts — see the note in admin/sessions.
     const { data, error } = await supabase
       .from("courses")
-      .select("id, title")
-      .eq("is_published", true);
+      .select("id, title, status")
+      .order("title", { ascending: true });
 
     if (!error && data) {
       setCourses(data as Course[]);
@@ -73,10 +73,8 @@ export default function AdminAssignmentsPage() {
         .insert({
           course_id: courseId,
           title,
-          instructions: instructions || null,
-          max_marks: Number(maxMarks),
-          deadline: deadline ? new Date(deadline).toISOString() : null,
-          created_by: user.id
+          description: instructions || null,
+          due_date: deadline ? new Date(deadline).toISOString() : null,
         });
 
       if (insertError) {
@@ -98,7 +96,6 @@ export default function AdminAssignmentsPage() {
     setCourseId("");
     setTitle("");
     setInstructions("");
-    setMaxMarks(100);
     setDeadline("");
   };
 
@@ -141,20 +138,19 @@ export default function AdminAssignmentsPage() {
               <tr>
                 <th className="px-6 py-4 font-semibold">Title</th>
                 <th className="px-6 py-4 font-semibold">Course</th>
-                <th className="px-6 py-4 font-semibold">Max Marks</th>
                 <th className="px-6 py-4 font-semibold">Deadline</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/20">
               {loading ? (
                 <tr>
-                  <td colSpan={4} className="px-6 py-8 text-center text-on-surface-variant">
+                  <td colSpan={3} className="px-6 py-8 text-center text-on-surface-variant">
                     <span className="material-symbols-outlined animate-spin text-3xl">progress_activity</span>
                   </td>
                 </tr>
               ) : assignments.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-6 py-8 text-center text-on-surface-variant">
+                  <td colSpan={3} className="px-6 py-8 text-center text-on-surface-variant">
                     No assignments found.
                   </td>
                 </tr>
@@ -163,23 +159,20 @@ export default function AdminAssignmentsPage() {
                   <tr key={assignment.id} className="hover:bg-surface-container/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="font-semibold text-primary-container">{assignment.title}</div>
-                      {assignment.instructions && (
-                        <div className="text-xs text-on-surface-variant truncate max-w-xs">{assignment.instructions}</div>
+                      {assignment.description && (
+                        <div className="text-xs text-on-surface-variant truncate max-w-xs">{assignment.description}</div>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-on-surface line-clamp-1">{assignment.course?.title}</div>
                     </td>
-                    <td className="px-6 py-4 font-medium text-on-surface">
-                      {assignment.max_marks} Marks
-                    </td>
                     <td className="px-6 py-4">
                       <div className="text-on-surface">
-                        {assignment.deadline ? new Date(assignment.deadline).toLocaleDateString() : "No deadline"}
+                        {assignment.due_date ? new Date(assignment.due_date).toLocaleDateString() : "No deadline"}
                       </div>
-                      {assignment.deadline && (
+                      {assignment.due_date && (
                         <div className="text-xs text-on-surface-variant">
-                          {new Date(assignment.deadline).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          {new Date(assignment.due_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </div>
                       )}
                     </td>
@@ -217,14 +210,10 @@ export default function AdminAssignmentsPage() {
                   className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/40 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm text-on-surface transition-all"
                 >
                   <option value="">Select a Course</option>
-                  {!courses.some(c => c.title === "Generative AI with Data Analytics" || c.id === "11111111-1111-1111-1111-111111111111") && (
-                    <option value="11111111-1111-1111-1111-111111111111">
-                      Generative AI with Data Analytics
-                    </option>
-                  )}
                   {courses.map((course) => (
                     <option key={course.id} value={course.id}>
                       {course.title}
+                      {course.status && course.status !== "open" ? ` (${course.status.replace(/_/g, " ")})` : ""}
                     </option>
                   ))}
                 </select>
@@ -257,32 +246,16 @@ export default function AdminAssignmentsPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">
-                    Max Marks *
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    min={1}
-                    value={maxMarks}
-                    onChange={(e) => setMaxMarks(Number(e.target.value))}
-                    className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/40 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm text-on-surface transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">
-                    Deadline Date & Time
-                  </label>
-                  <input
-                    type="datetime-local"
-                    value={deadline}
-                    onChange={(e) => setDeadline(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/40 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm text-on-surface transition-all"
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">
+                  Deadline Date & Time
+                </label>
+                <input
+                  type="datetime-local"
+                  value={deadline}
+                  onChange={(e) => setDeadline(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/40 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm text-on-surface transition-all"
+                />
               </div>
 
               <div className="pt-4 border-t border-outline-variant/20 flex justify-end gap-3">

@@ -30,6 +30,7 @@ export default function DashboardPage() {
           .from("enrollments")
           .select(`
             course_id,
+            progress_pct,
             course:courses(title, description, duration_weeks)
           `)
           .eq("student_id", profile.id)
@@ -39,24 +40,39 @@ export default function DashboardPage() {
 
         if (enrollmentData) {
           const courseId = enrollmentData.course_id;
-          
-          // Get Progress
-          const { data: progressData } = await supabase.rpc("calculate_progress", {
-            p_student_id: profile.id,
-            p_course_id: courseId
-          });
 
-          // Get next lesson (just the first module's first lesson for now as a placeholder)
-          const { data: nextLessonData } = await supabase
+          // Progress is maintained by the lesson player on enrollments.progress_pct
+          const progressData = Number(enrollmentData.progress_pct ?? 0);
+
+          // "Continue watching": the first lesson this student hasn't finished
+          const { data: moduleData } = await supabase
             .from("modules")
-            .select(`
-              title,
-              lessons(id, title)
-            `)
+            .select(`title, lessons(id, title, video_url, order_index)`)
             .eq("course_id", courseId)
-            .order("sort_order", { ascending: true })
-            .limit(1)
-            .single();
+            .order("order_index", { ascending: true });
+
+          const orderedLessons = (moduleData ?? []).flatMap((m: any) =>
+            [...(m.lessons ?? [])].sort(
+              (a: any, b: any) => (a.order_index ?? 0) - (b.order_index ?? 0)
+            )
+          );
+
+          let nextLesson = orderedLessons[0] ?? null;
+          if (orderedLessons.length > 0) {
+            const { data: watched } = await supabase
+              .from("video_progress")
+              .select("lesson_id, is_completed")
+              .eq("user_id", profile.id)
+              .in(
+                "lesson_id",
+                orderedLessons.map((l: any) => l.id)
+              );
+
+            const done = new Set(
+              (watched ?? []).filter((w: any) => w.is_completed).map((w: any) => w.lesson_id)
+            );
+            nextLesson = orderedLessons.find((l: any) => !done.has(l.id)) ?? nextLesson;
+          }
 
           // Get upcoming sessions
           const { data: sessionsData } = await supabase
@@ -73,7 +89,7 @@ export default function DashboardPage() {
             .select(`
               id,
               title,
-              deadline,
+              due_date,
               submissions!left(id, status)
             `)
             .eq("course_id", courseId);
@@ -83,8 +99,8 @@ export default function DashboardPage() {
           setStats({
             courseId: courseId,
             courseTitle: (enrollmentData.course as any)?.title || "Unknown Course",
-            progress: progressData || 0,
-            nextLesson: nextLessonData?.lessons?.[0] || null,
+            progress: progressData,
+            nextLesson,
             upcomingSessions: sessionsData || [],
             pendingAssignments: pending,
           });
@@ -252,7 +268,7 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <h4 className="font-bold text-sm text-on-surface group-hover:text-secondary transition-colors">{assignment.title}</h4>
-                    <p className="text-xs text-error font-medium">Due: {assignment.deadline ? new Date(assignment.deadline).toLocaleDateString() : 'No deadline'}</p>
+                    <p className="text-xs text-error font-medium">Due: {assignment.due_date ? new Date(assignment.due_date).toLocaleDateString() : 'No deadline'}</p>
                   </div>
                 </div>
                 <Link href="/dashboard/assignments" className="opacity-0 group-hover:opacity-100 transition-opacity">

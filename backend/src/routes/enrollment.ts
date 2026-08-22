@@ -268,14 +268,33 @@ router.post("/waitlist", async (req: Request, res: Response) => {
     return res.status(400).json({ error: "Email and course_slug are required" });
   }
 
+  const normalisedEmail = String(email).trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalisedEmail)) {
+    return res.status(400).json({ error: "A valid email address is required" });
+  }
+
   try {
-    // STUB: The waitlist table doesn't exist in the database yet.
-    // So we just log it and simulate a successful insertion.
-    // In the future, this would use the service role key to insert into a 'waitlist' table.
-    console.log(`[WAITLIST STUB] Captured waitlist entry: ${email} for course ${course_slug}`);
-    
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 500));
+    const supabase = getSupabaseClient();
+
+    // Resolve the course so the admin list can group by programme. The slug is
+    // kept regardless, so an unknown slug still captures the lead.
+    const { data: course } = await supabase
+      .from("courses")
+      .select("id")
+      .eq("slug", course_slug)
+      .maybeSingle();
+
+    const { error } = await supabase.from("waitlist").insert({
+      email: normalisedEmail,
+      course_slug,
+      course_id: course?.id ?? null,
+    });
+
+    // Signing up twice is not an error as far as the visitor is concerned.
+    if (error && error.code !== "23505") {
+      console.error("Waitlist insert failed:", error);
+      return res.status(500).json({ error: "Could not join the waitlist" });
+    }
 
     res.json({ success: true, message: "Added to waitlist" });
   } catch (error) {

@@ -32,19 +32,6 @@ export default function AdminQuizzesPage() {
     setLoading(false);
   };
 
-  const handleTogglePublish = async (id: string, currentStatus: boolean) => {
-    const { error } = await supabase
-      .from("quizzes")
-      .update({ is_published: !currentStatus })
-      .eq("id", id);
-
-    if (error) {
-      alert("Failed to update quiz status.");
-    } else {
-      setQuizzes(quizzes.map(q => q.id === id ? { ...q, is_published: !currentStatus } : q));
-    }
-  };
-
   return (
     <div className="p-8 max-w-7xl mx-auto animate-fade-in">
       <div className="flex justify-between items-center mb-8">
@@ -68,22 +55,21 @@ export default function AdminQuizzesPage() {
               <tr>
                 <th className="px-6 py-4 font-semibold">Title</th>
                 <th className="px-6 py-4 font-semibold">Course</th>
-                <th className="px-6 py-4 font-semibold">Total Marks</th>
-                <th className="px-6 py-4 font-semibold">Passing %</th>
-                <th className="px-6 py-4 font-semibold">Status</th>
-                <th className="px-6 py-4 font-semibold text-right">Actions</th>
+                <th className="px-6 py-4 font-semibold">Passing score</th>
+                <th className="px-6 py-4 font-semibold">Time limit</th>
+                <th className="px-6 py-4 font-semibold">Attempts</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/20">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-on-surface-variant">
+                  <td colSpan={5} className="px-6 py-8 text-center text-on-surface-variant">
                     <span className="material-symbols-outlined animate-spin text-3xl">progress_activity</span>
                   </td>
                 </tr>
               ) : quizzes.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-on-surface-variant">
+                  <td colSpan={5} className="px-6 py-8 text-center text-on-surface-variant">
                     No quizzes found.
                   </td>
                 </tr>
@@ -97,25 +83,15 @@ export default function AdminQuizzesPage() {
                       <div className="text-on-surface line-clamp-1">{quiz.course?.title}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-on-surface">{quiz.total_marks}</div>
+                      <div className="text-on-surface">{quiz.passing_score ?? "—"}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-on-surface">{quiz.passing_percentage}%</div>
+                      <div className="text-on-surface">
+                        {quiz.time_limit_minutes ? `${quiz.time_limit_minutes} min` : "No limit"}
+                      </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                        quiz.is_published ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
-                      }`}>
-                        {quiz.is_published ? "Published" : "Draft"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right space-x-2">
-                      <button
-                        onClick={() => handleTogglePublish(quiz.id, quiz.is_published)}
-                        className="text-xs px-3 py-1.5 rounded-lg font-semibold bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface"
-                      >
-                        {quiz.is_published ? "Unpublish" : "Publish"}
-                      </button>
+                      <div className="text-on-surface">{quiz.max_attempts ?? "Unlimited"}</div>
                     </td>
                   </tr>
                 ))

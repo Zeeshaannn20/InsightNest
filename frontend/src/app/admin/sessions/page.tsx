@@ -7,6 +7,8 @@ import type { LiveSession, Course } from "@/lib/types/database";
 export default function AdminSessionsPage() {
   const [sessions, setSessions] = useState<LiveSession[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
+  const [attendanceSession, setAttendanceSession] = useState<LiveSession | null>(null);
+  const [attendanceRows, setAttendanceRows] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -147,10 +149,13 @@ export default function AdminSessionsPage() {
   };
 
   const fetchCourses = async () => {
+    // Every course, not just published ones — a session is often scheduled
+    // while the course is still a draft. Filtering here is what previously
+    // forced a hardcoded course option into the dropdown.
     const { data, error } = await supabase
       .from("courses")
-      .select("id, title")
-      .eq("is_published", true);
+      .select("id, title, status")
+      .order("title", { ascending: true });
 
     if (!error && data) {
       setCourses(data as Course[]);
@@ -204,10 +209,8 @@ export default function AdminSessionsPage() {
           .insert({
             course_id: courseId,
             title: `Assignment: ${title}`,
-            instructions: assignmentInstructions || `Homework assignment for live class: ${title}`,
-            max_marks: Number(assignmentMaxMarks),
-            deadline: deadlineISO,
-            created_by: user.id
+            description: assignmentInstructions || `Homework assignment for live class: ${title}`,
+            due_date: deadlineISO,
           });
 
         if (assignmentError) {
@@ -244,6 +247,22 @@ export default function AdminSessionsPage() {
     setAssignmentMaxMarks(100);
     setAssignmentDeadlineDate("");
     setAssignmentDeadlineTime("23:59");
+  };
+
+  const openAttendance = async (session: LiveSession) => {
+    setAttendanceSession(session);
+    setAttendanceRows(null);
+
+    // attendance.student_id has a foreign key to profiles, so the student
+    // embeds directly here (unlike enrollments, which has none).
+    const { data, error: attErr } = await supabase
+      .from("attendance")
+      .select("id, status, join_timestamp, student:profiles!attendance_student_id_fkey(full_name, email)")
+      .eq("session_id", session.id)
+      .order("join_timestamp", { ascending: true });
+
+    if (attErr) setError(attErr.message);
+    setAttendanceRows((data as any[]) ?? []);
   };
 
   const handleDeleteSession = async (id: string) => {
@@ -393,7 +412,13 @@ export default function AdminSessionsPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button 
+                      <button
+                        onClick={() => openAttendance(session)}
+                        className="text-xs px-3 py-1.5 rounded-lg font-semibold bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors mr-1"
+                      >
+                        Attendance
+                      </button>
+                      <button
                         onClick={() => handleDeleteSession(session.id)}
                         className="text-error hover:text-error/80 p-2 rounded-lg hover:bg-error-container/20 transition-colors"
                         title="Delete session"
@@ -408,6 +433,93 @@ export default function AdminSessionsPage() {
           </table>
         </div>
       </div>
+
+      {/* Per-session attendance */}
+      {attendanceSession && (
+        <div
+          className="fixed inset-0 bg-black/45 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setAttendanceSession(null)}
+        >
+          <div
+            className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden animate-scale-up flex flex-col max-h-[80vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6 border-b border-outline-variant/20 flex justify-between items-start bg-surface-container-low">
+              <div>
+                <h2 className="text-xl font-bold text-primary-container">Attendance</h2>
+                <p className="text-xs text-on-surface-variant mt-1">
+                  {attendanceSession.title} ·{" "}
+                  {new Date(attendanceSession.session_date).toLocaleDateString()}
+                </p>
+              </div>
+              <button
+                onClick={() => setAttendanceSession(null)}
+                className="p-1 hover:bg-surface-container rounded-lg text-on-surface-variant transition-colors"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6">
+              {attendanceRows === null ? (
+                <div className="py-10 text-center text-on-surface-variant">
+                  <span className="material-symbols-outlined animate-spin text-3xl">
+                    progress_activity
+                  </span>
+                </div>
+              ) : attendanceRows.length === 0 ? (
+                <div className="py-10 text-center border border-dashed border-outline-variant/40 rounded-xl">
+                  <span className="material-symbols-outlined text-3xl text-on-surface-variant/50 mb-1">
+                    person_off
+                  </span>
+                  <p className="text-sm text-on-surface-variant">
+                    Nobody joined this session yet.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <p className="text-sm font-bold text-on-surface mb-3">
+                    {attendanceRows.length} attendee{attendanceRows.length === 1 ? "" : "s"}
+                  </p>
+                  <div className="border border-outline-variant/20 rounded-xl divide-y divide-outline-variant/10">
+                    {attendanceRows.map((row) => (
+                      <div key={row.id} className="px-4 py-3 flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-on-surface truncate">
+                            {row.student?.full_name ?? "Unknown student"}
+                          </p>
+                          <p className="text-xs text-on-surface-variant truncate">
+                            {row.student?.email}
+                          </p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <span
+                            className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                              row.status === "present"
+                                ? "bg-green-100 text-green-700"
+                                : row.status === "late"
+                                  ? "bg-yellow-100 text-yellow-700"
+                                  : "bg-error-container text-on-error-container"
+                            }`}
+                          >
+                            {row.status}
+                          </span>
+                          <p className="text-[11px] text-outline mt-0.5">
+                            {new Date(row.join_timestamp).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal Dialog */}
       {isModalOpen && (
@@ -435,14 +547,10 @@ export default function AdminSessionsPage() {
                   className="w-full px-4 py-2.5 bg-surface-container-low border border-outline-variant/40 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm text-on-surface transition-all"
                 >
                   <option value="">Select a Course</option>
-                  {!courses.some(c => c.title === "Generative AI with Data Analytics" || c.id === "11111111-1111-1111-1111-111111111111") && (
-                    <option value="11111111-1111-1111-1111-111111111111">
-                      Generative AI with Data Analytics
-                    </option>
-                  )}
                   {courses.map((course) => (
                     <option key={course.id} value={course.id}>
                       {course.title}
+                      {course.status && course.status !== "open" ? ` (${course.status.replace(/_/g, " ")})` : ""}
                     </option>
                   ))}
                 </select>

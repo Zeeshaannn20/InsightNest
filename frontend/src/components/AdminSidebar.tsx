@@ -12,6 +12,8 @@ export default function AdminSidebar() {
   const navItems = [
     { name: "Dashboard", href: "/admin", icon: "dashboard" },
     { name: "Students", href: "/admin/students", icon: "groups" },
+    { name: "Enrollments", href: "/admin/enrollments", icon: "card_membership" },
+    { name: "Waitlist", href: "/admin/waitlist", icon: "hourglass_top" },
     { name: "Instructors", href: "/admin/instructors", icon: "co_present" },
     { name: "Courses", href: "/admin/courses", icon: "library_books" },
     { name: "Live Sessions", href: "/admin/sessions", icon: "video_camera_front" },

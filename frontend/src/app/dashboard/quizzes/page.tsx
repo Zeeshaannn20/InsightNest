@@ -29,7 +29,6 @@ export default function StudentQuizzesPage() {
           .from("quizzes")
           .select("*, course:courses(title)")
           .in("course_id", courseIds)
-          .eq("is_published", true)
           .order("created_at", { ascending: false });
 
         if (quizzesData) {
@@ -102,10 +101,10 @@ export default function StudentQuizzesPage() {
                     </span>
                   </div>
                   <div className="bg-surface-container p-3 rounded-xl border border-outline-variant/30">
-                    <span className="text-xs text-on-surface-variant font-medium block">Total Marks</span>
+                    <span className="text-xs text-on-surface-variant font-medium block">Passing Score</span>
                     <span className="font-bold text-on-surface flex items-center gap-1">
                       <span className="material-symbols-outlined text-[16px]">military_tech</span>
-                      {quiz.total_marks}
+                      {quiz.passing_score ?? "—"}
                     </span>
                   </div>
                 </div>

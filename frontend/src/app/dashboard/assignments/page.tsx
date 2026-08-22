@@ -29,14 +29,14 @@ export default function StudentAssignmentsPage() {
           .from("assignments")
           .select("*, course:courses(title)")
           .in("course_id", courseIds)
-          .order("deadline", { ascending: true });
+          .order("due_date", { ascending: true });
 
         if (assignmentsData) {
           // Fetch submissions for this student
           const { data: submissionsData } = await supabase
             .from("submissions")
             .select("*")
-            .eq("student_id", profile.id);
+            .eq("user_id", profile.id);
             
           const submissionMap = new Map(submissionsData?.map((s: any) => [s.assignment_id, s]) || []);
           
@@ -81,13 +81,15 @@ export default function StudentAssignmentsPage() {
             <div key={assignment.id} className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row gap-6 hover:border-secondary transition-colors group">
               <div className="flex-shrink-0">
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${
-                  assignment.submission?.status === 'graded' ? 'bg-green-100 text-green-600' :
-                  assignment.submission?.status === 'submitted' ? 'bg-blue-100 text-blue-600' :
+                  assignment.submission?.status === 'approved' ? 'bg-green-100 text-green-600' :
+                  assignment.submission?.status === 'needs_revision' ? 'bg-yellow-100 text-yellow-700' :
+                  assignment.submission ? 'bg-blue-100 text-blue-600' :
                   'bg-surface-container-highest text-on-surface-variant'
                 }`}>
                   <span className="material-symbols-outlined text-3xl">
-                    {assignment.submission?.status === 'graded' ? 'verified' : 
-                     assignment.submission?.status === 'submitted' ? 'pending' : 'assignment'}
+                    {assignment.submission?.status === 'approved' ? 'verified' :
+                     assignment.submission?.status === 'needs_revision' ? 'rule' :
+                     assignment.submission ? 'pending' : 'assignment'}
                   </span>
                 </div>
               </div>
@@ -96,11 +98,12 @@ export default function StudentAssignmentsPage() {
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
-                      assignment.submission?.status === 'graded' ? 'bg-green-100 text-green-700' :
-                      assignment.submission?.status === 'submitted' ? 'bg-blue-100 text-blue-700' :
+                      assignment.submission?.status === 'approved' ? 'bg-green-100 text-green-700' :
+                      assignment.submission?.status === 'needs_revision' ? 'bg-yellow-100 text-yellow-700' :
+                      assignment.submission ? 'bg-blue-100 text-blue-700' :
                       'bg-error-container text-on-error-container'
                     }`}>
-                      {assignment.submission ? assignment.submission.status : 'Pending'}
+                      {assignment.submission ? assignment.submission.status.replace(/_/g, " ") : 'Pending'}
                     </span>
                     <span className="text-xs font-semibold text-secondary bg-secondary/10 px-2 py-0.5 rounded-md">
                       {(assignment as any).course?.title}
@@ -108,18 +111,27 @@ export default function StudentAssignmentsPage() {
                   </div>
                   <div className="text-sm font-semibold text-error flex items-center gap-1">
                     <span className="material-symbols-outlined text-[16px]">schedule</span>
-                    Due: {assignment.deadline ? new Date(assignment.deadline).toLocaleDateString() : 'No deadline'}
+                    Due: {assignment.due_date ? new Date(assignment.due_date).toLocaleDateString() : 'No deadline'}
                   </div>
                 </div>
-                
-                <h3 className="text-xl font-bold text-primary-container">{assignment.title}</h3>
-                <p className="text-sm text-on-surface-variant line-clamp-2">{assignment.instructions}</p>
-                <div className="text-sm font-bold text-on-surface pt-2">Marks: {assignment.max_marks}</div>
 
-                {assignment.submission?.status === 'graded' && (
-                  <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-xl">
-                    <p className="text-green-800 font-bold mb-1">Score: {assignment.submission.marks} / {assignment.max_marks}</p>
-                    <p className="text-sm text-green-700">{assignment.submission.feedback}</p>
+                <h3 className="text-xl font-bold text-primary-container">{assignment.title}</h3>
+                <p className="text-sm text-on-surface-variant line-clamp-2">{assignment.description}</p>
+
+                {assignment.submission?.feedback && (
+                  <div className={`mt-4 p-4 rounded-xl border ${
+                    assignment.submission.status === 'approved'
+                      ? 'bg-green-50 border-green-200'
+                      : 'bg-yellow-50 border-yellow-200'
+                  }`}>
+                    <p className={`font-bold mb-1 ${
+                      assignment.submission.status === 'approved' ? 'text-green-800' : 'text-yellow-800'
+                    }`}>
+                      {assignment.submission.status === 'approved' ? 'Approved' : 'Feedback'}
+                    </p>
+                    <p className={`text-sm ${
+                      assignment.submission.status === 'approved' ? 'text-green-700' : 'text-yellow-700'
+                    }`}>{assignment.submission.feedback}</p>
                   </div>
                 )}
               </div>
@@ -129,13 +141,17 @@ export default function StudentAssignmentsPage() {
                   <button onClick={handleUploadClick} className="w-full md:w-auto bg-secondary text-on-secondary px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-secondary/90 transition-all btn-press shadow-sm flex items-center justify-center gap-2">
                     <span className="material-symbols-outlined">upload_file</span> Submit
                   </button>
-                ) : assignment.submission.status === 'submitted' ? (
-                  <button disabled className="w-full md:w-auto bg-surface-container-high text-on-surface px-6 py-2.5 rounded-xl font-bold text-sm cursor-not-allowed text-center">
-                    Submitted
+                ) : assignment.submission.status === 'approved' ? (
+                  <button disabled className="w-full md:w-auto bg-green-100 text-green-700 px-6 py-2.5 rounded-xl font-bold text-sm cursor-not-allowed text-center flex items-center justify-center gap-1">
+                    <span className="material-symbols-outlined text-[18px]">done_all</span> Approved
+                  </button>
+                ) : assignment.submission.status === 'needs_revision' ? (
+                  <button onClick={handleUploadClick} className="w-full md:w-auto bg-yellow-100 text-yellow-800 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-yellow-200 transition-all btn-press flex items-center justify-center gap-1">
+                    <span className="material-symbols-outlined text-[18px]">refresh</span> Resubmit
                   </button>
                 ) : (
-                  <button disabled className="w-full md:w-auto bg-green-100 text-green-700 px-6 py-2.5 rounded-xl font-bold text-sm cursor-not-allowed text-center flex items-center justify-center gap-1">
-                    <span className="material-symbols-outlined text-[18px]">done_all</span> Graded
+                  <button disabled className="w-full md:w-auto bg-surface-container-high text-on-surface px-6 py-2.5 rounded-xl font-bold text-sm cursor-not-allowed text-center">
+                    {assignment.submission.status === 'under_review' ? 'Under review' : 'Submitted'}
                   </button>
                 )}
               </div>

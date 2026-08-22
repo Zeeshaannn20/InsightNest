@@ -2,8 +2,10 @@
 
 import Sidebar from "@/components/Sidebar";
 import Link from "next/link";
-import { useState, useEffect, useRef, use } from "react";
+import { useState, useEffect, useRef, use, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
+import LessonPlayer from "@/components/LessonPlayer";
+import { COMPLETION_RATIO, saveVideoProgress, syncCourseProgress } from "@/lib/progress";
 
 interface ChatMessage {
   id: string;
@@ -30,28 +32,81 @@ export default function CourseViewerPage({ params }: { params: Promise<{ id: str
 
   const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
   const [activeVideoTitle, setActiveVideoTitle] = useState<string | null>(null);
+  /** null when playing a standalone recording, which has no lesson to track. */
+  const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
+  const [resumeAt, setResumeAt] = useState(0);
 
-  // Helper to extract YouTube video ID and format embed URL
-  const getYouTubeEmbedUrl = (url: string): string | null => {
-    if (!url) return null;
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    const videoId = (match && match[2].length === 11) ? match[2] : null;
-    if (!videoId) return null;
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+  const [userId, setUserId] = useState<string | null>(null);
+  /** lesson_id -> saved position and completion */
+  const [progress, setProgress] = useState<
+    Record<string, { last_position_sec: number; is_completed: boolean }>
+  >({});
+  const lastSavedRef = useRef<Record<string, number>>({});
+
+  const allLessons = modules.flatMap((m: any) => m.lessons ?? []);
+  const totalLessons = allLessons.length;
+  const completedCount = allLessons.filter((l: any) => progress[l.id]?.is_completed).length;
+  const percentComplete =
+    totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+
+  const handlePlayVideo = (url: string | null, title: string, lessonId: string | null = null) => {
+    if (!url) return;
+    setActiveVideoUrl(url);
+    setActiveVideoTitle(title);
+    setActiveLessonId(lessonId);
+    setResumeAt(lessonId ? progress[lessonId]?.last_position_sec ?? 0 : 0);
   };
 
-  const handlePlayVideo = (url: string | null, title: string) => {
-    if (!url) return;
-    const embedUrl = getYouTubeEmbedUrl(url);
-    if (embedUrl) {
-      setActiveVideoUrl(embedUrl);
-      setActiveVideoTitle(title);
-    } else {
-      // Fallback for direct video links or raw URLs
-      setActiveVideoUrl(url);
-      setActiveVideoTitle(title);
-    }
+  /** Persist completion for one lesson, then refresh the course rollup. */
+  const markLesson = useCallback(
+    async (lessonId: string, seconds: number, completed: boolean) => {
+      if (!userId) return;
+
+      setProgress((prev) => ({
+        ...prev,
+        [lessonId]: { last_position_sec: Math.floor(seconds), is_completed: completed },
+      }));
+
+      await saveVideoProgress(supabase, userId, lessonId, seconds, completed);
+
+      const nowCompleted = allLessons.filter((l: any) =>
+        l.id === lessonId ? completed : progress[l.id]?.is_completed
+      ).length;
+      await syncCourseProgress(supabase, userId, id, nowCompleted, totalLessons);
+    },
+    [userId, supabase, id, allLessons, progress, totalLessons]
+  );
+
+  const handleProgress = useCallback(
+    (seconds: number, duration: number) => {
+      if (!activeLessonId || !userId) return;
+
+      // Skip tiny deltas so a long lecture doesn't hammer the database.
+      const last = lastSavedRef.current[activeLessonId] ?? -Infinity;
+      const finished =
+        duration > 0 && seconds / duration >= COMPLETION_RATIO;
+      if (!finished && Math.abs(seconds - last) < 5) return;
+      lastSavedRef.current[activeLessonId] = seconds;
+
+      const alreadyDone = progress[activeLessonId]?.is_completed ?? false;
+      markLesson(activeLessonId, seconds, alreadyDone || finished);
+    },
+    [activeLessonId, userId, progress, markLesson]
+  );
+
+  /** Jump back to the most recently watched lesson, or the first unwatched one. */
+  const handleResume = () => {
+    const watched = allLessons
+      .filter((l: any) => progress[l.id])
+      .sort(
+        (a: any, b: any) =>
+          (progress[b.id]?.last_position_sec ?? 0) - (progress[a.id]?.last_position_sec ?? 0)
+      );
+    const target =
+      watched.find((l: any) => !progress[l.id]?.is_completed) ??
+      allLessons.find((l: any) => !progress[l.id]?.is_completed && l.video_url) ??
+      watched[0];
+    if (target?.video_url) handlePlayVideo(target.video_url, target.title, target.id);
   };
 
   useEffect(() => {
@@ -68,11 +123,11 @@ export default function CourseViewerPage({ params }: { params: Promise<{ id: str
         .from("modules")
         .select(`*, lessons(*)`)
         .eq("course_id", id)
-        .order("sort_order", { ascending: true });
+        .order("order_index", { ascending: true });
 
       if (mData) {
         mData.forEach((m: any) => {
-          m.lessons.sort((a: any, b: any) => a.sort_order - b.sort_order);
+          m.lessons.sort((a: any, b: any) => a.order_index - b.order_index);
         });
         setModules(mData);
       }
@@ -85,6 +140,40 @@ export default function CourseViewerPage({ params }: { params: Promise<{ id: str
 
       if (recData) {
         setRecordings(recData);
+      }
+
+      // Saved playback positions for this viewer, across this course's lessons.
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        setUserId(user.id);
+        const lessonIds = (mData ?? []).flatMap((m: any) =>
+          (m.lessons ?? []).map((l: any) => l.id)
+        );
+
+        if (lessonIds.length > 0) {
+          const { data: progressRows } = await supabase
+            .from("video_progress")
+            .select("lesson_id, last_position_sec, is_completed")
+            .eq("user_id", user.id)
+            .in("lesson_id", lessonIds);
+
+          if (progressRows) {
+            setProgress(
+              Object.fromEntries(
+                progressRows.map((row: any) => [
+                  row.lesson_id,
+                  {
+                    last_position_sec: row.last_position_sec ?? 0,
+                    is_completed: Boolean(row.is_completed),
+                  },
+                ])
+              )
+            );
+          }
+        }
       }
 
       setLoading(false);
@@ -159,9 +248,14 @@ export default function CourseViewerPage({ params }: { params: Promise<{ id: str
           
           <div className="hidden md:flex items-center gap-4 w-1/3">
             <div className="flex-1 h-2 bg-surface-container rounded-full overflow-hidden">
-              <div className="h-full bg-secondary rounded-full" style={{ width: '0%' }}></div>
+              <div
+                className="h-full bg-secondary rounded-full transition-all duration-500"
+                style={{ width: `${percentComplete}%` }}
+              ></div>
             </div>
-            <span className="text-sm font-bold text-on-surface-variant">0% Complete</span>
+            <span className="text-sm font-bold text-on-surface-variant whitespace-nowrap">
+              {percentComplete}% Complete
+            </span>
           </div>
 
           <div className="flex items-center gap-4">
@@ -180,20 +274,18 @@ export default function CourseViewerPage({ params }: { params: Promise<{ id: str
             
             {/* Video Container */}
             <div className="aspect-video bg-black relative w-full flex-shrink-0 flex items-center justify-center border-b border-outline-variant/20">
-              {activeVideoUrl ? (
-                <iframe
-                  src={activeVideoUrl}
-                  title={activeVideoTitle || "Lecture Video"}
-                  className="w-full h-full border-0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                ></iframe>
-              ) : (
-                <div className="text-center text-outline">
-                  <span className="material-symbols-outlined text-6xl mb-2">video_library</span>
-                  <p>Select a lesson from the syllabus or a recording to start learning.</p>
-                </div>
-              )}
+              <LessonPlayer
+                key={activeVideoUrl ?? "empty"}
+                videoUrl={activeVideoUrl}
+                title={activeVideoTitle}
+                startAtSec={resumeAt}
+                onProgress={handleProgress}
+                onEnded={() => {
+                  if (activeLessonId) {
+                    markLesson(activeLessonId, progress[activeLessonId]?.last_position_sec ?? 0, true);
+                  }
+                }}
+              />
             </div>
 
             {/* Video Metadata */}
@@ -206,9 +298,33 @@ export default function CourseViewerPage({ params }: { params: Promise<{ id: str
                   </p>
                 </div>
                 <div className="flex gap-3 flex-shrink-0">
-                  <button className="border border-outline-variant text-on-surface px-4 py-2 rounded-lg font-bold text-sm hover:bg-surface-container transition-colors">Resume</button>
-                  <button className="bg-primary-container text-on-primary px-4 py-2 rounded-lg font-bold text-sm hover:bg-primary-container/90 transition-colors shadow-md flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[18px]">check_circle</span> Mark Complete
+                  <button
+                    onClick={handleResume}
+                    disabled={totalLessons === 0}
+                    className="border border-outline-variant text-on-surface px-4 py-2 rounded-lg font-bold text-sm hover:bg-surface-container transition-colors disabled:opacity-50"
+                  >
+                    Resume
+                  </button>
+                  <button
+                    onClick={() =>
+                      activeLessonId &&
+                      markLesson(
+                        activeLessonId,
+                        progress[activeLessonId]?.last_position_sec ?? 0,
+                        !progress[activeLessonId]?.is_completed
+                      )
+                    }
+                    disabled={!activeLessonId}
+                    className="bg-primary-container text-on-primary px-4 py-2 rounded-lg font-bold text-sm hover:bg-primary-container/90 transition-colors shadow-md flex items-center gap-2 disabled:opacity-50"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">
+                      {activeLessonId && progress[activeLessonId]?.is_completed
+                        ? "check_circle"
+                        : "radio_button_unchecked"}
+                    </span>
+                    {activeLessonId && progress[activeLessonId]?.is_completed
+                      ? "Completed"
+                      : "Mark Complete"}
                   </button>
                 </div>
               </div>
@@ -323,30 +439,37 @@ export default function CourseViewerPage({ params }: { params: Promise<{ id: str
                       {mod.isOpen && (
                         <div className="pb-2 animate-slide-down">
                           {mod.lessons?.map((lesson: any) => {
-                            const isPlayable = lesson.type === "video" || lesson.type === "recording" || lesson.content_url;
+                            const isPlayable = Boolean(lesson.video_url);
                             return (
                               <button
                                 key={lesson.id}
                                 disabled={!isPlayable}
                                 onClick={(e) => {
                                   e.preventDefault();
-                                  if (lesson.content_url) {
-                                    handlePlayVideo(lesson.content_url, lesson.title);
+                                  if (lesson.video_url) {
+                                    handlePlayVideo(lesson.video_url, lesson.title, lesson.id);
                                   }
                                 }}
                                 className={`w-full flex items-center gap-3 px-6 py-3 hover:bg-surface-container/30 transition-colors text-left ${
                                   !isPlayable ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
-                                }`}
+                                } ${activeLessonId === lesson.id ? "bg-secondary/10" : ""}`}
                               >
-                                <span className="material-symbols-outlined text-outline text-[20px]">
-                                  {lesson.type === "pdf" ? "picture_as_pdf" : 
-                                   lesson.type === "notes" ? "description" : 
-                                   "play_circle"}
+                                <span
+                                  className={`material-symbols-outlined text-[20px] ${
+                                    progress[lesson.id]?.is_completed ? "text-secondary" : "text-outline"
+                                  }`}
+                                >
+                                  {progress[lesson.id]?.is_completed
+                                    ? "check_circle"
+                                    : isPlayable
+                                      ? "play_circle"
+                                      : "lock"}
                                 </span>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-sm text-on-surface truncate">{lesson.title}</p>
                                   <p className="text-xs text-outline">
-                                    {lesson.type.toUpperCase()} {lesson.duration_minutes ? `• ${lesson.duration_minutes} mins` : ""}
+                                    {lesson.duration ? String(lesson.duration) : "Lesson"}
+                                    {lesson.is_free_preview ? " • Free preview" : ""}
                                   </p>
                                 </div>
                               </button>

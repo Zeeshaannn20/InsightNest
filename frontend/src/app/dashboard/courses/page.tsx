@@ -25,17 +25,14 @@ export default function StudentCoursesPage() {
         .eq("student_id", profile.id);
 
       if (!error && data) {
-        // Fetch progress for each
-        const withProgress = await Promise.all(
-          data.map(async (e: any) => {
-            const { data: progress } = await supabase.rpc("calculate_progress", {
-              p_student_id: profile.id,
-              p_course_id: e.course_id
-            });
-            return { ...e, progress: progress || 0 } as Enrollment & { progress?: number };
-          })
+        // progress_pct is kept up to date by the lesson player, so it comes
+        // back with the row — no extra call per course.
+        setEnrollments(
+          data.map((e: any) => ({
+            ...e,
+            progress: Math.round(Number(e.progress_pct ?? 0)),
+          })) as (Enrollment & { progress?: number })[]
         );
-        setEnrollments(withProgress);
       }
       setLoading(false);
     }

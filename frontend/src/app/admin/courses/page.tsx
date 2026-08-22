@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Course, RecordedLecture } from "@/lib/types/database";
 
@@ -8,6 +10,8 @@ export default function AdminCoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+  const router = useRouter();
   const supabase = createClient();
 
   // Recordings Modal States
@@ -149,6 +153,24 @@ export default function AdminCoursesPage() {
     }
   };
 
+  const handleCreateCourse = async () => {
+    setCreating(true);
+    setError(null);
+
+    const { data, error: createError } = await supabase
+      .from("courses")
+      .insert({ title: "Untitled course", status: "draft", is_published: false })
+      .select("id")
+      .single();
+
+    if (createError) {
+      setError("Failed to create course: " + createError.message);
+      setCreating(false);
+    } else {
+      router.push(`/admin/courses/${data.id}`);
+    }
+  };
+
   return (
     <div className="p-8 max-w-7xl mx-auto animate-fade-in">
       <div className="flex justify-between items-center mb-8">
@@ -156,6 +178,16 @@ export default function AdminCoursesPage() {
           <h1 className="text-3xl font-bold text-primary-container tracking-tight mb-2">Courses</h1>
           <p className="text-on-surface-variant">Manage programs, modules, and content.</p>
         </div>
+        <button
+          onClick={handleCreateCourse}
+          disabled={creating}
+          className="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-xl text-sm font-medium transition-all shadow-sm disabled:opacity-50"
+        >
+          <span className={`material-symbols-outlined text-base ${creating ? "animate-spin" : ""}`}>
+            {creating ? "progress_activity" : "add"}
+          </span>
+          New course
+        </button>
       </div>
 
       {error && (
@@ -194,14 +226,26 @@ export default function AdminCoursesPage() {
                 courses.map((course) => (
                   <tr key={course.id} className="hover:bg-surface-container/50 transition-colors">
                     <td className="px-6 py-4">
-                      <div className="font-semibold text-primary-container line-clamp-1">{course.title}</div>
-                      <div className="text-xs text-on-surface-variant">{course.duration_weeks} Weeks</div>
+                      <Link
+                        href={`/admin/courses/${course.id}`}
+                        className="font-semibold text-primary-container line-clamp-1 hover:text-secondary hover:underline"
+                      >
+                        {course.title}
+                      </Link>
+                      <div className="text-xs text-on-surface-variant">
+                        {course.duration_weeks ? `${course.duration_weeks} Weeks` : "Duration not set"}
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-on-surface">{course.instructor?.full_name || "Unassigned"}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-on-surface font-mono">₹{course.price}</div>
+                      <div className="text-on-surface font-mono">
+                        {course.price_paise != null
+                          ? `₹${(course.price_paise / 100).toLocaleString("en-IN")}`
+                          : "—"}
+                      </div>
+                      <div className="text-xs text-on-surface-variant">{course.status}</div>
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${
@@ -211,6 +255,12 @@ export default function AdminCoursesPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right space-x-2">
+                      <Link
+                        href={`/admin/courses/${course.id}`}
+                        className="text-xs px-3 py-1.5 rounded-lg font-semibold bg-primary/10 hover:bg-primary/20 text-primary transition-colors inline-block"
+                      >
+                        Edit content
+                      </Link>
                       <button
                         onClick={() => handleOpenRecModal(course)}
                         className="text-xs px-3 py-1.5 rounded-lg font-semibold bg-secondary/15 hover:bg-secondary/25 text-secondary transition-colors"

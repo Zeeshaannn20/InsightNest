@@ -1,254 +1,171 @@
 // ============================================================
 // InsightNest LMS — Database Types
-// TypeScript interfaces mirroring all PostgreSQL tables
+//
+// Row shapes come from ./database.generated.ts, which mirrors the live
+// Postgres schema. This file adds the optional relation fields used by
+// nested selects, plus form and view-model types.
+//
+// To refresh after a schema change, regenerate database.generated.ts —
+// never hand-edit it.
 // ============================================================
 
-export type UserRole = 'admin' | 'instructor' | 'student';
+import type {
+  ActivityLogRow,
+  AnnouncementRow,
+  AssignmentRow,
+  AttendanceRow,
+  CertificateRow,
+  ChatMessageRow,
+  CommunityChannelRow,
+  CourseRow,
+  EnrollmentRow,
+  EscalatedQuestionRow,
+  LessonProgressRow,
+  LessonRow,
+  LiveSessionRow,
+  ModuleRow,
+  NoteRow,
+  NotificationRow,
+  PaymentRow,
+  ProfileRow,
+  QuizAttemptRow,
+  QuizQuestionRow,
+  QuizResultRow,
+  QuizRow,
+  RecordedLectureRow,
+  ResourceRow,
+  SubmissionRow,
+  SubscriptionRow,
+  VideoProgressRow,
+} from "./database.generated";
 
-export type EnrollmentStatus = 'active' | 'completed' | 'dropped';
-
-export type SessionStatus = 'scheduled' | 'live' | 'completed' | 'cancelled';
-
-export type AttendanceStatus = 'present' | 'absent' | 'late';
-
-export type LessonType = 'video' | 'pdf' | 'notes' | 'link' | 'recording';
-
-export type SubmissionStatus = 'submitted' | 'graded' | 'late' | 'resubmit';
-
-export type AnnouncementType = 'update' | 'deadline' | 'notification' | 'general';
+// Re-export the generated row types and status unions
+// (UserRole, EnrollmentStatus, CourseStatus, QuestionType, …)
+export * from "./database.generated";
 
 // ============================================================
-// Core Tables
+// Core entities — row shape + the relations we select alongside them
 // ============================================================
 
-export interface Profile {
-  id: string;
-  enrollment_id: string | null;
-  role: UserRole;
-  full_name: string;
-  email: string;
-  phone: string | null;
-  avatar_url: string | null;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-}
+export type Profile = ProfileRow;
 
-export interface Course {
-  id: string;
-  title: string;
-  description: string | null;
-  thumbnail_url: string | null;
-  instructor_id: string | null;
-  is_published: boolean;
-  price: number;
-  duration_weeks: number;
-  created_at: string;
-  updated_at: string;
-  // Joined fields
+export interface Course extends CourseRow {
   instructor?: Profile;
   modules?: Module[];
   enrollment_count?: number;
 }
 
-export interface Module {
-  id: string;
-  course_id: string;
-  title: string;
-  description: string | null;
-  sort_order: number;
-  created_at: string;
-  // Joined fields
+export interface Module extends ModuleRow {
   lessons?: Lesson[];
   assignments?: Assignment[];
   quizzes?: Quiz[];
 }
 
-export interface Lesson {
-  id: string;
-  module_id: string;
-  title: string;
-  type: LessonType;
-  content_url: string | null;
-  content_text: string | null;
-  sort_order: number;
-  duration_minutes: number;
-  created_at: string;
-  // Joined
+export interface Lesson extends LessonRow {
+  resources?: Resource[];
+  /** Derived client-side from video_progress. */
   is_completed?: boolean;
 }
 
-export interface Enrollment {
-  id: string;
-  student_id: string;
-  course_id: string;
-  enrolled_at: string;
-  status: EnrollmentStatus;
-  // Joined
+export interface Enrollment extends EnrollmentRow {
   student?: Profile;
   course?: Course;
 }
 
-export interface LiveSession {
-  id: string;
-  course_id: string;
-  instructor_id: string | null;
-  title: string;
-  description: string | null;
-  session_date: string;
-  start_time: string;
-  end_time: string;
-  meet_link: string | null;
-  status: SessionStatus;
-  created_at: string;
-  updated_at: string;
-  // Joined
+export interface LiveSession extends LiveSessionRow {
   instructor?: Profile;
   course?: Course;
 }
 
-export interface Attendance {
-  id: string;
-  student_id: string;
-  session_id: string;
-  join_timestamp: string;
-  status: AttendanceStatus;
-  // Joined
+export interface Attendance extends AttendanceRow {
   student?: Profile;
   session?: LiveSession;
 }
 
-export interface Assignment {
-  id: string;
-  course_id: string;
-  module_id: string | null;
-  title: string;
-  instructions: string | null;
-  max_marks: number;
-  deadline: string | null;
-  created_by: string | null;
-  created_at: string;
-  updated_at: string;
-  // Joined
+export interface Assignment extends AssignmentRow {
   submission?: Submission;
   submissions?: Submission[];
   course?: Course;
 }
 
-export interface Submission {
-  id: string;
-  assignment_id: string;
-  student_id: string;
-  file_url: string | null;
-  file_name: string | null;
-  submitted_at: string;
-  marks: number | null;
-  feedback: string | null;
-  status: SubmissionStatus;
-  graded_by: string | null;
-  graded_at: string | null;
-  // Joined
-  student?: Profile;
+export interface Submission extends SubmissionRow {
+  user?: Profile;
   assignment?: Assignment;
+  reviewer?: Profile;
 }
 
-export interface Quiz {
-  id: string;
-  course_id: string;
-  module_id: string | null;
-  title: string;
-  description: string | null;
-  passing_percentage: number;
-  total_marks: number;
-  time_limit_minutes: number | null;
-  is_published: boolean;
-  created_by: string | null;
-  created_at: string;
-  updated_at: string;
-  // Joined
+export interface Quiz extends QuizRow {
   questions?: QuizQuestion[];
-  result?: QuizResult;
+  attempt?: QuizAttempt;
   course?: Course;
 }
 
-export interface QuizQuestion {
-  id: string;
-  quiz_id: string;
-  question_text: string;
-  options: string[]; // JSONB array
-  correct_option: number;
-  marks: number;
-  sort_order: number;
+/**
+ * Note: `correct_answer` is readable by enrolled students through the REST
+ * API, so grade server-side and never select this column in the browser.
+ */
+export type QuizQuestion = QuizQuestionRow;
+
+export interface QuizAttempt extends QuizAttemptRow {
+  user?: Profile;
+  quiz?: Quiz;
 }
 
-export interface QuizResult {
-  id: string;
-  quiz_id: string;
-  student_id: string;
-  score: number;
-  total_marks: number;
-  answers: Record<string, number>; // { question_id: selected_option }
-  attempted_at: string;
-  passed: boolean;
-  // Joined
+export interface QuizResult extends QuizResultRow {
   student?: Profile;
   quiz?: Quiz;
 }
 
-export interface Announcement {
-  id: string;
-  course_id: string | null;
-  title: string;
-  content: string;
-  type: AnnouncementType;
-  created_by: string | null;
-  created_at: string;
-  // Joined
+export interface Announcement extends AnnouncementRow {
   author?: Profile;
-}
-
-export interface ChatMessage {
-  id: string;
-  course_id: string;
-  sender_id: string;
-  message: string;
-  reply_to: string | null;
-  created_at: string;
-  // Joined
-  sender?: Profile;
-  reply_message?: ChatMessage;
-}
-
-export interface LessonProgress {
-  id: string;
-  student_id: string;
-  lesson_id: string;
-  completed_at: string;
-}
-
-export interface ActivityLog {
-  id: string;
-  user_id: string | null;
-  action: string;
-  details: Record<string, unknown>;
-  created_at: string;
-  // Joined
-  user?: Profile;
-}
-
-export interface RecordedLecture {
-  id: string;
-  course_id: string;
-  title: string;
-  youtube_url: string;
-  duration_minutes: number;
-  created_at: string;
-  // Joined
   course?: Course;
 }
 
+export interface ChatMessage extends ChatMessageRow {
+  user?: Profile;
+  channel?: CommunityChannel;
+  parent_message?: ChatMessage;
+}
+
+export type CommunityChannel = CommunityChannelRow;
+
+export interface Certificate extends CertificateRow {
+  user?: Profile;
+  course?: Course;
+}
+
+export interface Payment extends PaymentRow {
+  user?: Profile;
+}
+
+export type Subscription = SubscriptionRow;
+
+export type Notification = NotificationRow;
+
+export type Note = NoteRow;
+
+export type Resource = ResourceRow;
+
+export type VideoProgress = VideoProgressRow;
+
+export type LessonProgress = LessonProgressRow;
+
+export interface EscalatedQuestion extends EscalatedQuestionRow {
+  student?: Profile;
+  instructor?: Profile;
+  course?: Course;
+}
+
+export interface RecordedLecture extends RecordedLectureRow {
+  course?: Course;
+}
+
+export interface ActivityLog extends ActivityLogRow {
+  user?: Profile;
+}
+
 // ============================================================
-// Utility Types
+// View models
 // ============================================================
 
 export interface ProgressData {
@@ -267,7 +184,10 @@ export interface DashboardStats {
   total_quizzes_completed: number;
 }
 
-// Form types for creating/editing
+// ============================================================
+// Form types
+// ============================================================
+
 export interface CreateStudentForm {
   full_name: string;
   email: string;
@@ -279,7 +199,7 @@ export interface CreateCourseForm {
   title: string;
   description: string;
   instructor_id?: string;
-  price: number;
+  price_paise: number;
   duration_weeks: number;
 }
 
@@ -298,9 +218,8 @@ export interface CreateAssignmentForm {
   course_id: string;
   module_id?: string;
   title: string;
-  instructions: string;
-  max_marks: number;
-  deadline: string;
+  description: string;
+  due_date: string;
 }
 
 export interface CreateQuizForm {
@@ -308,14 +227,16 @@ export interface CreateQuizForm {
   module_id?: string;
   title: string;
   description: string;
-  passing_percentage: number;
+  passing_score: number;
   time_limit_minutes?: number;
+  max_attempts?: number;
   questions: CreateQuestionForm[];
 }
 
 export interface CreateQuestionForm {
-  question_text: string;
+  question: string;
+  question_type: QuizQuestion["question_type"];
   options: string[];
-  correct_option: number;
-  marks: number;
+  correct_answer: string;
+  points: number;
 }

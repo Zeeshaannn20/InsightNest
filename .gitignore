@@ -22,8 +22,17 @@ out/
 .DS_Store
 Thumbs.db
 
-# Test scripts with hardcoded credentials
+# Test and ops scripts with hardcoded credentials — never commit these
 test_*.js
+test_*.mjs
+update_password.js
+
+# Supabase CLI local state
+.temp/
+/supabase/
+
+# Local editor/agent config
+.claude/
 
 # Debug logs
 npm-debug.log*
