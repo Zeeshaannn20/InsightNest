@@ -5,7 +5,6 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import RazorpayButton from "./RazorpayButton";
 import Logo from "./Logo";
-import { apiBase } from "@/lib/api";
 
 interface CourseEnrollmentSectionProps {
   courseSlug: string;
@@ -86,8 +85,7 @@ export default function CourseEnrollmentSection({ courseSlug }: CourseEnrollment
     setWaitlistLoading(true);
     
     try {
-      const apiUrl = apiBase();
-      const response = await fetch(`${apiUrl}/api/enrollment/waitlist`, {
+      const response = await fetch("/api/enrollment/waitlist", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

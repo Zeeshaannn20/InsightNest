@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
-import { apiBase } from "@/lib/api";
 
 interface RazorpayButtonProps {
   courseId: string;
@@ -36,8 +35,7 @@ export default function RazorpayButton({ courseId, courseTitle, courseSlug, pric
       }
 
       // 2. Create Order on Backend
-      const apiUrl = apiBase();
-      const response = await fetch(`${apiUrl}/api/enrollment/create-order`, {
+      const response = await fetch("/api/enrollment/create-order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -72,8 +70,7 @@ export default function RazorpayButton({ courseId, courseTitle, courseSlug, pric
         handler: async function (response: any) {
           try {
             // Verify payment signature asynchronously
-            const apiUrl = apiBase();
-            const verifyRes = await fetch(`${apiUrl}/api/enrollment/verify-payment`, {
+                  const verifyRes = await fetch("/api/enrollment/verify-payment", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
