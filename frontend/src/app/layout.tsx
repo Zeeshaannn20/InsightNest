@@ -8,21 +8,35 @@ const inter = Inter({
   display: "swap",
 });
 
+const title = "Become a Job-Ready Data Analyst in 8 Weekends — InsightNest";
+const description =
+  "Live weekend training in Excel, SQL, Python, Statistics, Power BI and data storytelling. 16 live sessions, 7 portfolio projects and career support, for ₹2,999.";
+
 export const metadata: Metadata = {
-  title: "InsightNest — AI-Powered Data Analytics LMS",
-  description:
-    "Become job ready in Data Analytics with AI. Master Excel, SQL, Python, Power BI, and Microsoft Fabric with our AI-powered bootcamp.",
+  title,
+  description,
   keywords: [
-    "data analytics",
-    "LMS",
-    "AI mentor",
+    "data analyst course",
+    "data analytics bootcamp",
+    "live weekend classes",
     "Excel",
     "SQL",
     "Python",
     "Power BI",
-    "Microsoft Fabric",
-    "bootcamp",
+    "statistics",
+    "data analytics course India",
   ],
+  openGraph: {
+    title,
+    description,
+    type: "website",
+    siteName: "InsightNest",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+  },
   icons: "/icon.png",
 };
 

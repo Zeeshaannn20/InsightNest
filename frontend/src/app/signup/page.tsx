@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Logo from "@/components/Logo";
 
-type Outcome = "pending_approval" | "check_email";
+type Outcome = "check_email";
 
 export default function SignupPage() {
   const [fullName, setFullName] = useState("");
@@ -18,6 +19,7 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [outcome, setOutcome] = useState<Outcome | null>(null);
 
+  const router = useRouter();
   const supabase = createClient();
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -60,11 +62,9 @@ export default function SignupPage() {
       return;
     }
 
-    // Signed in straight away — but accounts start inactive and an admin has to
-    // approve them, so end the session rather than bouncing off a guarded page.
-    await supabase.auth.signOut();
-    setOutcome("pending_approval");
-    setLoading(false);
+    // Accounts are active on creation, so send them straight in. Course content
+    // is still gated by enrollment, which only a payment or an admin grant creates.
+    router.push("/dashboard");
   };
 
   if (outcome) {
@@ -73,26 +73,12 @@ export default function SignupPage() {
         <div className="w-full max-w-md text-center animate-fade-in">
           <Logo variant="img2" className="h-14 w-auto mx-auto mb-8" />
           <div className="w-16 h-16 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center mx-auto mb-6">
-            <span className="material-symbols-outlined text-3xl">
-              {outcome === "check_email" ? "mark_email_unread" : "hourglass_top"}
-            </span>
+            <span className="material-symbols-outlined text-3xl">mark_email_unread</span>
           </div>
-          <h1 className="text-2xl font-bold text-primary-container mb-3">
-            {outcome === "check_email" ? "Confirm your email" : "Account created"}
-          </h1>
+          <h1 className="text-2xl font-bold text-primary-container mb-3">Confirm your email</h1>
           <p className="text-on-surface-variant mb-8 leading-relaxed">
-            {outcome === "check_email" ? (
-              <>
-                We sent a confirmation link to <strong className="text-on-surface">{email}</strong>.
-                Open it to verify your address. Our team then activates your account before your
-                first sign in.
-              </>
-            ) : (
-              <>
-                Welcome, {fullName.split(" ")[0] || "there"}. Our team reviews new accounts before
-                granting access — you will be able to sign in as soon as yours is approved.
-              </>
-            )}
+            We sent a confirmation link to <strong className="text-on-surface">{email}</strong>.
+            Open it to verify your address, then sign in.
           </p>
           <Link
             href="/login"

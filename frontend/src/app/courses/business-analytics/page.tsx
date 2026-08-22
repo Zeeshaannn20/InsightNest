@@ -392,7 +392,7 @@ export default function BusinessAnalyticsCoursePage() {
             <h4 className="text-on-surface font-bold mb-4">Courses</h4>
             <ul className="space-y-3 text-sm">
               <li><Link href="/#courses" className="hover:text-secondary transition-colors">All Courses</Link></li>
-              <li><Link href="/courses/data-analyst" className="hover:text-secondary transition-colors">Data Analyst Bootcamp</Link></li>
+              <li><Link href="/" className="hover:text-secondary transition-colors">Data Analyst Bootcamp</Link></li>
             </ul>
           </div>
           <div>

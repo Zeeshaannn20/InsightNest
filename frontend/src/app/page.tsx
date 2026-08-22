@@ -1,25 +1,170 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Logo from "@/components/Logo";
+import CourseEnrollmentSection from "@/components/CourseEnrollmentSection";
+import {
+  AUDIENCE_NO,
+  AUDIENCE_YES,
+  BATCH,
+  CAREER_BLOCKS,
+  COMPARISON,
+  DIFFERENTIATORS,
+  FAQS,
+  INCLUDED,
+  MAJOR_PROJECTS,
+  MINI_PROJECTS,
+  PRICE,
+  PROBLEMS,
+  STATS,
+  TRACKS,
+} from "@/lib/landing-content";
 
-export default function LandingPage() {
+/* ---------------------------------- bits --------------------------------- */
+
+function SectionHeading({
+  eyebrow,
+  title,
+  sub,
+  light = false,
+}: {
+  eyebrow?: string;
+  title: string;
+  sub?: string;
+  light?: boolean;
+}) {
+  return (
+    <div className="max-w-3xl mb-14">
+      {eyebrow && (
+        <p
+          className={`text-xs font-bold uppercase tracking-[0.18em] mb-3 ${
+            light ? "text-secondary-container" : "text-secondary"
+          }`}
+        >
+          {eyebrow}
+        </p>
+      )}
+      <h2
+        className={`text-3xl md:text-[2.6rem] font-bold tracking-tight leading-[1.15] text-balance ${
+          light ? "text-white" : "text-primary-container"
+        }`}
+      >
+        {title}
+      </h2>
+      {sub && (
+        <p className={`mt-4 text-lg leading-relaxed ${light ? "text-white/70" : "text-on-surface-variant"}`}>
+          {sub}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function TrackAccordion({ track, index }: { track: (typeof TRACKS)[number]; index: number }) {
+  const [open, setOpen] = useState(index === 0);
+  const count = track.groups.reduce((n, g) => n + g.items.length, 0);
+
+  return (
+    <div
+      className="border border-outline-variant/40 rounded-2xl overflow-hidden bg-surface-container-lowest transition-shadow hover:shadow-card"
+      style={{ borderLeft: `4px solid ${track.hue}` }}
+    >
+      <button
+        onClick={() => setOpen(!open)}
+        aria-expanded={open}
+        className="w-full flex items-center gap-4 px-5 md:px-7 py-5 text-left hover:bg-surface-container-low/40 transition-colors"
+      >
+        <span
+          className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold shrink-0 text-white"
+          style={{ background: track.hue }}
+        >
+          {index + 1}
+        </span>
+        <span className="flex-1 min-w-0">
+          <span className="block font-bold text-primary-container text-lg leading-snug">{track.name}</span>
+          <span className="block text-sm text-on-surface-variant">
+            {track.summary} · {count} topics
+          </span>
+        </span>
+        <span
+          className={`material-symbols-outlined text-on-surface-variant transition-transform duration-300 ${
+            open ? "rotate-180" : ""
+          }`}
+        >
+          expand_more
+        </span>
+      </button>
+
+      {open && (
+        <div className="px-5 md:px-7 pb-7 pt-1 grid gap-6 md:grid-cols-2 animate-slide-down">
+          {track.groups.map((group) => (
+            <div key={group.heading}>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-3">
+                {group.heading}
+              </h4>
+              <ul className="space-y-2.5">
+                {group.items.map((item) => (
+                  <li key={item} className="flex gap-2.5 text-sm text-on-surface leading-relaxed">
+                    <span className="mt-2 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: track.hue }} />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Faq({ item }: { item: (typeof FAQS)[number] }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border-b border-outline-variant/40">
+      <button
+        onClick={() => setOpen(!open)}
+        aria-expanded={open}
+        className="w-full flex items-start justify-between gap-6 py-5 text-left group"
+      >
+        <span className="font-semibold text-primary-container group-hover:text-secondary transition-colors">
+          {item.q}
+        </span>
+        <span
+          className={`material-symbols-outlined text-on-surface-variant shrink-0 transition-transform duration-300 ${
+            open ? "rotate-45" : ""
+          }`}
+        >
+          add
+        </span>
+      </button>
+      {open && (
+        <p className="pb-6 -mt-1 text-on-surface-variant leading-relaxed max-w-3xl animate-slide-down">{item.a}</p>
+      )}
+    </div>
+  );
+}
+
+/* ---------------------------------- page --------------------------------- */
+
+export default function DataAnalystCoursePage() {
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
-    observerRef.current = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("animate-slide-up");
-          observerRef.current?.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1 });
-
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("animate-slide-up");
+            observerRef.current?.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
     const elements = document.querySelectorAll(".reveal-on-scroll");
     elements.forEach((el) => observerRef.current?.observe(el));
-
     return () => observerRef.current?.disconnect();
   }, []);
 
@@ -28,444 +173,630 @@ export default function LandingPage() {
       {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center">
-              <Logo variant="img1" className="h-16 w-auto" />
-            </Link>
-          </div>
+          <Link href="/" className="flex items-center">
+            <Logo variant="img1" className="h-16 w-auto" />
+          </Link>
           <div className="hidden md:flex items-center gap-8">
-            <Link href="/#courses" className="text-on-surface hover:text-secondary font-medium transition-colors">Courses</Link>
+            <a href="#curriculum" className="text-on-surface hover:text-secondary font-medium transition-colors">Curriculum</a>
+            <a href="#projects" className="text-on-surface hover:text-secondary font-medium transition-colors">Projects</a>
+            <a href="#pricing" className="text-on-surface hover:text-secondary font-medium transition-colors">Pricing</a>
+            <a href="#faq" className="text-on-surface hover:text-secondary font-medium transition-colors">FAQ</a>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/login" className="text-on-surface hover:text-secondary font-medium transition-colors hidden md:block">Login</Link>
-            <Link href="/#courses" className="bg-secondary text-on-secondary px-5 py-2 rounded-full font-semibold hover:bg-secondary/90 transition-all btn-press shadow-md">Explore Courses</Link>
+            <a href="#pricing" className="bg-secondary text-on-secondary px-5 py-2 rounded-full font-semibold hover:bg-secondary/90 transition-all btn-press shadow-md">
+              Enroll Now
+            </a>
           </div>
         </div>
       </nav>
 
-      <main className="pt-20">
-        {/* Hero Section */}
-        <section className="hero-gradient min-h-[calc(100vh-5rem)] flex flex-col py-12 md:py-20">
-          <div className="max-w-7xl w-full mx-auto px-6 grid md:grid-cols-2 gap-12 items-center my-auto">
-            <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 bg-surface-container-high px-3 py-1 rounded-full text-sm font-medium text-primary-container">
-                <span className="material-symbols-outlined text-secondary text-base">bolt</span>
-                Intensive 4-Week Accelerator
+      <main className="pt-20 pb-20 md:pb-0">
+        {/* ---------------------------- 1 · HERO ---------------------------- */}
+        <section className="relative overflow-hidden bg-primary-container text-white">
+          <div className="absolute -top-40 -right-32 w-[36rem] h-[36rem] bg-secondary/30 rounded-full blur-[140px] pointer-events-none" />
+          <div className="absolute -bottom-52 -left-20 w-[30rem] h-[30rem] bg-secondary-container/20 rounded-full blur-[130px] pointer-events-none" />
+
+          <div className="relative max-w-7xl mx-auto px-6 py-20 md:py-28 grid lg:grid-cols-[1.15fr_1fr] gap-14 items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide backdrop-blur-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                Live Weekend Batch · Beginner to Advanced · 2 Months
               </div>
-              <h1 className="text-5xl md:text-6xl font-extrabold text-primary-container leading-tight tracking-tight">
-                Become an AI-Augmented <span className="text-secondary">Data Leader</span>
+
+              <h1 className="mt-6 text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] text-balance">
+                Become a Job-Ready Data Analyst in 8 Weekends
               </h1>
-              <p className="text-lg text-on-surface-variant max-w-lg leading-relaxed">
-                Go from beginner to job-ready data analyst in 4 weeks. Learn Excel, SQL, Python, Power BI, and Microsoft Fabric — with AI tools baked into every lesson. Graduate with 4 portfolio projects and a certificate.
+
+              <p className="mt-6 text-lg md:text-xl text-white/75 leading-relaxed max-w-2xl">
+                Excel, SQL, Python, Statistics, Power BI and Data Storytelling — taught live, built around
+                7 real projects, and finished with a resume, a LinkedIn profile and an interview plan that
+                actually gets replies.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <a href="#courses" className="bg-secondary text-on-secondary px-8 py-3.5 rounded-full font-bold text-lg hover:bg-secondary/90 transition-all btn-press shadow-lg text-center">
-                  Explore Courses <span className="material-symbols-outlined align-middle ml-1">arrow_forward</span>
+
+              <div className="mt-9 flex flex-wrap items-center gap-4">
+                <a
+                  href="#pricing"
+                  className="bg-secondary text-on-secondary px-7 py-3.5 rounded-xl font-bold text-base hover:bg-secondary/90 transition-all btn-press shadow-lg shadow-secondary/25"
+                >
+                  Enroll Now — ₹{PRICE.now.toLocaleString("en-IN")}
+                </a>
+                <a
+                  href="#curriculum"
+                  className="border border-white/25 text-white px-7 py-3.5 rounded-xl font-bold text-base hover:bg-white/10 transition-all backdrop-blur-sm"
+                >
+                  See Full Syllabus
                 </a>
               </div>
-            </div>
-            
-            {/* Dashboard Preview Glass Card */}
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-tr from-secondary/20 to-primary-container/10 blur-3xl -z-10 rounded-[3rem]"></div>
-              <div className="glass-card p-4 rounded-2xl shadow-2xl border border-white/40 transform rotate-1 hover:rotate-0 transition-transform duration-500">
-                <div className="bg-primary-container rounded-xl overflow-hidden shadow-inner aspect-[4/3] flex flex-col relative">
-                  <div className="h-8 bg-inverse-surface/50 border-b border-white/10 flex items-center px-4 gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-error"></div>
-                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
-                    <div className="w-2.5 h-2.5 rounded-full bg-green-400"></div>
-                  </div>
-                  <div className="flex-1 p-6 grid grid-cols-2 gap-4 opacity-80">
-                    <div className="bg-white/5 rounded-lg border border-white/10 p-4 space-y-3">
-                      <div className="h-4 bg-white/20 rounded w-1/3"></div>
-                      <div className="h-8 bg-secondary/80 rounded w-2/3 mt-4"></div>
-                      <div className="h-2 bg-white/10 rounded w-full mt-auto"></div>
-                    </div>
-                    <div className="bg-white/5 rounded-lg border border-white/10 p-4 space-y-3 relative overflow-hidden">
-                       <div className="h-4 bg-white/20 rounded w-1/2"></div>
-                       <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-secondary/40 to-transparent"></div>
-                    </div>
-                    <div className="col-span-2 bg-white/5 rounded-lg border border-white/10 p-4">
-                      <div className="h-4 bg-white/20 rounded w-1/4 mb-4"></div>
-                      <div className="flex items-end gap-2 h-20">
-                        {[40, 70, 45, 90, 65, 80, 55].map((h, i) => (
-                          <div key={i} className="flex-1 bg-secondary rounded-t-sm" style={{ height: `${h}%` }}></div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  {/* Floating AI Bubble */}
-                  <div className="absolute bottom-6 right-6 bg-surface p-3 rounded-2xl rounded-br-none shadow-lg animate-pulse-soft border border-outline-variant flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center">
-                      <span className="material-symbols-outlined text-secondary text-sm">psychology</span>
-                    </div>
-                    <div>
-                      <div className="h-2 bg-outline-variant/40 rounded w-20 mb-1.5"></div>
-                      <div className="h-2 bg-outline-variant/40 rounded w-16"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
-        {/* ============================================================
-           Business Analytics — Standalone Course Section
-           ============================================================ */}
-        <section id="business-analytics" className="py-24 bg-surface-container-low border-y border-outline-variant/20">
-          <div className="max-w-7xl mx-auto px-6">
-
-            {/* Header block */}
-            <div className="text-center mb-16 reveal-on-scroll">
-              <div className="inline-flex items-center gap-2 bg-error/10 text-error px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-6">
-                <span className="material-symbols-outlined text-sm">timer</span>
-                Limited Seats — Batch Filling Fast
-              </div>
-              <h2 className="text-4xl md:text-5xl font-extrabold text-primary-container mb-4 tracking-tight">
-                Business Analytics
-              </h2>
-              <p className="text-xl md:text-2xl font-bold text-secondary mb-3">Your Career Starts Today</p>
-              <p className="text-on-surface-variant max-w-2xl mx-auto text-lg">
-                Learn Business Analytics from scratch — no coding, no degree needed.
+              <p className="mt-6 text-sm text-white/55 leading-relaxed">
+                487+ students taught · Live doubt-solving every weekend · Lifetime access to recordings ·
+                7 portfolio projects · Career support included
               </p>
             </div>
 
-            {/* Two-column layout: Benefits + Dashboard mockup */}
-            <div className="grid md:grid-cols-2 gap-12 items-start mb-20">
-
-              {/* Left: Key Benefits */}
-              <div className="space-y-8">
-                <h3 className="text-2xl font-bold text-primary-container">Why Business Analytics?</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  {[
-                    { icon: 'trending_up', label: 'High-Demand Skill', desc: 'Analytics roles are among the fastest-growing jobs in India and globally.' },
-                    { icon: 'payments', label: 'Great Salary Potential', desc: 'Entry-level analysts earn ₹4-8 LPA; experienced analysts earn significantly more.' },
-                    { icon: 'insights', label: 'Real-World Business Impact', desc: 'Make decisions that directly affect revenue, operations, and strategy.' },
-                    { icon: 'workspace_premium', label: 'Certification Included', desc: 'Earn a certificate of completion to showcase on LinkedIn and your resume.' },
-                  ].map((benefit) => (
-                    <div key={benefit.label} className="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/30 shadow-card hover:shadow-lg hover:-translate-y-0.5 transition-all group">
-                      <div className="w-11 h-11 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary mb-3 group-hover:bg-secondary/20 transition-colors">
-                        <span className="material-symbols-outlined">{benefit.icon}</span>
-                      </div>
-                      <h4 className="font-bold text-on-surface text-sm mb-1">{benefit.label}</h4>
-                      <p className="text-xs text-on-surface-variant leading-relaxed">{benefit.desc}</p>
-                    </div>
-                  ))}
-                </div>
+            {/* price card */}
+            <div className="lg:justify-self-end w-full max-w-sm bg-white/10 border border-white/15 rounded-3xl p-8 backdrop-blur-md shadow-2xl">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-secondary-container">
+                Complete Program
+              </p>
+              <div className="mt-4 flex items-end gap-3">
+                <span className="text-5xl font-bold tracking-tight">₹{PRICE.now.toLocaleString("en-IN")}</span>
+                <span className="text-xl text-white/40 line-through mb-1.5">
+                  ₹{PRICE.was.toLocaleString("en-IN")}
+                </span>
               </div>
+              <p className="mt-2 text-sm text-white/60">
+                One-time fee. Full program. No hidden charges.
+              </p>
 
-              {/* Right: Dashboard Mockup */}
-              {/* TODO: Replace this CSS mockup with a real screenshot or designed asset when available */}
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-secondary/15 to-primary-container/10 blur-3xl -z-10 rounded-[3rem]"></div>
-                <div className="glass-card p-4 rounded-2xl shadow-2xl border border-white/40">
-                  <div className="bg-primary-container rounded-xl overflow-hidden shadow-inner">
-                    {/* Window chrome */}
-                    <div className="h-8 bg-inverse-surface/50 border-b border-white/10 flex items-center justify-between px-4">
-                      <div className="flex gap-1.5">
-                        <div className="w-2.5 h-2.5 rounded-full bg-error"></div>
-                        <div className="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
-                        <div className="w-2.5 h-2.5 rounded-full bg-green-400"></div>
-                      </div>
-                      <span className="text-[10px] text-white/50 font-medium">Business Analytics Dashboard</span>
-                    </div>
-
-                    {/* KPI Cards Row */}
-                    <div className="p-4 space-y-4">
-                      <div className="grid grid-cols-3 gap-3">
-                        <div className="bg-white/10 rounded-lg p-3 border border-white/10">
-                          <p className="text-[10px] text-white/50 mb-1">Total Revenue</p>
-                          <p className="text-sm font-bold text-white/90">₹2.45 Cr</p>
-                          <span className="text-[10px] text-green-400 font-semibold">+18.6% ↑</span>
-                        </div>
-                        <div className="bg-white/10 rounded-lg p-3 border border-white/10">
-                          <p className="text-[10px] text-white/50 mb-1">Profit</p>
-                          <p className="text-sm font-bold text-white/90">₹1.25 Cr</p>
-                          <span className="text-[10px] text-green-400 font-semibold">+21.7% ↑</span>
-                        </div>
-                        <div className="bg-white/10 rounded-lg p-3 border border-white/10">
-                          <p className="text-[10px] text-white/50 mb-1">Orders</p>
-                          <p className="text-sm font-bold text-white/90">8,425</p>
-                          <span className="text-[10px] text-green-400 font-semibold">+12.4% ↑</span>
-                        </div>
-                      </div>
-
-                      {/* Chart placeholders */}
-                      <div className="grid grid-cols-2 gap-3">
-                        {/* Revenue Over Time — line chart mockup */}
-                        <div className="bg-white/5 rounded-lg p-3 border border-white/10 col-span-2 sm:col-span-1">
-                          <p className="text-[10px] text-white/40 mb-2 font-medium">Revenue Over Time</p>
-                          <div className="flex items-end gap-1 h-16">
-                            {[30, 42, 38, 55, 48, 62, 58, 70, 65, 78, 72, 85].map((h, i) => (
-                              <div key={i} className="flex-1 bg-secondary/70 rounded-t-sm transition-all" style={{ height: `${h}%` }}></div>
-                            ))}
-                          </div>
-                        </div>
-                        {/* Channel Performance — horizontal bars */}
-                        <div className="bg-white/5 rounded-lg p-3 border border-white/10 col-span-2 sm:col-span-1">
-                          <p className="text-[10px] text-white/40 mb-2 font-medium">Channel Performance</p>
-                          <div className="space-y-2">
-                            {[
-                              { label: 'Direct', w: '78%' },
-                              { label: 'Online', w: '62%' },
-                              { label: 'Partner', w: '45%' },
-                            ].map((ch) => (
-                              <div key={ch.label} className="flex items-center gap-2">
-                                <span className="text-[9px] text-white/40 w-10 text-right">{ch.label}</span>
-                                <div className="flex-1 h-2.5 bg-white/5 rounded-full overflow-hidden">
-                                  <div className="h-full bg-secondary-container/70 rounded-full" style={{ width: ch.w }}></div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Top Products mini-table */}
-                      <div className="bg-white/5 rounded-lg p-3 border border-white/10">
-                        <p className="text-[10px] text-white/40 mb-2 font-medium">Top Products</p>
-                        <div className="space-y-1.5">
-                          {[
-                            { name: 'Product A', rev: '₹48.2L', pct: '+24%' },
-                            { name: 'Product B', rev: '₹35.8L', pct: '+18%' },
-                            { name: 'Product C', rev: '₹29.1L', pct: '+11%' },
-                          ].map((p) => (
-                            <div key={p.name} className="flex items-center justify-between text-[10px]">
-                              <span className="text-white/60">{p.name}</span>
-                              <div className="flex items-center gap-3">
-                                <span className="text-white/80 font-medium">{p.rev}</span>
-                                <span className="text-green-400">{p.pct}</span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <p className="text-[9px] text-white/30 text-center italic">Illustrative sample data — not real metrics</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* 3 Easy Steps */}
-            <div className="mb-20 reveal-on-scroll">
-              <h3 className="text-2xl font-bold text-primary-container text-center mb-10">3 Easy Steps to Get Started</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+              <div className="mt-6 space-y-3 text-sm">
                 {[
-                  { step: '1', icon: 'edit_note', title: 'Apply', desc: 'Register your interest using the application form below.' },
-                  { step: '2', icon: 'mail', title: 'Get Enrollment Details', desc: 'We\u2019ll review your application and send you an enrollment invite within 24 hours.' },
-                  { step: '3', icon: 'school', title: 'Start Learning', desc: 'Complete payment, access the dashboard, and join your first live session this week.' },
-                ].map((s, i) => (
-                  <div key={s.step} className="relative text-center">
-                    {/* Connector line (hidden on mobile, shown on md+) */}
-                    {i < 2 && (
-                      <div className="hidden md:block absolute top-8 left-[calc(50%+2rem)] w-[calc(100%-4rem)] h-0.5 bg-outline-variant/30"></div>
-                    )}
-                    <div className="w-16 h-16 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-4 relative z-10">
-                      <span className="material-symbols-outlined text-secondary text-2xl">{s.icon}</span>
-                    </div>
-                    <span className="text-xs font-bold uppercase tracking-widest text-secondary block mb-2">Step {s.step}</span>
-                    <h4 className="font-bold text-on-surface mb-1">{s.title}</h4>
-                    <p className="text-sm text-on-surface-variant leading-relaxed max-w-xs mx-auto">{s.desc}</p>
+                  "16 live sessions over 8 weeks",
+                  "7 portfolio projects",
+                  "Lifetime recordings",
+                  "Career support included",
+                ].map((item) => (
+                  <div key={item} className="flex items-center gap-2.5 text-white/85">
+                    <span className="material-symbols-outlined text-[18px] text-green-400">check_circle</span>
+                    {item}
                   </div>
                 ))}
               </div>
-            </div>
 
-            {/* Price + CTA */}
-            <div className="max-w-xl mx-auto text-center bg-surface-container-lowest p-8 md:p-10 rounded-3xl border-2 border-secondary shadow-elevated reveal-on-scroll">
-              <span className="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-2">Course Fee</span>
-              <div className="mb-2 flex items-center justify-center">
-                <span className="text-2xl line-through text-outline mr-3">₹5,999</span>
-                <span className="text-4xl font-extrabold text-primary-container">₹2,999</span>
+              <div className="mt-6 pt-5 border-t border-white/15 flex items-center gap-2 text-xs text-white/60">
+                <span className="material-symbols-outlined text-[16px]">event_available</span>
+                Next batch starts {BATCH.startDate}
               </div>
-              <p className="text-sm text-on-surface-variant mb-6">One-time payment · Certification + Interview Prep included</p>
-              <a
-                href="#courses"
-                className="inline-flex items-center justify-center bg-secondary text-on-secondary px-10 py-3.5 rounded-full font-bold text-lg hover:bg-secondary/90 transition-all btn-press shadow-lg"
-              >
-                Enroll Now <span className="material-symbols-outlined ml-2">arrow_forward</span>
-              </a>
-              <p className="text-xs text-outline mt-4">Apply first — pay only after you are selected.</p>
             </div>
+          </div>
+        </section>
 
-            {/* Trust Badges Strip */}
-            <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-              {[
-                { icon: 'emoji_people', label: 'Beginner Friendly' },
-                { icon: 'schedule', label: 'Flexible Learning' },
-                { icon: 'groups', label: 'Learn from Industry Experts' },
-                { icon: 'work', label: 'Career Support' },
-              ].map((badge) => (
-                <div key={badge.label} className="flex flex-col items-center text-center gap-2 py-4">
-                  <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-secondary">{badge.icon}</span>
-                  </div>
-                  <span className="text-sm font-semibold text-on-surface">{badge.label}</span>
+        {/* --------------------------- STATS BAND --------------------------- */}
+        <section className="bg-surface-container-lowest border-b border-outline-variant/30">
+          <div className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-2 md:grid-cols-4 gap-8">
+            {STATS.map((s) => (
+              <div key={s.label} className="text-center">
+                <p className="text-3xl md:text-4xl font-bold text-secondary tracking-tight tabular-nums">
+                  {s.value}
+                </p>
+                <p className="mt-1 text-xs md:text-sm font-medium text-on-surface-variant">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* --------------------------- 2 · PROBLEM -------------------------- */}
+        <section className="py-24 bg-surface">
+          <div className="max-w-7xl mx-auto px-6 reveal-on-scroll">
+            <SectionHeading
+              eyebrow="Why most people stall"
+              title="Most people don’t fail at learning analytics. They fail at finishing."
+              sub="You’ve probably already watched 40 hours of free tutorials. You may have bought a course still sitting at 12% complete. And you still can’t answer the one question every interviewer asks."
+            />
+
+            <blockquote className="max-w-3xl border-l-4 border-secondary bg-surface-container-low rounded-r-2xl px-7 py-6 mb-14">
+              <p className="text-xl md:text-2xl font-medium text-primary-container leading-snug italic">
+                “Walk me through a project you built and the business decision it changed.”
+              </p>
+            </blockquote>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+              {PROBLEMS.map((p) => (
+                <div
+                  key={p.title}
+                  className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6 hover:border-error/40 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-error text-3xl">{p.icon}</span>
+                  <h3 className="mt-4 font-bold text-primary-container leading-snug">{p.title}</h3>
+                  <p className="mt-2 text-sm text-on-surface-variant leading-relaxed">{p.body}</p>
                 </div>
               ))}
             </div>
 
+            <p className="mt-10 text-lg font-semibold text-primary-container">
+              InsightNest is built to fix exactly these four gaps.
+            </p>
           </div>
         </section>
 
-        {/* Outcome Stats Bar — TODO: Replace with real data */}
-        <section className="py-8 bg-surface-container-high border-y border-outline-variant/20">
-          <div className="max-w-5xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            {/* TODO: Replace placeholder numbers with real outcome data */}
-            <div>
-              <span className="text-3xl font-extrabold text-secondary">4</span>
-              <p className="text-sm text-on-surface-variant mt-1">Portfolio Projects</p>
-            </div>
-            <div>
-              <span className="text-3xl font-extrabold text-secondary">6+</span>
-              <p className="text-sm text-on-surface-variant mt-1">Tools Covered</p>
-            </div>
-            <div>
-              {/* TODO: Replace with real graduate count */}
-              <span className="text-3xl font-extrabold text-secondary">—</span>
-              <p className="text-sm text-on-surface-variant mt-1">Graduates to Date</p>
-            </div>
-            <div>
-              {/* TODO: Replace with real salary range data */}
-              <span className="text-3xl font-extrabold text-secondary">—</span>
-              <p className="text-sm text-on-surface-variant mt-1">Avg. Starting Salary</p>
+        {/* ------------------------ 3 · DIFFERENTIATORS --------------------- */}
+        <section className="py-24 bg-surface-container-low border-y border-outline-variant/20">
+          <div className="max-w-7xl mx-auto px-6 reveal-on-scroll">
+            <SectionHeading
+              eyebrow="What makes this different"
+              title="Four things you won’t get from a ₹499 recorded course"
+            />
+            <div className="grid md:grid-cols-2 gap-6">
+              {DIFFERENTIATORS.map((d, i) => (
+                <div
+                  key={d.title}
+                  className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-7 flex gap-5 hover:shadow-card transition-shadow"
+                >
+                  <div className="w-12 h-12 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined">{d.icon}</span>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-secondary tracking-wider mb-1">
+                      {String(i + 1).padStart(2, "0")}
+                    </p>
+                    <h3 className="font-bold text-lg text-primary-container leading-snug">{d.title}</h3>
+                    <p className="mt-2 text-on-surface-variant leading-relaxed">{d.body}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* Courses Section */}
-        <section id="courses" className="py-24 bg-surface-container-low border-y border-outline-variant/20">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-16 reveal-on-scroll">
-              <h2 className="text-4xl font-extrabold text-primary-container mb-4 tracking-tight">Our Programs</h2>
-              <p className="text-on-surface-variant max-w-3xl mx-auto text-lg">
-                Choose the path that fits your career goals. Both programs feature hands-on projects, live sessions, and AI integration.
+        {/* --------------------------- 4 · AUDIENCE ------------------------- */}
+        <section className="py-24 bg-surface">
+          <div className="max-w-7xl mx-auto px-6 reveal-on-scroll">
+            <SectionHeading eyebrow="Who this is for" title="Built for people switching in, not starting over" />
+            <div className="grid lg:grid-cols-2 gap-6">
+              <div className="bg-surface-container-lowest border border-green-200 rounded-2xl p-8">
+                <h3 className="flex items-center gap-2 font-bold text-lg text-primary-container mb-5">
+                  <span className="material-symbols-outlined text-green-600">check_circle</span>
+                  This is for you if
+                </h3>
+                <ul className="space-y-4">
+                  {AUDIENCE_YES.map((item) => (
+                    <li key={item} className="flex gap-3 text-on-surface leading-relaxed">
+                      <span className="material-symbols-outlined text-green-600 text-[20px] mt-0.5 shrink-0">done</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="bg-surface-container-lowest border border-outline-variant/40 rounded-2xl p-8">
+                <h3 className="flex items-center gap-2 font-bold text-lg text-primary-container mb-5">
+                  <span className="material-symbols-outlined text-error">cancel</span>
+                  This is not for you if
+                </h3>
+                <ul className="space-y-4">
+                  {AUDIENCE_NO.map((item) => (
+                    <li key={item} className="flex gap-3 text-on-surface-variant leading-relaxed">
+                      <span className="material-symbols-outlined text-error text-[20px] mt-0.5 shrink-0">close</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* -------------------------- 5 · CURRICULUM ------------------------ */}
+        <section id="curriculum" className="py-24 bg-surface-container-low border-y border-outline-variant/20 scroll-mt-24">
+          <div className="max-w-7xl mx-auto px-6 reveal-on-scroll">
+            <SectionHeading
+              eyebrow="The curriculum"
+              title="8 weeks. 7 skill tracks. Beginner to advanced."
+              sub="Tap any track to see every topic covered inside it."
+            />
+            <div className="space-y-4">
+              {TRACKS.map((track, i) => (
+                <TrackAccordion key={track.id} track={track} index={i} />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* --------------------------- 6 · PROJECTS ------------------------- */}
+        <section id="projects" className="py-24 bg-surface scroll-mt-24">
+          <div className="max-w-7xl mx-auto px-6 reveal-on-scroll">
+            <SectionHeading
+              eyebrow="Projects"
+              title="A portfolio, not a certificate"
+              sub="3 mini projects to build the muscle, then 4 major end-to-end projects that become your interview material."
+            />
+
+            <div className="grid md:grid-cols-3 gap-5 mb-14">
+              {MINI_PROJECTS.map((p, i) => (
+                <div key={p.title} className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6">
+                  <span className="text-xs font-bold text-secondary tracking-wider">MINI {i + 1}</span>
+                  <h3 className="mt-2 font-bold text-primary-container leading-snug">{p.title}</h3>
+                  <p className="mt-2.5 text-sm text-on-surface-variant leading-relaxed">{p.body}</p>
+                  <p className="mt-4 text-xs text-outline">{p.skills}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              {MAJOR_PROJECTS.map((p, i) => (
+                <div
+                  key={p.title}
+                  className="relative bg-primary-container text-white rounded-3xl p-8 overflow-hidden group"
+                >
+                  <div className="absolute -top-16 -right-16 w-48 h-48 bg-secondary/25 rounded-full blur-3xl group-hover:bg-secondary/40 transition-colors" />
+                  <div className="relative">
+                    <span className="text-xs font-bold text-secondary-container tracking-wider">
+                      MAJOR PROJECT {i + 1}
+                    </span>
+                    <h3 className="mt-2 text-2xl font-bold leading-snug">{p.title}</h3>
+                    <p className="mt-3 text-white/70 leading-relaxed">{p.body}</p>
+                    <div className="mt-5 pt-5 border-t border-white/15 flex items-start gap-2 text-sm text-white/80">
+                      <span className="material-symbols-outlined text-[18px] text-secondary-container shrink-0">
+                        inventory_2
+                      </span>
+                      {p.deliverable}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ------------------------ 7 · LIVE SESSIONS ----------------------- */}
+        <section className="py-24 bg-surface-container-low border-y border-outline-variant/20">
+          <div className="max-w-7xl mx-auto px-6 reveal-on-scroll">
+            <SectionHeading
+              eyebrow="Live weekend sessions"
+              title="Every Saturday & Sunday. Live. With a human."
+            />
+
+            <div className="grid md:grid-cols-2 gap-6 mb-10">
+              {[
+                {
+                  day: "Saturday",
+                  icon: "cast_for_education",
+                  title: "Concept + live build",
+                  body: "A new topic taught by working through a real dataset on screen — you follow along, not watch a slide deck.",
+                },
+                {
+                  day: "Sunday",
+                  icon: "groups",
+                  title: "Project lab + doubt clearing",
+                  body: "You build, we review, and every question gets answered. No question is too basic.",
+                },
+              ].map((s) => (
+                <div key={s.day} className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-8">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="material-symbols-outlined text-secondary text-3xl">{s.icon}</span>
+                    <span className="text-xs font-bold uppercase tracking-[0.18em] text-secondary">{s.day}</span>
+                  </div>
+                  <h3 className="font-bold text-xl text-primary-container">{s.title}</h3>
+                  <p className="mt-2 text-on-surface-variant leading-relaxed">{s.body}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+              {[
+                { icon: "schedule", label: "Batch timing", value: BATCH.timing },
+                { icon: "calendar_month", label: "Duration", value: "8 weeks · 16 live sessions" },
+                { icon: "translate", label: "Language", value: BATCH.language },
+                { icon: "event_available", label: "Next batch starts", value: BATCH.startDate },
+              ].map((m) => (
+                <div key={m.label} className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-5">
+                  <span className="material-symbols-outlined text-secondary text-[22px]">{m.icon}</span>
+                  <p className="mt-2 text-xs font-bold uppercase tracking-wider text-on-surface-variant">{m.label}</p>
+                  <p className="mt-1 font-semibold text-primary-container text-sm leading-snug">{m.value}</p>
+                </div>
+              ))}
+            </div>
+
+            <ul className="grid sm:grid-cols-2 gap-x-8 gap-y-3 max-w-4xl">
+              {[
+                "Live teaching, never a pre-recorded replay",
+                "Screen-share project building you can code along with",
+                "Open doubt-solving in every session",
+                "Code, datasets and notes shared after every class",
+                "Full recording of every session, so a missed weekend doesn’t set you back",
+                "A private community group for the days in between",
+              ].map((item) => (
+                <li key={item} className="flex gap-2.5 text-on-surface leading-relaxed">
+                  <span className="material-symbols-outlined text-secondary text-[20px] mt-0.5 shrink-0">check</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* ------------------------ 8 · CAREER LAUNCHPAD -------------------- */}
+        <section className="py-24 bg-surface">
+          <div className="max-w-7xl mx-auto px-6 reveal-on-scroll">
+            <SectionHeading
+              eyebrow="Career launchpad"
+              title="The part every other course leaves out"
+              sub="Learning the tools gets you competent. This gets you hired."
+            />
+            <div className="grid md:grid-cols-2 gap-6">
+              {CAREER_BLOCKS.map((block) => (
+                <div key={block.title} className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-7">
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="w-11 h-11 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined">{block.icon}</span>
+                    </div>
+                    <h3 className="font-bold text-lg text-primary-container">{block.title}</h3>
+                  </div>
+                  <ul className="space-y-2.5">
+                    {block.items.map((item) => (
+                      <li key={item} className="flex gap-2.5 text-sm text-on-surface-variant leading-relaxed">
+                        <span className="mt-2 w-1.5 h-1.5 rounded-full bg-secondary shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ------------------------- 9 · WHAT YOU GET ----------------------- */}
+        <section className="py-24 bg-surface-container-low border-y border-outline-variant/20">
+          <div className="max-w-5xl mx-auto px-6 reveal-on-scroll">
+            <SectionHeading eyebrow="What you get" title="Everything included, one price" />
+            <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-3xl overflow-hidden">
+              {INCLUDED.map((item) => (
+                <div
+                  key={item}
+                  className="flex items-center justify-between gap-4 px-7 py-4 border-b border-outline-variant/20"
+                >
+                  <span className="text-on-surface">{item}</span>
+                  <span className="material-symbols-outlined text-green-600 shrink-0">check_circle</span>
+                </div>
+              ))}
+              <div className="flex items-center justify-between gap-4 px-7 py-6 bg-primary-container text-white">
+                <span className="font-bold text-lg">Total</span>
+                <span className="font-bold text-2xl">₹{PRICE.now.toLocaleString("en-IN")}</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* -------------------------- 10 · COMPARISON ----------------------- */}
+        <section className="py-24 bg-surface">
+          <div className="max-w-7xl mx-auto px-6 reveal-on-scroll">
+            <SectionHeading
+              eyebrow="Comparison"
+              title="How InsightNest compares to the big institutes"
+              sub="Category ranges, drawn from publicly reported 2026 market data. Verify current pricing on each provider’s own site."
+            />
+
+            <div className="overflow-x-auto rounded-2xl border border-outline-variant/30 bg-surface-container-lowest">
+              <table className="w-full text-sm min-w-[52rem]">
+                <thead>
+                  <tr className="border-b border-outline-variant/30">
+                    <th className="text-left font-semibold text-on-surface-variant px-5 py-4 w-56"> </th>
+                    <th className="text-left font-bold text-white px-5 py-4 bg-primary-container">InsightNest</th>
+                    {COMPARISON.columns.map((c) => (
+                      <th key={c} className="text-left font-semibold text-on-surface-variant px-5 py-4">
+                        {c}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {COMPARISON.rows.map((row) => (
+                    <tr key={row.label} className="border-b border-outline-variant/15 last:border-0">
+                      <td className="px-5 py-3.5 font-semibold text-primary-container">{row.label}</td>
+                      <td className="px-5 py-3.5 font-bold text-secondary bg-secondary/5">{row.ours}</td>
+                      {row.others.map((cell, i) => (
+                        <td key={i} className="px-5 py-3.5 text-on-surface-variant">
+                          {cell}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mt-8 max-w-3xl border-l-4 border-secondary bg-surface-container-low rounded-r-2xl px-7 py-6">
+              <p className="text-on-surface leading-relaxed">
+                The big programs are genuinely good — and genuinely expensive, often costing 20–100× more and
+                taking 3–6× longer. Much of that cost goes into brand marketing, large sales teams and long
+                timelines.
+              </p>
+              <p className="mt-3 text-on-surface leading-relaxed">
+                InsightNest strips it back to what actually gets you hired: the same core skill stack, real
+                projects, live weekend teaching and hands-on career support — in 2 months, for ₹
+                {PRICE.now.toLocaleString("en-IN")}.
               </p>
             </div>
-
-            <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-              {/* Data Analyst Course Card */}
-              <div className="bg-surface-container-lowest p-8 rounded-3xl border border-outline-variant/30 shadow-card flex flex-col justify-between hover:border-secondary transition-all group">
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary">
-                      <span className="material-symbols-outlined text-2xl">analytics</span>
-                    </div>
-                    <div className="inline-flex items-center gap-1.5 bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
-                      <span className="material-symbols-outlined text-xs">lock</span>
-                      Running &middot; Admissions Closed
-                    </div>
-                  </div>
-                  
-                  <h3 className="text-2xl font-bold text-primary-container mb-3 group-hover:text-secondary transition-colors">Data Analyst Bootcamp</h3>
-                  <p className="text-sm text-secondary font-semibold mb-4">The Generative AI Data Analytics &amp; Engineering Accelerator</p>
-                  
-                  <p className="text-sm text-on-surface-variant leading-relaxed mb-6">
-                    Master Excel, SQL, Python, Power BI, and Microsoft Fabric. Build a robust portfolio and learn to use AI to 10x your productivity.
-                  </p>
-                </div>
-                
-                <div className="mt-6 pt-6 border-t border-outline-variant/20">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm font-semibold text-on-surface-variant">4 Weeks &middot; Live</div>
-                    <Link href="/courses/data-analyst" className="bg-secondary text-on-secondary px-5 py-2 rounded-full font-semibold hover:bg-secondary/90 transition-all btn-press shadow-sm text-sm">
-                      View Course
-                    </Link>
-                  </div>
-                </div>
-              </div>
-
-              {/* Business Analyst Course Card */}
-              <div className="bg-surface-container-lowest p-8 rounded-3xl border border-outline-variant/30 shadow-card flex flex-col justify-between opacity-80">
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="w-12 h-12 rounded-xl bg-outline-variant/20 flex items-center justify-center text-outline">
-                      <span className="material-symbols-outlined text-2xl">trending_up</span>
-                    </div>
-                    <div className="inline-flex items-center gap-1.5 bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
-                      <span className="material-symbols-outlined text-xs">hourglass_empty</span>
-                      Coming Soon
-                    </div>
-                  </div>
-                  
-                  <h3 className="text-2xl font-bold text-outline mb-3">Business Analytics</h3>
-                  <p className="text-sm text-outline font-semibold mb-4">Mastering Business Intelligence and Strategy</p>
-                  
-                  <p className="text-sm text-on-surface-variant leading-relaxed mb-6">
-                    {/* TODO: Update description once course details are finalized */}
-                    Learn how to translate data into actionable business strategies. Focus on storytelling, stakeholder management, and advanced visualization.
-                  </p>
-                </div>
-                
-                <div className="mt-6 pt-6 border-t border-outline-variant/20">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm font-semibold text-outline">Duration TBD</div>
-                    <Link href="/courses/business-analytics" className="bg-secondary text-on-secondary px-5 py-2 rounded-full font-semibold hover:bg-secondary/90 transition-all btn-press shadow-sm text-sm">
-                      Join Waitlist
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
 
-        {/* Tech Stack Section */}
-        <section className="py-24 bg-surface">
-          <div className="max-w-7xl mx-auto px-6 text-center">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-primary-container mb-4">Master the Industry-Standard Stack</h2>
-            <p className="text-on-surface-variant max-w-2xl mx-auto mb-16 text-lg">Learn the tools that hiring managers actually look for — with AI assistants helping you every step of the way.</p>
-            
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+        {/* --------------------------- 11 · PRICING ------------------------- */}
+        <div id="pricing" className="scroll-mt-20">
+          <CourseEnrollmentSection courseSlug="data-analyst" />
+        </div>
+
+        <div className="bg-surface py-10 text-center px-6">
+          <p className="text-on-surface-variant">
+            That’s <span className="font-bold text-primary-container">₹{Math.round(PRICE.now / 16)} per live session</span>{" "}
+            — less than a single hour with a private tutor.
+          </p>
+        </div>
+
+        {/* ------------------------- 12 · CREDIBILITY ----------------------- */}
+        <section className="py-24 bg-surface-container-low border-y border-outline-variant/20">
+          <div className="max-w-4xl mx-auto px-6 text-center reveal-on-scroll">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-secondary mb-3">
+              Track record
+            </p>
+            <h2 className="text-3xl md:text-4xl font-bold text-primary-container tracking-tight text-balance">
+              487+ students have already learned with us
+            </h2>
+            <p className="mt-5 text-lg text-on-surface-variant leading-relaxed">
+              This program is the version we arrived at after teaching hundreds of learners — the same
+              curriculum, tightened around what actually got people interviews, and the gaps that kept
+              showing up filled in.
+            </p>
+
+            <div className="mt-10 grid sm:grid-cols-3 gap-4 text-left">
               {[
-                { name: 'Excel', icon: 'table_view', desc: 'Data Modeling & Analysis', color: 'from-emerald-500/10 to-teal-500/5', hoverBorder: 'hover:border-emerald-500/50 hover:shadow-emerald-500/5', iconColor: 'text-emerald-600', iconBg: 'bg-emerald-50 group-hover:bg-emerald-100' },
-                { name: 'SQL', icon: 'database', desc: 'Queries & Databases', color: 'from-blue-500/10 to-indigo-500/5', hoverBorder: 'hover:border-blue-500/50 hover:shadow-blue-500/5', iconColor: 'text-blue-600', iconBg: 'bg-blue-50 group-hover:bg-blue-100' },
-                { name: 'Python', icon: 'terminal', desc: 'Scripting & Automation', color: 'from-sky-500/10 to-blue-600/5', hoverBorder: 'hover:border-sky-500/50 hover:shadow-sky-500/5', iconColor: 'text-sky-600', iconBg: 'bg-sky-50 group-hover:bg-sky-100' },
-                { name: 'Power BI', icon: 'bar_chart', desc: 'Dashboards & DAX', color: 'from-amber-500/10 to-yellow-500/5', hoverBorder: 'hover:border-amber-500/50 hover:shadow-amber-500/5', iconColor: 'text-amber-600', iconBg: 'bg-amber-50 group-hover:bg-amber-100' },
-                { name: 'Fabric', icon: 'hub', desc: 'Cloud Data Platform', color: 'from-violet-500/10 to-purple-500/5', hoverBorder: 'hover:border-violet-500/50 hover:shadow-violet-500/5', iconColor: 'text-violet-600', iconBg: 'bg-violet-50 group-hover:bg-violet-100' },
-                { name: 'AI Tools', icon: 'smart_toy', desc: 'ChatGPT, Copilot & More', color: 'from-fuchsia-500/10 to-pink-500/5', hoverBorder: 'hover:border-fuchsia-500/50 hover:shadow-fuchsia-500/5', iconColor: 'text-fuchsia-600', iconBg: 'bg-fuchsia-50 group-hover:bg-fuchsia-100' }
-              ].map((tool) => (
-                <div key={tool.name} className={`relative overflow-hidden bg-gradient-to-br ${tool.color} border border-outline-variant/30 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group ${tool.hoverBorder}`}>
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none group-hover:bg-white/20 transition-all"></div>
-                  <div className={`w-14 h-14 mx-auto ${tool.iconBg} flex items-center justify-center rounded-xl mb-4 transition-colors duration-300`}>
-                    <span className={`material-symbols-outlined text-3xl transition-transform duration-300 group-hover:scale-110 ${tool.iconColor}`}>{tool.icon}</span>
-                  </div>
-                  <h3 className="font-bold text-on-surface text-lg mb-1">{tool.name}</h3>
-                  <p className="text-xs text-on-surface-variant font-medium">{tool.desc}</p>
+                {
+                  icon: "school",
+                  title: "Taught, not theorised",
+                  body: "Every track has been run with real students and revised from their questions.",
+                },
+                {
+                  icon: "group",
+                  title: "Small live batches",
+                  body: "Kept deliberately small so doubt-solving stays direct.",
+                },
+                {
+                  icon: "forum",
+                  title: "Direct instructor access",
+                  body: "You ask the person teaching, not a support ticket queue.",
+                },
+              ].map((b) => (
+                <div key={b.title} className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6">
+                  <span className="material-symbols-outlined text-secondary">{b.icon}</span>
+                  <h3 className="mt-2 font-bold text-primary-container">{b.title}</h3>
+                  <p className="mt-1 text-sm text-on-surface-variant leading-relaxed">{b.body}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Brand Representation Banner */}
-        <section className="py-12 bg-surface border-y border-outline-variant/10">
-          <div className="max-w-7xl mx-auto px-6 text-center flex flex-col items-center">
-            <Logo variant="img2" className="h-32 md:h-40 w-auto mb-8 opacity-100" />
-            <h3 className="text-3xl md:text-5xl font-extrabold tracking-widest text-primary-container mt-6 uppercase">InsightNest AI Academy</h3>
+        {/* ----------------------------- 13 · FAQ --------------------------- */}
+        <section id="faq" className="py-24 bg-surface scroll-mt-24">
+          <div className="max-w-4xl mx-auto px-6 reveal-on-scroll">
+            <SectionHeading eyebrow="FAQ" title="Questions people actually ask" />
+            <div>
+              {FAQS.map((item) => (
+                <Faq key={item.q} item={item} />
+              ))}
+            </div>
+
+            <div className="mt-10 bg-surface-container-low rounded-2xl p-6 flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <p className="font-semibold text-primary-container">Still have a question?</p>
+                <p className="text-sm text-on-surface-variant">We usually reply within a few hours.</p>
+              </div>
+              <a
+                href={BATCH.whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-secondary text-on-secondary px-6 py-3 rounded-xl font-bold hover:bg-secondary/90 transition-all btn-press shadow-md flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-[20px]">chat</span>
+                Talk to us on WhatsApp
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* -------------------------- 14 · FINAL CTA ------------------------ */}
+        <section className="relative overflow-hidden bg-primary-container text-white py-24">
+          <div className="absolute -top-32 left-1/3 w-[34rem] h-[34rem] bg-secondary/25 rounded-full blur-[130px] pointer-events-none" />
+          <div className="relative max-w-4xl mx-auto px-6 text-center">
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-[1.1] text-balance">
+              Two months from now, you’ll either have a portfolio — or another excuse.
+            </h2>
+            <p className="mt-6 text-lg text-white/70 leading-relaxed">
+              The next batch starts {BATCH.startDate}. Sixteen live sessions, seven projects, one skill stack,
+              and a career plan you can actually execute.
+            </p>
+
+            <div className="mt-8 flex items-center justify-center gap-3">
+              <span className="text-2xl text-white/40 line-through">₹{PRICE.was.toLocaleString("en-IN")}</span>
+              <span className="text-5xl font-bold">₹{PRICE.now.toLocaleString("en-IN")}</span>
+            </div>
+            <p className="mt-2 text-white/60 text-sm">Everything included.</p>
+
+            <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
+              <a
+                href="#pricing"
+                className="bg-secondary text-on-secondary px-8 py-4 rounded-xl font-bold text-lg hover:bg-secondary/90 transition-all btn-press shadow-lg shadow-secondary/25"
+              >
+                Enroll Now
+              </a>
+              <a
+                href={BATCH.whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="border border-white/25 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white/10 transition-all backdrop-blur-sm"
+              >
+                Talk to Us on WhatsApp
+              </a>
+            </div>
+
+            <p className="mt-8 text-sm text-white/50">
+              Questions? {BATCH.whatsapp} ·{" "}
+              <a href={`mailto:${BATCH.email}`} className="underline hover:text-white">
+                {BATCH.email}
+              </a>
+            </p>
           </div>
         </section>
       </main>
 
+      {/* Sticky mobile CTA */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface/95 backdrop-blur-md border-t border-outline-variant/30 px-4 py-3 flex items-center justify-between gap-4">
+        <div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-xl font-bold text-primary-container">₹{PRICE.now.toLocaleString("en-IN")}</span>
+            <span className="text-sm text-outline line-through">₹{PRICE.was.toLocaleString("en-IN")}</span>
+          </div>
+          <p className="text-[11px] text-on-surface-variant">Everything included</p>
+        </div>
+        <a
+          href="#pricing"
+          className="bg-secondary text-on-secondary px-6 py-3 rounded-xl font-bold text-sm shadow-md btn-press"
+        >
+          Enroll Now
+        </a>
+      </div>
+
       {/* Footer */}
       <footer className="bg-surface-container-low text-on-surface-variant py-16 border-t border-outline-variant/30">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12">
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Link href="/" className="flex items-center">
-                <Logo variant="img2" className="h-14 w-auto" />
-              </Link>
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
+          <div className="space-y-4 md:col-span-2">
+            <Link href="/" className="flex items-center">
+              <Logo variant="img2" className="h-14 w-auto" />
+            </Link>
+            <p className="text-sm max-w-sm">
+              Live, project-first data analytics training. Built for people switching careers on weekends.
+            </p>
+            <div className="text-sm space-y-1 pt-2">
+              <p className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[18px]">chat</span>
+                {BATCH.whatsapp}
+              </p>
+              <p className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[18px]">mail</span>
+                <a href={`mailto:${BATCH.email}`} className="hover:text-secondary transition-colors">
+                  {BATCH.email}
+                </a>
+              </p>
             </div>
-            <p className="text-sm">Empowering next-gen analysts with AI-powered education and career transformation.</p>
           </div>
           <div>
-            <h4 className="text-on-surface font-bold mb-4">Courses</h4>
+            <h4 className="text-on-surface font-bold mb-4">Program</h4>
             <ul className="space-y-3 text-sm">
-              <li><a href="#courses" className="hover:text-secondary transition-colors">All Courses</a></li>
-              <li><Link href="/courses/data-analyst" className="hover:text-secondary transition-colors">Data Analyst Bootcamp</Link></li>
+              <li><a href="#curriculum" className="hover:text-secondary transition-colors">Curriculum</a></li>
+              <li><a href="#projects" className="hover:text-secondary transition-colors">Projects</a></li>
+              <li><a href="#pricing" className="hover:text-secondary transition-colors">Pricing</a></li>
+              <li><a href="#faq" className="hover:text-secondary transition-colors">FAQ</a></li>
             </ul>
           </div>
           <div>
@@ -473,12 +804,12 @@ export default function LandingPage() {
             <ul className="space-y-3 text-sm">
               <li><Link href="/about" className="hover:text-secondary transition-colors">About Us</Link></li>
               <li><Link href="/privacy" className="hover:text-secondary transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="hover:text-secondary transition-colors">Terms of Service</Link></li>
+              <li><Link href="/terms" className="hover:text-secondary transition-colors">Terms &amp; Refunds</Link></li>
             </ul>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto px-6 mt-16 pt-8 border-t border-outline-variant/30 flex flex-col md:flex-row items-center justify-between gap-4 text-sm">
-          <p>&copy; 2026 InsightNest AI. All rights reserved.</p>
+        <div className="max-w-7xl mx-auto px-6 mt-16 pt-8 border-t border-outline-variant/30 text-sm">
+          <p>&copy; 2026 InsightNest. All rights reserved.</p>
         </div>
       </footer>
     </div>

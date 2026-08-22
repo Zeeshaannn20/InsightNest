@@ -56,7 +56,7 @@ function LoginContent() {
 
       if (!profile.is_active) {
         setError(
-          "Your account is awaiting approval. We'll email you as soon as it's activated."
+          "This account has been deactivated. Please contact support@insightnest.in."
         );
         await supabase.auth.signOut();
         setLoading(false);
