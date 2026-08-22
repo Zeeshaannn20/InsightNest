@@ -64,11 +64,21 @@ export default function SignupPage() {
       return;
     }
 
-    // With email confirmation switched on, there is no session yet.
+    // Supabase only returns a session here when its "Confirm email" setting is
+    // off. Accounts are auto-confirmed in the database either way, so sign in
+    // directly rather than sending the person away to find an email.
     if (!data.session) {
-      setOutcome("check_email");
-      setLoading(false);
-      return;
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+
+      if (signInError) {
+        // Sign-in genuinely blocked — fall back to asking for confirmation.
+        setOutcome("check_email");
+        setLoading(false);
+        return;
+      }
     }
 
     // Accounts are active on creation, so send them straight in. Course content
