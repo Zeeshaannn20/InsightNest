@@ -55,7 +55,16 @@ export default function SignupPage() {
       return;
     }
 
-    // With email confirmation on, there is no session yet.
+    // Supabase deliberately returns success with no session when the address is
+    // already registered, so signup responses can't be used to discover which
+    // emails have accounts. It signals it with an empty identities array.
+    if (data.user && (data.user.identities?.length ?? 0) === 0) {
+      setError("An account with this email already exists. Try signing in instead.");
+      setLoading(false);
+      return;
+    }
+
+    // With email confirmation switched on, there is no session yet.
     if (!data.session) {
       setOutcome("check_email");
       setLoading(false);
