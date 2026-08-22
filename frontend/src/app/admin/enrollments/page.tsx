@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/lib/hooks/useAuth";
 import type { EnrollmentStatus } from "@/lib/types/database";
+import { apiBase } from "@/lib/api";
 
 type Row = {
   id: string;
@@ -118,7 +119,7 @@ export default function AdminEnrollmentsPage() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001"}/api/admin/grant-access`,
+        `${apiBase()}/api/admin/grant-access`,
         {
           method: "POST",
           headers: {

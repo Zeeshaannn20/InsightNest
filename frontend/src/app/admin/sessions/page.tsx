@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { LiveSession, Course } from "@/lib/types/database";
+import { apiBase } from "@/lib/api";
 
 export default function AdminSessionsPage() {
   const [sessions, setSessions] = useState<LiveSession[]>([]);
@@ -17,7 +18,7 @@ export default function AdminSessionsPage() {
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
   const [checkingGoogle, setCheckingGoogle] = useState(true);
   const [googleEmail, setGoogleEmail] = useState<string | null>(null);
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5001";
+  const backendUrl = apiBase();
   const [googleAuthUrl, setGoogleAuthUrl] = useState(`${backendUrl}/api/auth/google`);
 
   // Modal states

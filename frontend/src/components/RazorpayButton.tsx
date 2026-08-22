@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { apiBase } from "@/lib/api";
 
 interface RazorpayButtonProps {
   courseId: string;
@@ -35,7 +36,7 @@ export default function RazorpayButton({ courseId, courseTitle, courseSlug, pric
       }
 
       // 2. Create Order on Backend
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5001';
+      const apiUrl = apiBase();
       const response = await fetch(`${apiUrl}/api/enrollment/create-order`, {
         method: "POST",
         headers: {
@@ -71,7 +72,7 @@ export default function RazorpayButton({ courseId, courseTitle, courseSlug, pric
         handler: async function (response: any) {
           try {
             // Verify payment signature asynchronously
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5001';
+            const apiUrl = apiBase();
             const verifyRes = await fetch(`${apiUrl}/api/enrollment/verify-payment`, {
               method: "POST",
               headers: {
@@ -108,7 +109,16 @@ export default function RazorpayButton({ courseId, courseTitle, courseSlug, pric
 
     } catch (err) {
       console.error("Payment initiation failed:", err);
-      alert("Something went wrong initiating the payment.");
+      // A network-level throw means the request never reached the backend —
+      // usually the API is unreachable rather than the payment being refused.
+      const unreachable = err instanceof TypeError;
+      alert(
+        unreachable
+          ? "We couldn't reach the payment service. Please try again in a few minutes, or contact support@insightnest.in and we'll get you enrolled."
+          : `We couldn't start the payment: ${
+              err instanceof Error ? err.message : "unknown error"
+            }. Please contact support@insightnest.in if this continues.`
+      );
     } finally {
       setLoading(false);
     }
