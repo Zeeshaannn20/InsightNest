@@ -51,10 +51,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing payment entity" }, { status: 400 });
   }
 
-  // Notes live on the payment for payment.captured, but on the order for
-  // order.paid — check both before giving up.
-  const notes =
-    payment.notes?.user_id ? payment.notes : body.payload?.order?.entity?.notes;
+  // create-order attaches user_id/course_id to the ORDER. order.paid carries the
+  // order in its payload; payment.captured does not, and Razorpay does not
+  // reliably copy order notes onto the payment. Fetch the order as a last resort
+  // so enrolment never depends on which event happens to arrive.
+  let notes = payment.notes?.user_id ? payment.notes : body.payload?.order?.entity?.notes;
+
+  if (!notes?.user_id && payment.order_id) {
+    notes = await fetchOrderNotes(payment.order_id);
+  }
 
   if (!notes?.user_id || !notes?.course_id) {
     console.error("Webhook missing user_id/course_id in notes", { event, payment_id: payment.id });
@@ -153,5 +158,36 @@ async function sendWelcomeEmail(
     });
   } catch (error) {
     console.error("Welcome email failed (non-fatal):", error);
+  }
+}
+
+/**
+ * Read the notes off a Razorpay order. The webhook only reaches this when the
+ * event payload did not carry them. Returns null rather than throwing so a
+ * Razorpay API blip surfaces as a retryable 400, not a 500 loop.
+ */
+async function fetchOrderNotes(orderId: string): Promise<any | null> {
+  const keyId = process.env.RAZORPAY_KEY_ID?.trim();
+  const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();
+  if (!keyId || !keySecret) {
+    console.error("Cannot fetch order notes: Razorpay keys are not configured");
+    return null;
+  }
+
+  try {
+    const credentials = Buffer.from(`${keyId}:${keySecret}`).toString("base64");
+    const response = await fetch(`https://api.razorpay.com/v1/orders/${orderId}`, {
+      headers: { Authorization: `Basic ${credentials}` },
+    });
+
+    if (!response.ok) {
+      console.error("Could not fetch Razorpay order", orderId, response.status);
+      return null;
+    }
+
+    return (await response.json())?.notes ?? null;
+  } catch (error) {
+    console.error("Error fetching Razorpay order", orderId, error);
+    return null;
   }
 }
