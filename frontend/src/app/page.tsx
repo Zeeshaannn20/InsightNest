@@ -84,7 +84,7 @@ function TrackAccordion({ track, index }: { track: (typeof TRACKS)[number]; inde
         <span className="flex-1 min-w-0">
           <span className="block font-bold text-primary-container text-lg leading-snug">{track.name}</span>
           <span className="block text-sm text-on-surface-variant">
-            {track.summary} · {count} topics
+            {track.summary} — {count} lessons
           </span>
         </span>
         <span
@@ -106,7 +106,13 @@ function TrackAccordion({ track, index }: { track: (typeof TRACKS)[number]; inde
               <ul className="space-y-2.5">
                 {group.items.map((item) => (
                   <li key={item} className="flex gap-2.5 text-sm text-on-surface leading-relaxed">
-                    <span className="mt-2 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: track.hue }} />
+                    <span
+                      className="material-symbols-outlined text-[18px] leading-5 shrink-0"
+                      style={{ color: track.hue }}
+                      aria-hidden="true"
+                    >
+                      check
+                    </span>
                     {item}
                   </li>
                 ))}
@@ -181,6 +187,7 @@ export default function DataAnalystCoursePage() {
             <a href="#projects" className="text-on-surface hover:text-secondary font-medium transition-colors">Projects</a>
             <a href="#pricing" className="text-on-surface hover:text-secondary font-medium transition-colors">Pricing</a>
             <a href="#faq" className="text-on-surface hover:text-secondary font-medium transition-colors">FAQ</a>
+            <Link href="/articles" className="text-on-surface hover:text-secondary font-medium transition-colors">Articles</Link>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/login" className="text-on-surface hover:text-secondary font-medium transition-colors hidden md:block">Login</Link>
@@ -201,7 +208,7 @@ export default function DataAnalystCoursePage() {
             <div>
               <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide backdrop-blur-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                Live Weekend Batch · Beginner to Advanced · 2 Months
+                Live weekend batch, beginner to advanced, 2 months
               </div>
 
               <h1 className="mt-6 text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] text-balance">
@@ -209,9 +216,8 @@ export default function DataAnalystCoursePage() {
               </h1>
 
               <p className="mt-6 text-lg md:text-xl text-white/75 leading-relaxed max-w-2xl">
-                Excel, SQL, Python, Statistics, Power BI and Data Storytelling — taught live, built around
-                7 real projects, and finished with a resume, a LinkedIn profile and an interview plan that
-                actually gets replies.
+                Excel, SQL, Python, Statistics, Power BI and Data Storytelling. Taught live, built on
+                7 real projects, finished with a resume and an interview plan.
               </p>
 
               <div className="mt-9 flex flex-wrap items-center gap-4">
@@ -219,7 +225,7 @@ export default function DataAnalystCoursePage() {
                   href="#pricing"
                   className="bg-secondary text-on-secondary px-7 py-3.5 rounded-xl font-bold text-base hover:bg-secondary/90 transition-all btn-press shadow-lg shadow-secondary/25"
                 >
-                  Enroll Now — ₹{PRICE.now.toLocaleString("en-IN")}
+                  Enroll Now for ₹{PRICE.now.toLocaleString("en-IN")}
                 </a>
                 <a
                   href="#curriculum"
@@ -230,8 +236,7 @@ export default function DataAnalystCoursePage() {
               </div>
 
               <p className="mt-6 text-sm text-white/55 leading-relaxed">
-                487+ students taught · Live doubt-solving every weekend · Lifetime access to recordings ·
-                7 portfolio projects · Career support included
+                487+ students taught. Lifetime recordings, 7 portfolio projects, career support included.
               </p>
             </div>
 
@@ -292,7 +297,7 @@ export default function DataAnalystCoursePage() {
             <SectionHeading
               eyebrow="Why most people stall"
               title="Most people don’t fail at learning analytics. They fail at finishing."
-              sub="You’ve probably already watched 40 hours of free tutorials. You may have bought a course still sitting at 12% complete. And you still can’t answer the one question every interviewer asks."
+              sub="You’ve watched the free tutorials. You may have a course sitting at 12% complete. And you still can’t answer the one question every interviewer asks."
             />
 
             <blockquote className="max-w-3xl border-l-4 border-secondary bg-surface-container-low rounded-r-2xl px-7 py-6 mb-14">
@@ -409,7 +414,7 @@ export default function DataAnalystCoursePage() {
             <SectionHeading
               eyebrow="Projects"
               title="A portfolio, not a certificate"
-              sub="3 mini projects to build the muscle, then 4 major end-to-end projects that become your interview material."
+              sub="3 mini projects to build the muscle, then 4 major ones that become your interview material."
             />
 
             <div className="grid md:grid-cols-3 gap-5 mb-14">
@@ -486,7 +491,7 @@ export default function DataAnalystCoursePage() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
               {[
                 { icon: "schedule", label: "Batch timing", value: BATCH.timing },
-                { icon: "calendar_month", label: "Duration", value: "8 weeks · 16 live sessions" },
+                { icon: "calendar_month", label: "Duration", value: "8 weeks, 16 live sessions" },
                 { icon: "translate", label: "Language", value: BATCH.language },
                 { icon: "event_available", label: "Next batch starts", value: BATCH.startDate },
               ].map((m) => (
@@ -609,14 +614,12 @@ export default function DataAnalystCoursePage() {
 
             <div className="mt-8 max-w-3xl border-l-4 border-secondary bg-surface-container-low rounded-r-2xl px-7 py-6">
               <p className="text-on-surface leading-relaxed">
-                The big programs are genuinely good — and genuinely expensive, often costing 20–100× more and
-                taking 3–6× longer. Much of that cost goes into brand marketing, large sales teams and long
-                timelines.
+                The big programs are good, and expensive: often 20–100× the cost and 3–6× the time. Much of
+                that goes into brand marketing and large sales teams.
               </p>
               <p className="mt-3 text-on-surface leading-relaxed">
-                InsightNest strips it back to what actually gets you hired: the same core skill stack, real
-                projects, live weekend teaching and hands-on career support — in 2 months, for ₹
-                {PRICE.now.toLocaleString("en-IN")}.
+                InsightNest keeps what gets you hired: the same skill stack, real projects, live teaching and
+                career support, in 2 months for ₹{PRICE.now.toLocaleString("en-IN")}.
               </p>
             </div>
           </div>
@@ -644,9 +647,8 @@ export default function DataAnalystCoursePage() {
               487+ students have already learned with us
             </h2>
             <p className="mt-5 text-lg text-on-surface-variant leading-relaxed">
-              This program is the version we arrived at after teaching hundreds of learners — the same
-              curriculum, tightened around what actually got people interviews, and the gaps that kept
-              showing up filled in.
+              This is the version we arrived at after teaching hundreds of learners: tightened around what
+              actually got people interviews.
             </p>
 
             <div className="mt-10 grid sm:grid-cols-3 gap-4 text-left">
@@ -710,11 +712,10 @@ export default function DataAnalystCoursePage() {
           <div className="absolute -top-32 left-1/3 w-[34rem] h-[34rem] bg-secondary/25 rounded-full blur-[130px] pointer-events-none" />
           <div className="relative max-w-4xl mx-auto px-6 text-center">
             <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-[1.1] text-balance">
-              Two months from now, you’ll either have a portfolio — or another excuse.
+              Two months from now, you’ll either have a portfolio or another excuse.
             </h2>
             <p className="mt-6 text-lg text-white/70 leading-relaxed">
-              The next batch starts {BATCH.startDate}. Sixteen live sessions, seven projects, one skill stack,
-              and a career plan you can actually execute.
+              The next batch starts {BATCH.startDate}. Sixteen live sessions, seven projects, one career plan.
             </p>
 
             <div className="mt-8 flex items-center justify-center gap-3">

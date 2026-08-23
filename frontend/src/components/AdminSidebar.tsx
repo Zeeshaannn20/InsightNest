@@ -20,6 +20,7 @@ export default function AdminSidebar() {
     { name: "Assignments", href: "/admin/assignments", icon: "assignment" },
     { name: "Quizzes", href: "/admin/quizzes", icon: "quiz" },
     { name: "Attendance", href: "/admin/attendance", icon: "how_to_reg" },
+    { name: "Articles", href: "/admin/articles", icon: "article" },
     { name: "Announcements", href: "/admin/announcements", icon: "campaign" },
     { name: "Analytics", href: "/admin/analytics", icon: "monitoring" },
   ];
