@@ -9,6 +9,8 @@ export const BATCH = {
   // TODO: update the batch dates for each new cohort before publishing
   month: "August",
   startDate: "27 August 2026",
+  // ISO form for schema.org / structured data. Keep in step with startDate.
+  startDateIso: "2026-08-27",
   timing: "Sat & Sun, 10:00 AM – 1:00 PM IST",
   language: "Hindi + English",
   whatsapp: "+91 87775 82751",

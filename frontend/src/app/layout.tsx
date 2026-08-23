@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { SITE_URL, SITE_NAME } from "@/lib/site";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -13,6 +14,9 @@ const description =
   "Live weekend training in Excel, SQL, Python, Statistics, Power BI and data storytelling. 16 live sessions, 7 portfolio projects and career support, for ₹2,999.";
 
 export const metadata: Metadata = {
+  // Makes every relative URL in metadata resolve to one canonical origin.
+  metadataBase: new URL(SITE_URL),
+  alternates: { canonical: "/" },
   title,
   description,
   keywords: [
@@ -30,7 +34,9 @@ export const metadata: Metadata = {
     title,
     description,
     type: "website",
-    siteName: "InsightNest",
+    siteName: SITE_NAME,
+    url: SITE_URL,
+    locale: "en_IN",
   },
   twitter: {
     card: "summary_large_image",

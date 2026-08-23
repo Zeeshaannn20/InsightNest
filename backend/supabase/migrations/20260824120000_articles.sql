@@ -80,3 +80,14 @@ drop trigger if exists articles_touch_updated_at on public.articles;
 create trigger articles_touch_updated_at
   before update on public.articles
   for each row execute function public.touch_articles_updated_at();
+
+-- ------------------------------------------------------------
+-- read_minutes
+--
+-- The blog index shows a reading time per card. Deriving it means fetching
+-- every article's full body just to count words, which at 100 posts turns the
+-- index into a megabyte-scale response. Store the number instead and let the
+-- editor compute it on save.
+-- ------------------------------------------------------------
+alter table public.articles
+  add column if not exists read_minutes integer not null default 1;

@@ -2,26 +2,33 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import Logo from "@/components/Logo";
-import { readingMinutes } from "@/lib/markdown";
+import { BlogJsonLd } from "@/components/JsonLd";
 
 export const metadata: Metadata = {
   title: "Articles — InsightNest",
   description:
     "Practical writing on data analytics: SQL, Python, Power BI, Excel and the career side of becoming an analyst.",
+  alternates: { canonical: "/articles" },
 };
 
 // Published articles change when the admin publishes, not when we deploy.
 export const revalidate = 60;
+
+const PER_PAGE = 12;
 
 type ArticleCard = {
   id: string;
   slug: string;
   title: string;
   excerpt: string | null;
-  content: string;
   cover_image_url: string | null;
   category: string | null;
   published_at: string | null;
+  read_minutes: number | null;
+};
+
+type Props = {
+  searchParams: Promise<{ page?: string; category?: string }>;
 };
 
 function formatDate(value: string | null) {
@@ -33,22 +40,61 @@ function formatDate(value: string | null) {
   });
 }
 
-export default async function ArticlesPage() {
+export default async function ArticlesPage({ searchParams }: Props) {
+  const { page: pageParam, category } = await searchParams;
+  const page = Math.max(1, Number(pageParam) || 1);
+  const from = (page - 1) * PER_PAGE;
+
   const supabase = await createClient();
 
-  // RLS already restricts anonymous readers to published rows; the explicit
-  // filter keeps the intent obvious and covers staff, who can see drafts.
-  const { data, error } = await supabase
+  // Note the absent `content` column. Reading time comes from read_minutes so
+  // the index never transfers article bodies — at 100 posts that is the
+  // difference between a fast page and a megabyte of unused text.
+  let query = supabase
     .from("articles")
-    .select("id, slug, title, excerpt, content, cover_image_url, category, published_at")
+    .select(
+      "id, slug, title, excerpt, cover_image_url, category, published_at, read_minutes",
+      { count: "exact" }
+    )
     .eq("status", "published")
-    .order("published_at", { ascending: false });
+    .order("published_at", { ascending: false })
+    .range(from, from + PER_PAGE - 1);
+
+  if (category) query = query.eq("category", category);
+
+  const { data, error, count } = await query;
 
   const articles = (data ?? []) as ArticleCard[];
-  const [lead, ...rest] = articles;
+  const total = count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
+
+  // Category chips, so a reader (and a crawler) can move between topics.
+  const { data: categoryRows } = await supabase
+    .from("articles")
+    .select("category")
+    .eq("status", "published")
+    .not("category", "is", null);
+
+  const categories = [
+    ...new Set((categoryRows ?? []).map((r) => r.category as string).filter(Boolean)),
+  ].sort();
+
+  // The lead card only makes sense on an unfiltered first page.
+  const showLead = page === 1 && !category && articles.length > 0;
+  const lead = showLead ? articles[0] : null;
+  const rest = showLead ? articles.slice(1) : articles;
+
+  const pageHref = (n: number) => {
+    const params = new URLSearchParams();
+    if (category) params.set("category", category);
+    if (n > 1) params.set("page", String(n));
+    const qs = params.toString();
+    return qs ? `/articles?${qs}` : "/articles";
+  };
 
   return (
     <div className="min-h-screen bg-surface">
+      <BlogJsonLd />
       <header className="sticky top-0 z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30">
         <div className="max-w-6xl mx-auto px-6 h-[72px] flex items-center justify-between">
           <Link href="/" className="flex items-center">
@@ -72,15 +118,43 @@ export default async function ArticlesPage() {
       </header>
 
       <main className="max-w-6xl mx-auto px-6 py-16 md:py-20">
-        <div className="max-w-3xl mb-14">
+        <div className="max-w-3xl mb-10">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-secondary mb-3">Articles</p>
           <h1 className="text-4xl md:text-5xl font-bold text-primary-container tracking-tight text-balance">
-            Notes on doing analytics well
+            {category ? `${category} articles` : "Notes on doing analytics well"}
           </h1>
           <p className="mt-5 text-lg text-on-surface-variant leading-relaxed">
             Practical writing on SQL, Python, Power BI, Excel and the career side of the job.
           </p>
         </div>
+
+        {categories.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-12">
+            <Link
+              href="/articles"
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
+                !category
+                  ? "bg-secondary text-on-secondary"
+                  : "bg-surface-container-low text-on-surface hover:bg-surface-container"
+              }`}
+            >
+              All
+            </Link>
+            {categories.map((c) => (
+              <Link
+                key={c}
+                href={`/articles?category=${encodeURIComponent(c)}`}
+                className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
+                  category === c
+                    ? "bg-secondary text-on-secondary"
+                    : "bg-surface-container-low text-on-surface hover:bg-surface-container"
+                }`}
+              >
+                {c}
+              </Link>
+            ))}
+          </div>
+        )}
 
         {error && (
           <div className="p-4 rounded-xl bg-error-container text-on-error-container text-sm flex items-start gap-3">
@@ -92,7 +166,9 @@ export default async function ArticlesPage() {
         {!error && articles.length === 0 && (
           <div className="border border-dashed border-outline-variant rounded-2xl py-20 text-center">
             <span className="material-symbols-outlined text-5xl text-outline mb-3 block">draft</span>
-            <p className="text-on-surface-variant">No articles published yet. Check back soon.</p>
+            <p className="text-on-surface-variant">
+              {category ? `No articles in ${category} yet.` : "No articles published yet. Check back soon."}
+            </p>
           </div>
         )}
 
@@ -124,7 +200,7 @@ export default async function ArticlesPage() {
                     </span>
                   )}
                   <span>{formatDate(lead.published_at)}</span>
-                  <span>{readingMinutes(lead.content)} min read</span>
+                  <span>{lead.read_minutes ?? 1} min read</span>
                 </div>
                 <h2 className="text-2xl md:text-3xl font-bold text-primary-container tracking-tight leading-snug group-hover:text-secondary transition-colors">
                   {lead.title}
@@ -172,11 +248,11 @@ export default async function ArticlesPage() {
                         {article.category}
                       </span>
                     )}
-                    <span>{readingMinutes(article.content)} min</span>
+                    <span>{article.read_minutes ?? 1} min</span>
                   </div>
-                  <h3 className="font-bold text-primary-container text-lg leading-snug group-hover:text-secondary transition-colors line-clamp-2">
+                  <h2 className="font-bold text-primary-container text-lg leading-snug group-hover:text-secondary transition-colors line-clamp-2">
                     {article.title}
-                  </h3>
+                  </h2>
                   {article.excerpt && (
                     <p className="mt-2.5 text-sm text-on-surface-variant leading-relaxed line-clamp-3">
                       {article.excerpt}
@@ -187,6 +263,32 @@ export default async function ArticlesPage() {
               </Link>
             ))}
           </div>
+        )}
+
+        {totalPages > 1 && (
+          <nav className="mt-14 flex items-center justify-center gap-2" aria-label="Pagination">
+            {page > 1 && (
+              <Link
+                href={pageHref(page - 1)}
+                rel="prev"
+                className="px-4 py-2 rounded-xl border border-outline-variant text-sm font-semibold hover:bg-surface-container-low transition-colors"
+              >
+                Previous
+              </Link>
+            )}
+            <span className="px-4 py-2 text-sm text-on-surface-variant">
+              Page {page} of {totalPages}
+            </span>
+            {page < totalPages && (
+              <Link
+                href={pageHref(page + 1)}
+                rel="next"
+                className="px-4 py-2 rounded-xl border border-outline-variant text-sm font-semibold hover:bg-surface-container-low transition-colors"
+              >
+                Next
+              </Link>
+            )}
+          </nav>
         )}
       </main>
 

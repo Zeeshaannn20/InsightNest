@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import Logo from "@/components/Logo";
 import { renderMarkdown, readingMinutes } from "@/lib/markdown";
+import { ArticleJsonLd } from "@/components/JsonLd";
 
 export const revalidate = 60;
 
@@ -18,13 +19,15 @@ type Article = {
   cover_image_url: string | null;
   category: string | null;
   published_at: string | null;
+  updated_at: string | null;
+  read_minutes: number | null;
 };
 
 async function loadArticle(slug: string): Promise<Article | null> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("articles")
-    .select("id, slug, title, excerpt, content, cover_image_url, category, published_at")
+    .select("id, slug, title, excerpt, content, cover_image_url, category, published_at, updated_at, read_minutes")
     .eq("slug", slug)
     .eq("status", "published")
     .maybeSingle();
@@ -40,6 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${article.title} — InsightNest`,
     description,
+    alternates: { canonical: `/articles/${article.slug}` },
     openGraph: {
       title: article.title,
       description,
@@ -68,6 +72,14 @@ export default async function ArticlePage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-surface">
+      <ArticleJsonLd
+        title={article.title}
+        description={article.excerpt}
+        slug={article.slug}
+        image={article.cover_image_url}
+        publishedAt={article.published_at}
+        updatedAt={article.updated_at}
+      />
       <header className="sticky top-0 z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30">
         <div className="max-w-6xl mx-auto px-6 h-[72px] flex items-center justify-between">
           <Link href="/" className="flex items-center">
@@ -106,7 +118,7 @@ export default async function ArticlePage({ params }: Props) {
             </span>
           )}
           {published && <span>{published}</span>}
-          <span>{readingMinutes(article.content)} min read</span>
+          <span>{article.read_minutes ?? readingMinutes(article.content)} min read</span>
         </div>
 
         <h1 className="text-3xl md:text-5xl font-bold text-primary-container tracking-tight leading-[1.12] text-balance">

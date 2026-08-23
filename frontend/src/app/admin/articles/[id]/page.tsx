@@ -85,6 +85,9 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ id: st
         category: next.category?.trim() || null,
         status: next.status,
         published_at: publishedAt,
+        // Stored so the public index can show reading time without
+        // transferring every article body. See src/app/articles/page.tsx.
+        read_minutes: readingMinutes(next.content),
       })
       .eq("id", article.id);
 

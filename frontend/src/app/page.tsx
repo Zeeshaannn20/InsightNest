@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Logo from "@/components/Logo";
 import CourseEnrollmentSection from "@/components/CourseEnrollmentSection";
+import { OrganizationJsonLd, CourseJsonLd, FaqJsonLd } from "@/components/JsonLd";
 import {
   AUDIENCE_NO,
   AUDIENCE_YES,
@@ -176,6 +177,16 @@ export default function DataAnalystCoursePage() {
 
   return (
     <div className="min-h-screen bg-background text-on-background">
+      {/* Structured data — how search and AI answer engines read this page */}
+      <OrganizationJsonLd />
+      <CourseJsonLd
+        price={PRICE.now}
+        startDate={BATCH.startDateIso}
+        durationWeeks={8}
+        topics={TRACKS.map((t) => t.name)}
+      />
+      <FaqJsonLd faqs={FAQS} />
+
       {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
