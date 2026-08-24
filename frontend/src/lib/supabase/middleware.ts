@@ -2,6 +2,20 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function updateSession(request: NextRequest) {
+  // Supabase sends recovery and confirmation links to its configured Site URL,
+  // which is not necessarily the route that can exchange the token — a reset
+  // triggered from the Supabase dashboard always lands on the site root. Rather
+  // than depend on that setting being right, forward any stray auth code to the
+  // callback that knows what to do with it.
+  const authCode = request.nextUrl.searchParams.get("code");
+  const isCallback = request.nextUrl.pathname.startsWith("/auth/");
+  if (authCode && !isCallback) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/callback";
+    url.searchParams.set("next", "/reset-password");
+    return NextResponse.redirect(url);
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
