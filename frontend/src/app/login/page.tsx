@@ -17,7 +17,15 @@ function LoginContent() {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
+
+  // /auth/callback sends people here when a recovery link is dead.
+  useEffect(() => {
+    if (searchParams.get("error") === "link_expired") {
+      setError("That reset link has expired or was already used. Request a new one.");
+    }
+  }, [searchParams]);
 
   // ============================================================
   // LOGIN: Enrolled Student / Admin / Instructor
@@ -152,7 +160,15 @@ function LoginContent() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-sm font-semibold text-on-surface">Password</label>
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-semibold text-on-surface">Password</label>
+                  <Link
+                    href="/forgot-password"
+                    className="text-sm text-secondary font-semibold hover:underline"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant text-xl">lock</span>
                   <input
