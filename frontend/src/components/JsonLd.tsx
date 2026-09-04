@@ -44,7 +44,8 @@ export function CourseJsonLd({
   topics,
 }: {
   price: number;
-  startDate: string;
+  /** Omitted while enrolment is rolling and no cohort date is announced. */
+  startDate?: string;
   durationWeeks: number;
   topics: string[];
 }) {
@@ -73,7 +74,9 @@ export function CourseJsonLd({
           "@type": "CourseInstance",
           courseMode: "Online",
           courseWorkload: `PT${durationWeeks * 10}H`,
-          startDate,
+          // Advertising a date that has already passed reads worse in a search
+          // result than no date at all, so emit the field only when set.
+          ...(startDate ? { startDate } : {}),
           location: { "@type": "VirtualLocation", url: SITE_URL },
         },
       }}

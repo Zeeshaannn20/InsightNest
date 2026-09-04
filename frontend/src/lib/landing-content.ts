@@ -6,11 +6,13 @@
 // ============================================================
 
 export const BATCH = {
-  // TODO: update the batch dates for each new cohort before publishing
+  // No fixed start date is advertised while enrolment is rolling. Put the
+  // date back in both fields together when the next cohort is announced —
+  // startDateIso feeds schema.org and must stay in step with startDate.
   month: "August",
-  startDate: "27 August 2026",
-  // ISO form for schema.org / structured data. Keep in step with startDate.
-  startDateIso: "2026-08-27",
+  startDate: "",
+  startDateIso: "",
+  enrolmentNote: "Enrollments closing soon",
   timing: "Sat & Sun, 10:00 AM – 1:00 PM IST",
   language: "Hindi + English",
   whatsapp: "+91 63667 35759",

@@ -181,7 +181,6 @@ export default function DataAnalystCoursePage() {
       <OrganizationJsonLd />
       <CourseJsonLd
         price={PRICE.now}
-        startDate={BATCH.startDateIso}
         durationWeeks={8}
         topics={TRACKS.map((t) => t.name)}
       />
@@ -282,7 +281,7 @@ export default function DataAnalystCoursePage() {
 
               <div className="mt-6 pt-5 border-t border-white/15 flex items-center gap-2 text-xs text-white/60">
                 <span className="material-symbols-outlined text-[16px]">event_available</span>
-                Next batch starts {BATCH.startDate}
+                {BATCH.enrolmentNote}
               </div>
             </div>
           </div>
@@ -504,7 +503,7 @@ export default function DataAnalystCoursePage() {
                 { icon: "schedule", label: "Batch timing", value: BATCH.timing },
                 { icon: "calendar_month", label: "Duration", value: "8 weeks, 16 live sessions" },
                 { icon: "translate", label: "Language", value: BATCH.language },
-                { icon: "event_available", label: "Next batch starts", value: BATCH.startDate },
+                { icon: "hourglass_top", label: "Enrolment", value: "Closing soon" },
               ].map((m) => (
                 <div key={m.label} className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-5">
                   <span className="material-symbols-outlined text-secondary text-[22px]">{m.icon}</span>
@@ -726,7 +725,7 @@ export default function DataAnalystCoursePage() {
               Two months from now, you’ll either have a portfolio or another excuse.
             </h2>
             <p className="mt-6 text-lg text-white/70 leading-relaxed">
-              The next batch starts {BATCH.startDate}. Sixteen live sessions, seven projects, one career plan.
+              {BATCH.enrolmentNote}. Sixteen live sessions, seven projects, one career plan.
             </p>
 
             <div className="mt-8 flex items-center justify-center gap-3">
