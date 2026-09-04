@@ -13,8 +13,8 @@ export const BATCH = {
   startDateIso: "2026-08-27",
   timing: "Sat & Sun, 10:00 AM – 1:00 PM IST",
   language: "Hindi + English",
-  whatsapp: "+91 87775 82751",
-  whatsappLink: "https://wa.me/918777582751",
+  whatsapp: "+91 63667 35759",
+  whatsappLink: "https://wa.me/916366735759",
   email: "support@insightnest.in",
 };
 

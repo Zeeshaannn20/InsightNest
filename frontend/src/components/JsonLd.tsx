@@ -29,7 +29,7 @@ export function OrganizationJsonLd() {
         description: SITE_DESCRIPTION,
         logo: absoluteUrl("/icon.png"),
         email: "support@insightnest.in",
-        telephone: "+91-87775-82751",
+        telephone: "+91-63667-35759",
         areaServed: "IN",
         sameAs: [] as string[],
       }}
