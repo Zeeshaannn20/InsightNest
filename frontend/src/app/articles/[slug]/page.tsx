@@ -24,14 +24,23 @@ type Article = {
 };
 
 async function loadArticle(slug: string): Promise<Article | null> {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("articles")
-    .select("id, slug, title, excerpt, content, cover_image_url, category, published_at, updated_at, read_minutes")
-    .eq("slug", slug)
-    .eq("status", "published")
-    .maybeSingle();
-  return (data as Article) ?? null;
+  // Returning null on failure sends the reader to the 404 page instead of a
+  // 500. The error is logged so a real outage is still visible in the logs.
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("articles")
+      .select("id, slug, title, excerpt, content, cover_image_url, category, published_at, updated_at, read_minutes")
+      .eq("slug", slug)
+      .eq("status", "published")
+      .maybeSingle();
+
+    if (error) throw error;
+    return (data as Article) ?? null;
+  } catch (err) {
+    console.error(`Article "${slug}" failed to load:`, err);
+    return null;
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

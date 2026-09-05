@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import Logo from "@/components/Logo";
 import { BlogJsonLd } from "@/components/JsonLd";
+import { BATCH } from "@/lib/landing-content";
 
 export const metadata: Metadata = {
   title: "Articles — InsightNest",
@@ -45,39 +46,51 @@ export default async function ArticlesPage({ searchParams }: Props) {
   const page = Math.max(1, Number(pageParam) || 1);
   const from = (page - 1) * PER_PAGE;
 
-  const supabase = await createClient();
+  let articles: ArticleCard[] = [];
+  let total = 0;
+  let categories: string[] = [];
 
-  // Note the absent `content` column. Reading time comes from read_minutes so
-  // the index never transfers article bodies — at 100 posts that is the
-  // difference between a fast page and a megabyte of unused text.
-  let query = supabase
-    .from("articles")
-    .select(
-      "id, slug, title, excerpt, cover_image_url, category, published_at, read_minutes",
-      { count: "exact" }
-    )
-    .eq("status", "published")
-    .order("published_at", { ascending: false })
-    .range(from, from + PER_PAGE - 1);
+  // A database problem should leave the reader on a tidy page rather than a
+  // 500. The failure is still logged, so it stays diagnosable.
+  try {
+    const supabase = await createClient();
 
-  if (category) query = query.eq("category", category);
+    // Note the absent `content` column. Reading time comes from read_minutes so
+    // the index never transfers article bodies — at 100 posts that is the
+    // difference between a fast page and a megabyte of unused text.
+    let query = supabase
+      .from("articles")
+      .select(
+        "id, slug, title, excerpt, cover_image_url, category, published_at, read_minutes",
+        { count: "exact" }
+      )
+      .eq("status", "published")
+      .order("published_at", { ascending: false })
+      .range(from, from + PER_PAGE - 1);
 
-  const { data, error, count } = await query;
+    if (category) query = query.eq("category", category);
 
-  const articles = (data ?? []) as ArticleCard[];
-  const total = count ?? 0;
+    const { data, error, count } = await query;
+    if (error) throw error;
+
+    articles = (data ?? []) as ArticleCard[];
+    total = count ?? 0;
+
+    // Category chips, so a reader (and a crawler) can move between topics.
+    const { data: categoryRows } = await supabase
+      .from("articles")
+      .select("category")
+      .eq("status", "published")
+      .not("category", "is", null);
+
+    categories = [
+      ...new Set((categoryRows ?? []).map((r) => r.category as string).filter(Boolean)),
+    ].sort();
+  } catch (err) {
+    console.error("Articles index failed to load:", err);
+  }
+
   const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
-
-  // Category chips, so a reader (and a crawler) can move between topics.
-  const { data: categoryRows } = await supabase
-    .from("articles")
-    .select("category")
-    .eq("status", "published")
-    .not("category", "is", null);
-
-  const categories = [
-    ...new Set((categoryRows ?? []).map((r) => r.category as string).filter(Boolean)),
-  ].sort();
 
   // The lead card only makes sense on an unfiltered first page.
   const showLead = page === 1 && !category && articles.length > 0;
@@ -156,19 +169,68 @@ export default async function ArticlesPage({ searchParams }: Props) {
           </div>
         )}
 
-        {error && (
-          <div className="p-4 rounded-xl bg-error-container text-on-error-container text-sm flex items-start gap-3">
-            <span className="material-symbols-outlined">error</span>
-            <p className="font-medium">Could not load articles: {error.message}</p>
-          </div>
-        )}
+        {articles.length === 0 && (
+          <div className="relative overflow-hidden rounded-3xl border border-outline-variant/40 bg-surface-container-lowest p-8 md:p-14 text-center shadow-card">
+            <div className="absolute -top-24 -right-24 w-60 h-60 bg-secondary/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -left-24 w-60 h-60 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
 
-        {!error && articles.length === 0 && (
-          <div className="border border-dashed border-outline-variant rounded-2xl py-20 text-center">
-            <span className="material-symbols-outlined text-5xl text-outline mb-3 block">draft</span>
-            <p className="text-on-surface-variant">
-              {category ? `No articles in ${category} yet.` : "No articles published yet. Check back soon."}
-            </p>
+            <div className="relative max-w-2xl mx-auto flex flex-col items-center">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary-container/30 border border-secondary-container text-secondary text-xs font-bold uppercase tracking-wider mb-6">
+                <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
+                Coming soon
+              </div>
+
+              <div className="w-16 h-16 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary mb-6 shadow-sm">
+                <span className="material-symbols-outlined text-3xl">auto_stories</span>
+              </div>
+
+              <h2 className="text-2xl md:text-3xl font-bold text-primary-container tracking-tight">
+                {category
+                  ? `Articles on ${category} are on the way`
+                  : "Practical data analytics guides, coming soon"}
+              </h2>
+
+              <p className="mt-4 text-on-surface-variant leading-relaxed text-base md:text-lg">
+                We are writing hands-on guides, case studies and interview playbooks covering SQL, Python,
+                Power BI, Excel and data storytelling.
+              </p>
+
+              <div className="mt-8 flex flex-wrap justify-center gap-2.5 max-w-xl">
+                {[
+                  "SQL query optimisation and window functions",
+                  "Python and Pandas on real datasets",
+                  "Power BI DAX and executive dashboards",
+                  "Advanced Excel formulas and modelling",
+                  "Analyst interview prep and resume tips",
+                ].map((topic) => (
+                  <span
+                    key={topic}
+                    className="px-3.5 py-1.5 rounded-xl bg-surface-container-low text-xs font-medium text-on-surface border border-outline-variant/30"
+                  >
+                    {topic}
+                  </span>
+                ))}
+              </div>
+
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+                <Link
+                  href="/#curriculum"
+                  className="bg-secondary text-on-secondary px-6 py-3 rounded-xl font-bold text-sm hover:bg-secondary/90 transition-all shadow-md btn-press flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[18px]">menu_book</span>
+                  Explore the curriculum
+                </Link>
+                <a
+                  href={BATCH.whatsappLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="border border-outline-variant/60 text-primary-container px-6 py-3 rounded-xl font-bold text-sm hover:bg-surface-container-low transition-all flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[18px]">chat</span>
+                  Get updates on WhatsApp
+                </a>
+              </div>
+            </div>
           </div>
         )}
 
