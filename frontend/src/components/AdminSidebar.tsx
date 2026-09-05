@@ -16,6 +16,7 @@ export default function AdminSidebar() {
     { name: "Waitlist", href: "/admin/waitlist", icon: "hourglass_top" },
     { name: "Instructors", href: "/admin/instructors", icon: "co_present" },
     { name: "Courses", href: "/admin/courses", icon: "library_books" },
+    { name: "Cohorts", href: "/admin/cohorts", icon: "groups" },
     { name: "Live Sessions", href: "/admin/sessions", icon: "video_camera_front" },
     { name: "Assignments", href: "/admin/assignments", icon: "assignment" },
     { name: "Quizzes", href: "/admin/quizzes", icon: "quiz" },
