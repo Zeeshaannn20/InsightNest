@@ -9,7 +9,11 @@ export async function updateSession(request: NextRequest) {
   // callback that knows what to do with it.
   const authCode = request.nextUrl.searchParams.get("code");
   const isCallback = request.nextUrl.pathname.startsWith("/auth/");
-  if (authCode && !isCallback) {
+  // /reset-password exchanges its own code in the browser, where the PKCE
+  // verifier lives. Forwarding it to the server callback would break the
+  // cross-device case this rule is meant to help.
+  const handlesOwnCode = request.nextUrl.pathname.startsWith("/reset-password");
+  if (authCode && !isCallback && !handlesOwnCode) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/callback";
     url.searchParams.set("next", "/reset-password");

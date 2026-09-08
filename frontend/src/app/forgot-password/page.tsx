@@ -19,7 +19,9 @@ export default function ForgotPasswordPage() {
     setError(null);
 
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
+      // Straight to the client page: a server route cannot read a URL
+      // fragment, and a redirect through one would drop it.
+      redirectTo: `${window.location.origin}/reset-password`,
     });
 
     setLoading(false);

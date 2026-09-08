@@ -20,16 +20,53 @@ export default function ResetPasswordPage() {
   const supabase = createClient();
   const router = useRouter();
 
-  // The recovery link is exchanged for a session by /auth/callback before the
-  // browser gets here. No session means the link was expired, already used, or
-  // this page was opened directly.
+  /**
+   * Supabase can deliver a recovery link in three shapes, and which one
+   * arrives depends on project settings and the email template. All three are
+   * handled here, in the browser, because:
+   *
+   *   - a `#fragment` never reaches a server route, and a server redirect
+   *     would drop it;
+   *   - a PKCE `?code=` can only be exchanged where the code verifier was
+   *     stored, which is the browser that asked for the reset;
+   *   - `?token_hash=` works anywhere, and is what makes opening the email on
+   *     a different device than you requested it from work at all.
+   */
   useEffect(() => {
     (async () => {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("code");
+      const tokenHash = params.get("token_hash");
+      const type = params.get("type");
+
+      try {
+        if (tokenHash) {
+          // Device independent: no verifier needed.
+          await supabase.auth.verifyOtp({
+            type: (type as "recovery") || "recovery",
+            token_hash: tokenHash,
+          });
+        } else if (code) {
+          await supabase.auth.exchangeCodeForSession(code);
+        }
+        // A #fragment is picked up automatically by the browser client, so it
+        // needs no branch here — getSession below sees the result.
+      } catch (err) {
+        console.error("Recovery link could not be redeemed:", err);
+      }
+
       const {
         data: { session },
       } = await supabase.auth.getSession();
+
       setHasSession(Boolean(session));
       setChecking(false);
+
+      // Drop the token from the address bar once it has been redeemed, so it
+      // is not left in history or copied out of the URL.
+      if (window.location.search || window.location.hash) {
+        window.history.replaceState({}, "", "/reset-password");
+      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
