@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
 
 const inter = Inter({
@@ -51,6 +52,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const gaId = process.env.NEXT_PUBLIC_GA_ID?.trim();
+
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <head>
@@ -60,6 +63,13 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col font-sans">{children}</body>
+      {/*
+        Rendered only when the measurement ID is set, so local development and
+        preview builds do not report into the production property. The ID is
+        public by design — it identifies the property, it does not grant
+        access to the data.
+      */}
+      {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
     </html>
   );
 }
