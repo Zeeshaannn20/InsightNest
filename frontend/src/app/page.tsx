@@ -183,6 +183,7 @@ export default function DataAnalystCoursePage() {
         price={PRICE.now}
         durationWeeks={8}
         topics={TRACKS.map((t) => t.name)}
+        offerEnds={BATCH.enrolmentCloseIso}
       />
       <FaqJsonLd faqs={FAQS} />
 
@@ -503,7 +504,7 @@ export default function DataAnalystCoursePage() {
                 { icon: "schedule", label: "Batch timing", value: BATCH.timing },
                 { icon: "calendar_month", label: "Duration", value: "8 weeks, 16 live sessions" },
                 { icon: "translate", label: "Language", value: BATCH.language },
-                { icon: "hourglass_top", label: "Enrolment", value: "Closing soon" },
+                { icon: "hourglass_top", label: "Enrolment closes", value: "29 September 2026" },
               ].map((m) => (
                 <div key={m.label} className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-5">
                   <span className="material-symbols-outlined text-secondary text-[22px]">{m.icon}</span>

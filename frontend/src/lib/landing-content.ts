@@ -12,7 +12,10 @@ export const BATCH = {
   month: "August",
   startDate: "",
   startDateIso: "",
-  enrolmentNote: "Enrollments closing soon",
+  // The advertised close date. enrolmentCloseIso feeds schema.org and must
+  // stay in step with enrolmentNote.
+  enrolmentNote: "Enrollments close 29 September",
+  enrolmentCloseIso: "2026-09-29",
   timing: "Sat & Sun, 10:00 AM – 1:00 PM IST",
   language: "Hindi + English",
   whatsapp: "+91 63667 35759",

@@ -40,12 +40,15 @@ export function OrganizationJsonLd() {
 export function CourseJsonLd({
   price,
   startDate,
+  offerEnds,
   durationWeeks,
   topics,
 }: {
   price: number;
   /** Omitted while enrolment is rolling and no cohort date is announced. */
   startDate?: string;
+  /** ISO date the offer stops being available, i.e. when enrolment closes. */
+  offerEnds?: string;
   durationWeeks: number;
   topics: string[];
 }) {
@@ -67,6 +70,9 @@ export function CourseJsonLd({
           price: String(price),
           priceCurrency: "INR",
           availability: "https://schema.org/InStock",
+          // Lets a search or answer engine say when enrolment closes rather
+          // than presenting the offer as open ended.
+          ...(offerEnds ? { availabilityEnds: offerEnds } : {}),
           url: `${SITE_URL}/#pricing`,
           category: "Paid",
         },
