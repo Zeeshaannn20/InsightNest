@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import MetaPixel from "@/components/MetaPixel";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
 
 const inter = Inter({
@@ -53,6 +54,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const gaId = process.env.NEXT_PUBLIC_GA_ID?.trim();
+  const isProduction = process.env.NODE_ENV === "production";
 
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
@@ -70,6 +72,8 @@ export default function RootLayout({
         access to the data.
       */}
       {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
+      {/* Production only, so local runs and previews stay out of the pixel. */}
+      {isProduction ? <MetaPixel /> : null}
     </html>
   );
 }

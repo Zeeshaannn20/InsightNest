@@ -16,3 +16,12 @@ export const SITE_DESCRIPTION =
 export function absoluteUrl(path = "/"): string {
   return new URL(path, SITE_URL).toString();
 }
+
+/**
+ * Meta (Facebook) Pixel ID.
+ *
+ * Public by design: it is visible in the page source of every site that runs
+ * a pixel. Kept here rather than in an environment variable so it needs no
+ * dashboard configuration to work.
+ */
+export const META_PIXEL_ID = "2303152423863109";
