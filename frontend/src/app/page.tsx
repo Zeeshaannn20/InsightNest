@@ -157,6 +157,16 @@ function Faq({ item }: { item: (typeof FAQS)[number] }) {
 
 export default function DataAnalystCoursePage() {
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // A menu left open while the page scrolls behind it is disorienting, so the
+  // body is locked for as long as it is showing.
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
 
   useEffect(() => {
     observerRef.current = new IntersectionObserver(
@@ -200,16 +210,68 @@ export default function DataAnalystCoursePage() {
             <a href="#faq" className="text-on-surface hover:text-secondary font-medium transition-colors">FAQ</a>
             <Link href="/articles" className="text-on-surface hover:text-secondary font-medium transition-colors">Articles</Link>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 md:gap-4">
             <Link href="/login" className="text-on-surface hover:text-secondary font-medium transition-colors hidden md:block">Login</Link>
-            <a href="#pricing" className="bg-secondary text-on-secondary px-5 py-2 rounded-full font-semibold hover:bg-secondary/90 transition-all btn-press shadow-md">
+            <a href="#pricing" className="bg-secondary text-on-secondary px-4 md:px-5 py-2 rounded-full font-semibold hover:bg-secondary/90 transition-all btn-press shadow-md text-sm md:text-base">
               Enroll Now
             </a>
+
+            {/* Without this the only things reachable on a phone were the logo
+                and Enroll Now — an existing student had no way to sign in. */}
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              className="md:hidden w-11 h-11 -mr-2 flex items-center justify-center text-on-surface rounded-xl hover:bg-surface-container-low transition-colors"
+            >
+              <span className="material-symbols-outlined text-[26px]">
+                {menuOpen ? "close" : "menu"}
+              </span>
+            </button>
           </div>
         </div>
+
+        {/* Mobile menu */}
+        {menuOpen && (
+          <div className="md:hidden border-t border-outline-variant/30 bg-surface animate-slide-down">
+            <div className="px-6 py-3 flex flex-col">
+              {[
+                { href: "#curriculum", label: "Curriculum" },
+                { href: "#projects", label: "Projects" },
+                { href: "#pricing", label: "Pricing" },
+                { href: "#faq", label: "FAQ" },
+              ].map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="py-3.5 text-on-surface font-medium border-b border-outline-variant/20 active:text-secondary"
+                >
+                  {item.label}
+                </a>
+              ))}
+              <Link
+                href="/articles"
+                onClick={() => setMenuOpen(false)}
+                className="py-3.5 text-on-surface font-medium border-b border-outline-variant/20 active:text-secondary"
+              >
+                Articles
+              </Link>
+              <Link
+                href="/login"
+                onClick={() => setMenuOpen(false)}
+                className="mt-3 mb-2 py-3 text-center rounded-xl border border-outline-variant font-semibold text-primary-container active:bg-surface-container-low"
+              >
+                Log in to your dashboard
+              </Link>
+            </div>
+          </div>
+        )}
       </nav>
 
-      <main className="pt-20 pb-20 md:pb-0">
+      {/* pb-28 clears the ~70px sticky price bar with room to spare; without
+          it the footer sits underneath and the last links are untappable. */}
+      <main className="pt-20 pb-28 md:pb-0">
         {/* ---------------------------- 1 · HERO ---------------------------- */}
         <section className="relative overflow-hidden bg-primary-container text-white">
           <div className="absolute -top-40 -right-32 w-[36rem] h-[36rem] bg-secondary/30 rounded-full blur-[140px] pointer-events-none" />
@@ -594,6 +656,10 @@ export default function DataAnalystCoursePage() {
               sub="Category ranges, drawn from publicly reported 2026 market data. Verify current pricing on each provider’s own site."
             />
 
+            <p className="md:hidden text-xs text-on-surface-variant mb-2 flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[16px]">swipe_left</span>
+              Swipe the table to compare
+            </p>
             <div className="overflow-x-auto rounded-2xl border border-outline-variant/30 bg-surface-container-lowest">
               <table className="w-full text-sm min-w-[52rem]">
                 <thead>
@@ -754,7 +820,7 @@ export default function DataAnalystCoursePage() {
 
             <p className="mt-8 text-sm text-white/50">
               Questions? {BATCH.whatsapp} ·{" "}
-              <a href={`mailto:${BATCH.email}`} className="underline hover:text-white">
+              <a href={`mailto:${BATCH.email}`} className="inline-block py-1 underline hover:text-white">
                 {BATCH.email}
               </a>
             </p>
@@ -796,7 +862,7 @@ export default function DataAnalystCoursePage() {
               </p>
               <p className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-[18px]">mail</span>
-                <a href={`mailto:${BATCH.email}`} className="hover:text-secondary transition-colors">
+                <a href={`mailto:${BATCH.email}`} className="inline-block py-1.5 hover:text-secondary transition-colors">
                   {BATCH.email}
                 </a>
               </p>
@@ -805,18 +871,18 @@ export default function DataAnalystCoursePage() {
           <div>
             <h4 className="text-on-surface font-bold mb-4">Program</h4>
             <ul className="space-y-3 text-sm">
-              <li><a href="#curriculum" className="hover:text-secondary transition-colors">Curriculum</a></li>
-              <li><a href="#projects" className="hover:text-secondary transition-colors">Projects</a></li>
-              <li><a href="#pricing" className="hover:text-secondary transition-colors">Pricing</a></li>
-              <li><a href="#faq" className="hover:text-secondary transition-colors">FAQ</a></li>
+              <li><a href="#curriculum" className="inline-block py-1.5 hover:text-secondary transition-colors">Curriculum</a></li>
+              <li><a href="#projects" className="inline-block py-1.5 hover:text-secondary transition-colors">Projects</a></li>
+              <li><a href="#pricing" className="inline-block py-1.5 hover:text-secondary transition-colors">Pricing</a></li>
+              <li><a href="#faq" className="inline-block py-1.5 hover:text-secondary transition-colors">FAQ</a></li>
             </ul>
           </div>
           <div>
             <h4 className="text-on-surface font-bold mb-4">Company</h4>
             <ul className="space-y-3 text-sm">
-              <li><Link href="/about" className="hover:text-secondary transition-colors">About Us</Link></li>
-              <li><Link href="/privacy" className="hover:text-secondary transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="hover:text-secondary transition-colors">Terms &amp; Refunds</Link></li>
+              <li><Link href="/about" className="inline-block py-1.5 hover:text-secondary transition-colors">About Us</Link></li>
+              <li><Link href="/privacy" className="inline-block py-1.5 hover:text-secondary transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/terms" className="inline-block py-1.5 hover:text-secondary transition-colors">Terms &amp; Refunds</Link></li>
             </ul>
           </div>
         </div>
