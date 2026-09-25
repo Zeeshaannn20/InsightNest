@@ -4,6 +4,18 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
 
+/**
+ * Fire a Meta Pixel event if the pixel is loaded.
+ *
+ * The pixel only mounts in production, so this is a no-op in development
+ * rather than something that has to be guarded at every call site.
+ */
+function trackPixel(event: string, params?: Record<string, unknown>) {
+  if (typeof window === "undefined") return;
+  const fbq = (window as unknown as { fbq?: (...a: unknown[]) => void }).fbq;
+  fbq?.("track", event, params);
+}
+
 interface RazorpayButtonProps {
   courseId: string;
   courseTitle: string;
@@ -88,6 +100,17 @@ export default function RazorpayButton({ courseId, courseTitle, courseSlug, pric
               return;
             }
 
+            // Only now is the payment genuinely confirmed. Firing Purchase on
+            // the raw callback would let a forged response inflate conversion
+            // data and mislead ad optimisation.
+            trackPixel("Purchase", {
+              value: pricePaise / 100,
+              currency: "INR",
+              content_name: courseTitle,
+              content_ids: [courseId],
+              content_type: "product",
+            });
+
             // Success handler - Webhook handles the actual DB insertion securely
             router.push("/dashboard?success=true");
           } catch (err) {
@@ -98,6 +121,15 @@ export default function RazorpayButton({ courseId, courseTitle, courseSlug, pric
       };
 
       const paymentObject = new (window as any).Razorpay(options);
+
+      trackPixel("InitiateCheckout", {
+        value: pricePaise / 100,
+        currency: "INR",
+        content_name: courseTitle,
+        content_ids: [courseId],
+        content_type: "product",
+      });
+
       paymentObject.open();
 
       paymentObject.on("payment.failed", function (response: any) {
