@@ -16,6 +16,16 @@ import type { Assignment, Submission } from "@/lib/types/database";
 type AssignmentWithSubmission = Assignment & { submission?: Submission };
 
 /**
+ * Whether a brief has more to show than the two-line clamp reveals. The length
+ * cut is a guess at where two lines end — erring low, since offering "Show
+ * full assignment" on something already fully visible is a smaller annoyance
+ * than hiding the rest of the question behind no affordance at all.
+ */
+function isTruncatable(description: string | null): boolean {
+  return !!description && (description.includes("\n") || description.length > 110);
+}
+
+/**
  * A label wrapping a visually hidden file input: clicking it opens the picker,
  * and the input stays keyboard-focusable, which a plain styled button would not.
  */
@@ -61,6 +71,7 @@ export default function StudentAssignmentsPage() {
   const [loading, setLoading] = useState(true);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string | null>>({});
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const supabase = createClient();
 
   useEffect(() => {
@@ -247,7 +258,34 @@ export default function StudentAssignmentsPage() {
                 </div>
 
                 <h3 className="text-xl font-bold text-primary-container">{assignment.title}</h3>
-                <p className="text-sm text-on-surface-variant line-clamp-2">{assignment.description}</p>
+                {assignment.description && (
+                  <div className="space-y-1.5">
+                    {/* Collapsed, line-clamp needs the text inline; expanded,
+                        whitespace-pre-line keeps the line breaks the brief was
+                        written with instead of running it into one blob. */}
+                    <p
+                      className={`text-sm text-on-surface-variant ${
+                        expanded[assignment.id] ? "whitespace-pre-line leading-relaxed" : "line-clamp-2"
+                      }`}
+                    >
+                      {assignment.description}
+                    </p>
+                    {isTruncatable(assignment.description) && (
+                      <button
+                        onClick={() =>
+                          setExpanded((e) => ({ ...e, [assignment.id]: !e[assignment.id] }))
+                        }
+                        aria-expanded={!!expanded[assignment.id]}
+                        className="inline-flex items-center gap-0.5 text-sm font-semibold text-secondary hover:underline"
+                      >
+                        {expanded[assignment.id] ? "Show less" : "Show full assignment"}
+                        <span className="material-symbols-outlined text-[18px]">
+                          {expanded[assignment.id] ? "expand_less" : "expand_more"}
+                        </span>
+                      </button>
+                    )}
+                  </div>
+                )}
 
                 {assignment.submission && (
                   <button
