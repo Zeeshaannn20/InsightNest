@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { errorMessage, submissionFileUrl } from "@/lib/submissions";
 import type { Profile } from "@/lib/types/database";
 
 type StudentDetail = {
@@ -96,7 +97,7 @@ export default function AdminStudentsPage() {
         .limit(25),
       supabase
         .from("submissions")
-        .select("id, status, submitted_at, feedback, assignment:assignments(title)")
+        .select("id, status, submitted_at, feedback, file_url, file_name, assignment:assignments(title)")
         .eq("user_id", student.id)
         .order("submitted_at", { ascending: false })
         .limit(25),
@@ -108,6 +109,16 @@ export default function AdminStudentsPage() {
       submissions: submissions.data ?? [],
     });
     setDetailLoading(false);
+  };
+
+  /** Submission files live in a private bucket, so open them through a signed URL. */
+  const openSubmission = async (submission: { file_url: string }) => {
+    try {
+      const url = await submissionFileUrl(supabase, submission.file_url);
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch (err: unknown) {
+      setError(errorMessage(err, "Could not open that file."));
+    }
   };
 
   const exportCsv = () => {
@@ -435,6 +446,15 @@ export default function AdminStudentsPage() {
                               {String(s.status).replace(/_/g, " ")}
                             </span>
                           </div>
+                          {s.file_url && (
+                            <button
+                              onClick={() => openSubmission(s)}
+                              className="inline-flex items-center gap-1 text-xs font-semibold text-secondary hover:underline max-w-full"
+                            >
+                              <span className="material-symbols-outlined text-[14px] flex-shrink-0">description</span>
+                              <span className="truncate">{s.file_name || "Submitted file"}</span>
+                            </button>
+                          )}
                           {s.feedback && (
                             <p className="text-xs text-on-surface-variant">{s.feedback}</p>
                           )}
