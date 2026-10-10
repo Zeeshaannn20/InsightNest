@@ -118,6 +118,8 @@ export interface EnrollmentRow {
   razorpay_order_id: string | null;
   razorpay_payment_id: string | null;
   purchased_at: string | null;
+  /** Admin who granted this by hand. Null for Razorpay and pre-2026-10-11 rows. */
+  granted_by: string | null;
 }
 
 export interface EscalatedQuestionRow {

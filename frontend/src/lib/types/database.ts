@@ -70,6 +70,8 @@ export interface Lesson extends LessonRow {
 export interface Enrollment extends EnrollmentRow {
   student?: Profile;
   course?: Course;
+  /** Select as `grantor:profiles!enrollments_granted_by_fkey(full_name, email)`. */
+  grantor?: Profile;
 }
 
 export interface LiveSession extends LiveSessionRow {
