@@ -78,7 +78,10 @@ function LoginContent() {
         student: "/dashboard",
       };
 
-      router.push(redirectMap[profile.role] || "/dashboard");
+      // Students who were sent here from a page go back to it.
+      const target = searchParams.get("redirect");
+      const back = target && target.startsWith("/") && !target.startsWith("//") ? target : null;
+      router.push((profile.role === "student" && back) || redirectMap[profile.role] || "/dashboard");
     } catch (err) {
       setError("Something went wrong. Please try again.");
     }

@@ -8,11 +8,16 @@ import Logo from "@/components/Logo";
 
 type Outcome = "check_email";
 
+/** A same-site path from ?redirect=, or null. Off-site targets are ignored. */
+function safeRedirect() {
+  const target = new URLSearchParams(window.location.search).get("redirect");
+  return target && target.startsWith("/") && !target.startsWith("//") ? target : null;
+}
+
 export default function SignupPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
@@ -28,10 +33,6 @@ export default function SignupPage() {
 
     if (password.length < 8) {
       setError("Password must be at least 8 characters.");
-      return;
-    }
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
       return;
     }
 
@@ -83,7 +84,7 @@ export default function SignupPage() {
 
     // Accounts are active on creation, so send them straight in. Course content
     // is still gated by enrollment, which only a payment or an admin grant creates.
-    router.push("/dashboard");
+    router.push(safeRedirect() ?? "/dashboard");
   };
 
   if (outcome) {
@@ -242,30 +243,6 @@ export default function SignupPage() {
                       {showPassword ? "visibility_off" : "visibility"}
                     </span>
                   </button>
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label
-                  htmlFor="confirmPassword"
-                  className="block text-sm font-semibold text-on-surface"
-                >
-                  Confirm Password
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant text-xl">
-                    lock_reset
-                  </span>
-                  <input
-                    id="confirmPassword"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    autoComplete="new-password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all text-on-surface"
-                    placeholder="Re-enter your password"
-                  />
                 </div>
               </div>
 
