@@ -21,11 +21,18 @@ export async function POST(request: Request) {
 
     const supabase = serviceClient();
 
-    // Find the account, or invite one. listUsers is paginated, so ask for the
-    // single address rather than scanning every page.
+    // Find the account, or invite one. listUsers returns one page (50 by
+    // default), so walk every page — otherwise anyone past the first page looks
+    // new, the invite fails with "already been registered", and they can't be
+    // enrolled.
+    const PER_PAGE = 1000;
     let userId: string | undefined;
-    const { data: found } = await supabase.auth.admin.listUsers();
-    userId = found?.users.find((u) => u.email?.toLowerCase() === email)?.id;
+    for (let page = 1; !userId; page++) {
+      const { data: found, error: listError } = await supabase.auth.admin.listUsers({ page, perPage: PER_PAGE });
+      if (listError) throw listError;
+      userId = found.users.find((u) => u.email?.toLowerCase() === email)?.id;
+      if (found.users.length < PER_PAGE) break;
+    }
 
     if (!userId) {
       const { data: invited, error: inviteError } =
