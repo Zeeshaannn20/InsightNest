@@ -14,8 +14,8 @@ export const BATCH = {
   startDateIso: "",
   // The advertised close date. enrolmentCloseIso feeds schema.org and must
   // stay in step with enrolmentNote.
-  enrolmentNote: "Enrollments close 29 September",
-  enrolmentCloseIso: "2026-09-29",
+  enrolmentNote: "Enrollments close 10 November",
+  enrolmentCloseIso: "2026-11-10",
   timing: "Sat & Sun, 10:00 AM – 1:00 PM IST",
   language: "Hindi + English",
   whatsapp: "+91 63667 35759",
@@ -23,11 +23,11 @@ export const BATCH = {
   email: "support@insightnest.in",
 };
 
-export const PRICE = { now: 2999, was: 5999 };
+export const PRICE = { now: 2999, was: 4999 };
 
 /** Headline numbers. Keep these defensible — they are advertising claims. */
 export const STATS = [
-  { value: "487+", label: "Students taught" },
+  { value: "900+", label: "Students taught" },
   { value: "16", label: "Live sessions" },
   { value: "7", label: "Portfolio projects" },
   { value: "2", label: "Months, start to finish" },
@@ -456,5 +456,100 @@ export const FAQS = [
   {
     q: "Are there any additional charges?",
     a: "None. ₹2,999 covers the entire program, all materials, all recordings and all career sessions.",
+  },
+];
+
+export const PM_MODULES = [
+  {
+    title: "Introduction to Product Management",
+    body: "Understand the role of a Product Manager and the complete product lifecycle. Learn the difference between Product, Project and Program Management. Explore B2B, B2C, SaaS and marketplace business models. Analyze how companies like Airbnb, Uber and Spotify build successful products.",
+  },
+  {
+    title: "Product Strategy & Market Research",
+    body: "Learn how to identify market opportunities and evaluate business potential. Master TAM, SAM, SOM, competitor analysis and market positioning. Explore product vision, business models and monetization strategies. Apply RICE, ICE and MoSCoW frameworks to prioritize product ideas.",
+  },
+  {
+    title: "User Research & Problem Discovery",
+    body: "Understand customer behaviour, needs, motivations and pain points. Learn user interviews, surveys, customer personas and Jobs To Be Done. Apply empathy mapping and customer journey mapping to identify problems. Translate customer insights into actionable product opportunities.",
+  },
+  {
+    title: "Product Design & UX Fundamentals",
+    body: "Learn the fundamentals of UI/UX and human-centred product design. Understand user flows, wireframing, information architecture and prototyping. Get hands-on experience with Figma to visualize product ideas. Learn usability testing and validate product experiences before development.",
+  },
+  {
+    title: "PRD, Agile & Product Execution",
+    body: "Learn to translate product ideas into structured Product Requirement Documents (PRDs). Master user stories, acceptance criteria, product roadmaps and feature prioritization. Understand Agile, Scrum, sprint planning and backlog management. Gain practical exposure to Jira and cross-functional product execution.",
+  },
+  {
+    title: "Product Analytics & Metrics",
+    body: "Learn to measure product performance using data-driven decision-making. Understand North Star Metrics, AARRR, DAU, MAU, CAC, LTV and churn. Explore conversion funnels, retention, cohort analysis and A/B testing. Use product analytics concepts to identify opportunities for product improvement.",
+  },
+  {
+    title: "Growth, GTM & Product Launch",
+    body: "Learn how to position, price and successfully launch a product in the market. Understand ICP, STP, Product-Led Growth and customer acquisition strategies. Explore onboarding, activation, retention and growth loops. Develop a practical Go-To-Market strategy for a real-world product.",
+  },
+  {
+    title: "AI in Product Management & Capstone",
+    body: "Discover how AI tools like ChatGPT can accelerate product research, documentation and decision-making. Use AI for competitor analysis, PRDs, user stories and product ideation. Apply your learning to develop an end-to-end product strategy. Present a capstone covering research, prototype, roadmap, metrics and launch strategy.",
+  },
+];
+
+/** The two courses, shown side by side on the first screen. */
+export const COURSES = [
+  {
+    tag: "Data & AI",
+    icon: "query_stats",
+    name: "Data Analytics with GenAI for Placement Bootcamp",
+    summary: "Turn raw data into business decisions, from your first spreadsheet to a full capstone.",
+    points: ["Excel, SQL, Python and Power BI", "Statistics and data storytelling", "Resume and interview prep"],
+    enrollHref: "#pricing",
+    curriculumHref: "#curriculum",
+  },
+  {
+    tag: "Product & AI",
+    icon: "rocket_launch",
+    name: "Product Management with Generative AI",
+    summary: "Learn to decide what gets built and why, from user research to a product launch.",
+    points: ["Strategy and user research", "PRDs, Agile, Figma and Jira", "Metrics, launch and AI for PMs"],
+    enrollHref: "/courses/product-management#enrollment",
+    curriculumHref: "/courses/product-management#curriculum",
+  },
+];
+
+/**
+ * Why each skill is worth learning, and what the market pays.
+ * Pay figures are approximate ranges from 2026 salary guides (checked Nov 2026):
+ * weekday.works, guvi.in, masaischool.com, citing Glassdoor. Refresh them when
+ * they age, and never present them as InsightNest student outcomes.
+ */
+export const CAREER_CASE = [
+  {
+    field: "Data Analytics",
+    icon: "query_stats",
+    why: [
+      "Companies in every sector need people who can turn numbers into decisions.",
+      "AI and big data lead the fastest-growing skills in the World Economic Forum’s Future of Jobs Report 2025.",
+      "You can start from a non-technical background, beginning with Excel and SQL.",
+    ],
+    pay: [
+      { level: "Freshers", range: "₹3–6 LPA" },
+      { level: "National average", range: "About ₹6.5 LPA" },
+      { level: "Senior analysts", range: "₹12–20 LPA" },
+    ],
+  },
+  {
+    field: "Product Management",
+    icon: "rocket_launch",
+    why: [
+      "Product managers decide what gets built and bring design, engineering and business together.",
+      "Experience in sales, operations, marketing or design carries over well into product work.",
+      "AI now speeds up research, documentation and PRDs, so PMs who use it well can move faster.",
+    ],
+    pay: [
+      { level: "Associate PM", range: "₹8–22 LPA" },
+      { level: "Average PM", range: "About ₹22–25 LPA" },
+      { level: "Senior PM", range: "₹35–60 LPA" },
+    ],
+    note: "Many PM roles ask for prior work experience, so freshers often need to start as an Associate PM or in a related role.",
   },
 ];

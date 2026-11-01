@@ -8,6 +8,8 @@ import { OrganizationJsonLd, CourseJsonLd, FaqJsonLd } from "@/components/JsonLd
 import {
   BATCH,
   CAREER_BLOCKS,
+  CAREER_CASE,
+  COURSES,
   DIFFERENTIATORS,
   FAQS,
   MAJOR_PROJECTS,
@@ -155,15 +157,16 @@ export default function DataAnalystCoursePage() {
             <Logo variant="img1" className="h-16 w-auto" />
           </Link>
           <div className="hidden md:flex items-center gap-8">
+            <a href="#courses" className="text-on-surface hover:text-secondary font-medium transition-colors">Courses</a>
             <a href="#curriculum" className="text-on-surface hover:text-secondary font-medium transition-colors">Curriculum</a>
             <a href="#projects" className="text-on-surface hover:text-secondary font-medium transition-colors">Projects</a>
             <a href="#pricing" className="text-on-surface hover:text-secondary font-medium transition-colors">Pricing</a>
             <a href="#faq" className="text-on-surface hover:text-secondary font-medium transition-colors">FAQ</a>
-            <Link href="/articles" className="text-on-surface hover:text-secondary font-medium transition-colors">Articles</Link>
+                        <Link href="/articles" className="text-on-surface hover:text-secondary font-medium transition-colors">Articles</Link>
           </div>
           <div className="flex items-center gap-3 md:gap-4">
             <Link href="/login" className="text-on-surface hover:text-secondary font-medium transition-colors hidden md:block">Login</Link>
-            <a href="#pricing" className="bg-secondary text-on-secondary px-4 md:px-5 py-2 rounded-full font-semibold hover:bg-secondary/90 transition-all btn-press shadow-md text-sm md:text-base">
+            <a href="#courses" className="inline-flex items-center min-h-11 bg-secondary text-on-secondary px-4 md:px-5 py-2 rounded-full font-semibold hover:bg-secondary/90 transition-all btn-press shadow-md text-sm md:text-base">
               Enroll Now
             </a>
 
@@ -187,6 +190,7 @@ export default function DataAnalystCoursePage() {
           <div className="md:hidden border-t border-outline-variant/30 bg-surface animate-slide-down">
             <div className="px-6 py-3 flex flex-col">
               {[
+                { href: "#courses", label: "Courses" },
                 { href: "#curriculum", label: "Curriculum" },
                 { href: "#projects", label: "Projects" },
                 { href: "#pricing", label: "Pricing" },
@@ -201,6 +205,13 @@ export default function DataAnalystCoursePage() {
                   {item.label}
                 </a>
               ))}
+              <Link
+                href="/courses/product-management"
+                onClick={() => setMenuOpen(false)}
+                className="py-3.5 text-on-surface font-medium border-b border-outline-variant/20 active:text-secondary"
+              >
+                Product Management
+              </Link>
               <Link
                 href="/articles"
                 onClick={() => setMenuOpen(false)}
@@ -224,76 +235,121 @@ export default function DataAnalystCoursePage() {
           it the footer sits underneath and the last links are untappable. */}
       <main className="pt-20 pb-28 md:pb-0">
         {/* ------------------------- SCREEN 1 · HERO ------------------------ */}
-        <section className={`relative overflow-hidden bg-primary-container text-white ${SCREEN}`}>
+        <section id="courses" className={`relative overflow-hidden bg-primary-container text-white ${SCREEN} max-md:py-6!`}>
           <div className="absolute -top-40 -right-32 w-[36rem] h-[36rem] bg-secondary/30 rounded-full blur-[140px] pointer-events-none" />
           <div className="absolute -bottom-52 -left-20 w-[30rem] h-[30rem] bg-secondary-container/20 rounded-full blur-[130px] pointer-events-none" />
 
-          <div className="relative w-full max-w-7xl mx-auto px-6 grid lg:grid-cols-[1.15fr_1fr] gap-12 items-center">
-            <div>
-              <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide backdrop-blur-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                Live weekend batch · {BATCH.enrolmentNote}
+          {/* On a phone the cards come before the numbers, so both courses are seen first. */}
+          <div className="relative w-full max-w-7xl mx-auto px-6 grid lg:grid-cols-[1.5fr_1fr] gap-6 lg:gap-8 lg:items-end">
+              <div>
+                <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide backdrop-blur-sm">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                  Live weekend batch · {BATCH.enrolmentNote}
+                </div>
+                <h1 className="mt-4 text-3xl md:text-5xl font-bold tracking-tight leading-[1.08] text-balance">
+                  Two live courses. Pick your path into data or product.
+                </h1>
+                <p className="hidden md:block mt-4 text-lg text-white/75 leading-relaxed max-w-2xl">
+                  Learn live on weekends, build a real portfolio and get career support. {price(PRICE.now)} per course.
+                </p>
               </div>
 
-              <h1 className="mt-6 text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] text-balance">
-                Become a Job-Ready Data Analyst in 8 Weekends
-              </h1>
-
-              <p className="mt-6 text-lg md:text-xl text-white/75 leading-relaxed max-w-2xl">
-                Excel, SQL, Python, Statistics, Power BI and Data Storytelling. Taught live, built on
-                7 real projects, finished with a resume and an interview plan.
-              </p>
-
-              <div className="mt-9 flex flex-wrap items-center gap-4">
-                <a
-                  href="#pricing"
-                  className="bg-secondary text-on-secondary px-7 py-3.5 rounded-xl font-bold text-base hover:bg-secondary/90 transition-all btn-press shadow-lg shadow-secondary/25"
-                >
-                  Enroll Now for {price(PRICE.now)}
-                </a>
-                <a
-                  href="#curriculum"
-                  className="border border-white/25 text-white px-7 py-3.5 rounded-xl font-bold text-base hover:bg-white/10 transition-all backdrop-blur-sm"
-                >
-                  See Full Syllabus
-                </a>
-              </div>
-
-              <div className="mt-10 grid grid-cols-4 gap-4 max-w-xl">
+              <div className="order-last lg:order-none grid grid-cols-4 gap-3 lg:pb-1">
                 {STATS.map((s) => (
                   <div key={s.label}>
                     <p className="text-2xl md:text-3xl font-bold tracking-tight tabular-nums">{s.value}</p>
-                    <p className="mt-0.5 text-[11px] md:text-xs text-white/55 leading-snug">{s.label}</p>
+                    <p className="mt-0.5 text-[11px] md:text-xs text-white/70 leading-snug">{s.label}</p>
                   </div>
                 ))}
               </div>
-            </div>
 
-            {/* price card */}
-            <div className="lg:justify-self-end w-full max-w-sm bg-white/10 border border-white/15 rounded-3xl p-8 backdrop-blur-md shadow-2xl">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-secondary-container">Complete Program</p>
-              <div className="mt-4 flex items-end gap-3">
-                <span className="text-5xl font-bold tracking-tight">{price(PRICE.now)}</span>
-                <span className="text-xl text-white/40 line-through mb-1.5">{price(PRICE.was)}</span>
-              </div>
-              <p className="mt-2 text-sm text-white/60">One-time fee. Full program. No hidden charges.</p>
-              <div className="mt-6 space-y-3 text-sm">
-                {["16 live sessions over 8 weeks", "7 portfolio projects", "Lifetime recordings", "Career support included"].map(
-                  (item) => (
-                    <div key={item} className="flex items-center gap-2.5 text-white/85">
-                      <span className="material-symbols-outlined text-[18px] text-green-400">check_circle</span>
-                      {item}
+            <div className="lg:col-span-2 grid md:grid-cols-2 gap-4 md:gap-5">
+              {COURSES.map((c) => (
+                <div
+                  key={c.name}
+                  className="flex flex-col bg-white/10 border border-white/15 rounded-3xl p-5 md:p-7 backdrop-blur-md shadow-2xl"
+                >
+                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-secondary-container">
+                    <span className="material-symbols-outlined text-[18px]" aria-hidden="true">{c.icon}</span>
+                    {c.tag}
+                  </div>
+                  <h2 className="mt-2 md:mt-3 text-xl md:text-2xl font-bold leading-snug text-balance">{c.name}</h2>
+                  <p className="hidden md:block mt-2 text-sm text-white/75 leading-relaxed">{c.summary}</p>
+                  <ul className="hidden md:block mt-4 mb-6 space-y-2 text-sm">
+                    {c.points.map((point) => (
+                      <li key={point} className="flex items-center gap-2.5 text-white/85">
+                        <span className="material-symbols-outlined text-[18px] text-green-400" aria-hidden="true">check_circle</span>
+                        {point}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-3 md:mt-auto flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+                    <p className="flex items-baseline gap-2">
+                      <span className="text-2xl md:text-3xl font-bold tracking-tight">{price(PRICE.now)}</span>
+                      <span className="text-white/60 line-through">{price(PRICE.was)}</span>
+                    </p>
+                    <div className="flex items-center gap-4">
+                      <Link href={c.curriculumHref} className="py-3 text-sm font-semibold text-white/85 underline underline-offset-4 hover:text-white">
+                        Curriculum
+                      </Link>
+                      <Link
+                        href={c.enrollHref}
+                        className="bg-secondary text-on-secondary px-6 py-3 rounded-xl font-bold hover:bg-secondary/90 transition-all btn-press shadow-lg shadow-secondary/25"
+                      >
+                        Enroll Now
+                      </Link>
                     </div>
-                  )
-                )}
-              </div>
-              <a
-                href="#pricing"
-                className="mt-7 block text-center bg-white text-primary-container py-3.5 rounded-xl font-bold hover:bg-white/90 transition-all btn-press"
-              >
-                Reserve My Seat
-              </a>
+                  </div>
+                </div>
+              ))}
             </div>
+          </div>
+        </section>
+
+        {/* ------------------------- WHY THESE SKILLS ----------------------- */}
+        <section id="why-these-skills" className="bg-surface-container-low py-16 md:py-20 scroll-mt-20">
+          <div className="max-w-7xl mx-auto px-6">
+            <SectionHeading
+              eyebrow="Why these skills"
+              title="Why learn this, and what does it pay?"
+              sub="Both careers reward people who can use evidence to make better business decisions. Here is what each one offers."
+            />
+            <div className="grid md:grid-cols-2 gap-5">
+              {CAREER_CASE.map((c) => (
+                <div key={c.field} className="flex flex-col bg-surface-container-lowest border border-outline-variant/30 rounded-3xl p-6 md:p-7">
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined" aria-hidden="true">{c.icon}</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-primary-container">{c.field}</h3>
+                  </div>
+                  <ul className="mt-5 mb-6 space-y-3">
+                    {c.why.map((line) => (
+                      <li key={line} className="flex gap-2.5 text-sm text-on-surface leading-relaxed">
+                        <span className="material-symbols-outlined text-[18px] leading-5 text-secondary shrink-0" aria-hidden="true">check</span>
+                        {line}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-auto">
+                    <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">Typical market pay in India</p>
+                    <dl className="grid grid-cols-3 gap-2">
+                      {c.pay.map((row) => (
+                        <div key={row.level} className="bg-surface-container-low rounded-xl p-3">
+                          <dt className="text-xs text-on-surface-variant leading-snug">{row.level}</dt>
+                          <dd className="mt-1 text-sm md:text-base font-bold text-primary-container leading-snug">{row.range}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                    {c.note && <p className="mt-3 text-xs text-on-surface-variant leading-relaxed">{c.note}</p>}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="mt-5 text-xs text-on-surface-variant leading-relaxed max-w-4xl">
+              Approximate market ranges from 2026 salary guides citing Glassdoor. Pay varies by city, company and experience. These
+              are general market figures, not InsightNest student results or a promise of any job or salary.
+            </p>
           </div>
         </section>
 
@@ -341,9 +397,17 @@ export default function DataAnalystCoursePage() {
         <section id="curriculum" className={`bg-surface-container-low border-y border-outline-variant/20 ${SCREEN}`}>
           <div className="w-full max-w-7xl mx-auto px-6 reveal-on-scroll">
             <SectionHeading
-              eyebrow="Curriculum & projects"
+              eyebrow="Data Analytics curriculum & projects"
               title="7 skill tracks. 7 portfolio projects. 8 weeks."
             />
+
+            <Link
+              href="/courses/product-management#curriculum"
+              className="-mt-6 mb-8 inline-flex items-center gap-1.5 py-2 font-semibold text-secondary hover:underline"
+            >
+              Looking for Product Management? See its 8 modules
+              <span className="material-symbols-outlined text-[20px]" aria-hidden="true">arrow_forward</span>
+            </Link>
 
             <div className="grid lg:grid-cols-[1.25fr_1fr] gap-6">
               {/* track picker */}
@@ -529,16 +593,16 @@ export default function DataAnalystCoursePage() {
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface/95 backdrop-blur-md border-t border-outline-variant/30 px-4 py-3 flex items-center justify-between gap-4">
         <div>
           <div className="flex items-baseline gap-2">
-            <span className="text-xl font-bold text-primary-container">₹{PRICE.now.toLocaleString("en-IN")}</span>
-            <span className="text-sm text-outline line-through">₹{PRICE.was.toLocaleString("en-IN")}</span>
+            <span className="text-xl font-bold text-primary-container">{price(PRICE.now)}</span>
+            <span className="text-sm text-outline line-through">{price(PRICE.was)}</span>
           </div>
-          <p className="text-[11px] text-on-surface-variant">Everything included</p>
+          <p className="text-[11px] text-on-surface-variant">2 courses · per course</p>
         </div>
         <a
-          href="#pricing"
+          href="#courses"
           className="bg-secondary text-on-secondary px-6 py-3 rounded-xl font-bold text-sm shadow-md btn-press"
         >
-          Enroll Now
+          Choose Course
         </a>
       </div>
 
@@ -550,7 +614,7 @@ export default function DataAnalystCoursePage() {
               <Logo variant="img2" className="h-14 w-auto" />
             </Link>
             <p className="text-sm max-w-sm">
-              Live, project-first data analytics training. Built for people switching careers on weekends.
+              Live, project-first training in data analytics and product management. Built for people switching careers on weekends.
             </p>
             <div className="text-sm space-y-1 pt-2">
               <p className="flex items-center gap-2">
@@ -572,6 +636,7 @@ export default function DataAnalystCoursePage() {
               <li><a href="#projects" className="inline-block py-1.5 hover:text-secondary transition-colors">Projects</a></li>
               <li><a href="#pricing" className="inline-block py-1.5 hover:text-secondary transition-colors">Pricing</a></li>
               <li><a href="#faq" className="inline-block py-1.5 hover:text-secondary transition-colors">FAQ</a></li>
+              <li><Link href="/courses/product-management" className="inline-block py-1.5 hover:text-secondary transition-colors">Product Management</Link></li>
             </ul>
           </div>
           <div>

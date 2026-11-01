@@ -5,6 +5,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import RazorpayButton from "./RazorpayButton";
 import Logo from "./Logo";
+import { PRICE } from "@/lib/landing-content";
 
 interface CourseEnrollmentSectionProps {
   courseSlug: string;
@@ -12,7 +13,9 @@ interface CourseEnrollmentSectionProps {
 
 // Fallback data for when Supabase is unavailable or migration hasn't run
 const COURSE_FALLBACKS: Record<string, { title: string; price_paise: number; status: string; duration_weeks: number }> = {
-  "data-analyst": { title: "GenAI Data Analyst Accelerator", price_paise: 299900, status: "open", duration_weeks: 4 },
+  "data-analyst": { title: "Data Analytics with GenAI for Placement Bootcamp", price_paise: 299900, status: "open", duration_weeks: 8 },
+  // No course id without the database row, so checkout cannot work: take interest instead.
+  "product-management": { title: "Product Management with Generative AI", price_paise: 299900, status: "coming_soon", duration_weeks: 0 },
   "business-analytics": { title: "Business Analyst Fundamentals", price_paise: 299900, status: "coming_soon", duration_weeks: 4 },
 };
 
@@ -128,7 +131,7 @@ export default function CourseEnrollmentSection({ courseSlug }: CourseEnrollment
 
   // Formatted price
   const priceDisplay = course.price_paise ? (course.price_paise / 100).toLocaleString('en-IN') : "2,999";
-  const originalPriceDisplay = "5,999";
+  const originalPriceDisplay = PRICE.was.toLocaleString("en-IN");
 
   return (
     <section id="enrollment" className="py-24 bg-surface border-t border-outline-variant/20">

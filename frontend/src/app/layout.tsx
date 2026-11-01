@@ -11,9 +11,9 @@ const inter = Inter({
   display: "swap",
 });
 
-const title = "Become a Job-Ready Data Analyst in 8 Weekends — InsightNest";
+const title = "Data Analytics & Product Management Courses with GenAI — InsightNest";
 const description =
-  "Live weekend training in Excel, SQL, Python, Statistics, Power BI and data storytelling. 16 live sessions, 7 portfolio projects and career support, for ₹2,999.";
+  "Two live courses: Data Analytics with GenAI and Product Management with Generative AI. 16 live sessions, 7 portfolio projects and career support, for ₹2,999 each.";
 
 export const metadata: Metadata = {
   // Makes every relative URL in metadata resolve to one canonical origin.

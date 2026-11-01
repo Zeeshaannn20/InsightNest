@@ -13,6 +13,7 @@ export const revalidate = 3600;
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: absoluteUrl("/"), changeFrequency: "weekly", priority: 1 },
+    { url: absoluteUrl("/courses/product-management"), changeFrequency: "weekly", priority: 0.9 },
     { url: absoluteUrl("/articles"), changeFrequency: "daily", priority: 0.8 },
     { url: absoluteUrl("/login"), changeFrequency: "yearly", priority: 0.2 },
     { url: absoluteUrl("/signup"), changeFrequency: "yearly", priority: 0.3 },

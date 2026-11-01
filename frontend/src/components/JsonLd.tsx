@@ -58,7 +58,7 @@ export function CourseJsonLd({
         "@context": "https://schema.org",
         "@type": "Course",
         "@id": `${SITE_URL}/#course`,
-        name: "Complete Data Analytics Program",
+        name: "Data Analytics with GenAI for Placement Bootcamp",
         description: SITE_DESCRIPTION,
         url: SITE_URL,
         provider: { "@type": "EducationalOrganization", name: SITE_NAME, url: SITE_URL },

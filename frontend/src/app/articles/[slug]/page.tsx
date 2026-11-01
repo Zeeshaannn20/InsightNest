@@ -155,7 +155,7 @@ export default async function ArticlePage({ params }: Props) {
         <div className="mt-16 rounded-2xl bg-primary-container text-white p-8 md:p-10">
           <h2 className="text-2xl font-bold tracking-tight">Want to learn this properly?</h2>
           <p className="mt-3 text-white/75 leading-relaxed">
-            The Complete Data Analytics Program covers Excel, SQL, Python, Power BI and Statistics live over
+            The Data Analytics with GenAI for Placement Bootcamp covers Excel, SQL, Python, Power BI and Statistics live over
             8 weekends, built on 7 real projects.
           </p>
           <Link
