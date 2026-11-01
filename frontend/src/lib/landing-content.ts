@@ -14,8 +14,8 @@ export const BATCH = {
   startDateIso: "",
   // The advertised close date. enrolmentCloseIso feeds schema.org and must
   // stay in step with enrolmentNote.
-  enrolmentNote: "Enrollments close 29 September",
-  enrolmentCloseIso: "2026-09-29",
+  enrolmentNote: "Enrollments close 10 November",
+  enrolmentCloseIso: "2026-11-10",
   timing: "Sat & Sun, 10:00 AM – 1:00 PM IST",
   language: "Hindi + English",
   whatsapp: "+91 63667 35759",
@@ -23,7 +23,7 @@ export const BATCH = {
   email: "support@insightnest.in",
 };
 
-export const PRICE = { now: 2999, was: 5999 };
+export const PRICE = { now: 2999, was: 4999 };
 
 /** Headline numbers. Keep these defensible — they are advertising claims. */
 export const STATS = [
@@ -423,6 +423,70 @@ export const COMPARISON = {
     { label: "Loan or EMI needed", ours: "No — one payment", others: ["Usually EMI", "Usually loan", "Sometimes", "No"] },
   ],
 };
+
+// ──────────────────────────────────────────────────────────────
+// "Why these skills" + salary section content
+// Salary ranges: India market estimates from AmbitionBox & Glassdoor.
+// Update these periodically; never claim them as guarantees.
+// ──────────────────────────────────────────────────────────────
+
+export const WHY_LEARN = [
+  {
+    icon: "table_chart",
+    skill: "Excel & SQL",
+    badge: "Required in 7 out of 10 analyst job listings",
+    body: "Every company stores data in tables. SQL queries it. Excel presents it. These two tools appear in more Indian job listings than any other analytics skill — and most candidates can't use either beyond the basics.",
+  },
+  {
+    icon: "code_blocks",
+    skill: "Python",
+    badge: "The jump from ₹4 LPA to ₹8 LPA",
+    body: "Python automates in seconds what Excel takes hours to do manually. It's the single skill hiring managers look for when moving a candidate from junior to mid-level — and the one most self-taught analysts never fully learn.",
+  },
+  {
+    icon: "dashboard",
+    skill: "Power BI",
+    badge: "Used across 97% of Fortune 500 companies",
+    body: "Managers don't read spreadsheets. They read dashboards. Power BI is the most in-demand BI tool in India right now, and proficiency in it turns a back-room analyst into someone who shapes business decisions.",
+  },
+  {
+    icon: "smart_toy",
+    skill: "GenAI for Analytics",
+    badge: "The skill gap that still hasn't closed",
+    body: "Most analysts don't use AI tools in their daily workflow. Pairing your data skills with GenAI makes you dramatically faster — and puts you ahead of every candidate who learned the same stack without it.",
+  },
+];
+
+export const SALARY_TIERS = [
+  {
+    level: "Fresher · 0–1 yr",
+    role: "Junior Data Analyst",
+    range: "₹3–6 LPA",
+    skills: "Excel · SQL basics",
+    highlight: false,
+  },
+  {
+    level: "1–3 years",
+    role: "Data Analyst",
+    range: "₹6–12 LPA",
+    skills: "Python · Power BI · Advanced SQL",
+    highlight: true,
+  },
+  {
+    level: "3–6 years",
+    role: "Senior Data Analyst",
+    range: "₹12–22 LPA",
+    skills: "Full stack · Storytelling · Stakeholder mgmt",
+    highlight: false,
+  },
+  {
+    level: "5+ years",
+    role: "Analytics Lead / Manager",
+    range: "₹18–35 LPA",
+    skills: "Strategy · Team ownership · Cross-functional",
+    highlight: false,
+  },
+];
 
 export const FAQS = [
   {

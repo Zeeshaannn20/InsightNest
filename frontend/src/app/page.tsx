@@ -13,8 +13,10 @@ import {
   MAJOR_PROJECTS,
   MINI_PROJECTS,
   PRICE,
+  SALARY_TIERS,
   STATS,
   TRACKS,
+  WHY_LEARN,
 } from "@/lib/landing-content";
 
 const price = (n: number) => `₹${n.toLocaleString("en-IN")}`;
@@ -294,6 +296,103 @@ export default function DataAnalystCoursePage() {
                 Reserve My Seat
               </a>
             </div>
+          </div>
+        </section>
+
+        {/* ------------- NEW SCREEN · WHY THESE SKILLS + SALARIES ----------- */}
+        <section className={`bg-surface-container-low border-b border-outline-variant/20 ${SCREEN}`}>
+          <div className="w-full max-w-7xl mx-auto px-6 reveal-on-scroll">
+            <SectionHeading
+              eyebrow="Why now"
+              title="Data roles are among the fastest-growing jobs in India."
+              sub="Fintech, e-commerce, healthcare, SaaS — every sector is hiring analysts faster than colleges are producing them. The pay gap between analysts who know Python and those who don't has never been wider."
+            />
+
+            {/* Why each skill matters */}
+            <div className="grid md:grid-cols-2 gap-4 mb-12">
+              {WHY_LEARN.map((item) => (
+                <div
+                  key={item.skill}
+                  className="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant/30 hover:shadow-card transition-shadow"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="w-11 h-11 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined">{item.icon}</span>
+                    </div>
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                        <span className="font-bold text-primary-container">{item.skill}</span>
+                        <span className="text-[11px] font-bold bg-secondary/10 text-secondary px-2.5 py-0.5 rounded-full leading-5">
+                          {item.badge}
+                        </span>
+                      </div>
+                      <p className="text-sm text-on-surface-variant leading-relaxed">{item.body}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Salary progression */}
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-secondary mb-5">
+                What data analysts earn in India
+              </p>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {SALARY_TIERS.map((tier) => (
+                  <div
+                    key={tier.role}
+                    className={`rounded-2xl p-5 border-2 relative transition-all ${
+                      tier.highlight
+                        ? "bg-primary-container text-white border-primary-container shadow-xl"
+                        : "bg-surface-container-lowest border-outline-variant/30"
+                    }`}
+                  >
+                    {tier.highlight && (
+                      <span className="inline-block text-[10px] font-bold uppercase tracking-wider bg-secondary text-white px-2.5 py-0.5 rounded-full mb-3">
+                        Where this course gets you
+                      </span>
+                    )}
+                    <p
+                      className={`text-[11px] font-bold uppercase tracking-wider mb-1 ${
+                        tier.highlight ? "text-white/55" : "text-on-surface-variant"
+                      }`}
+                    >
+                      {tier.level}
+                    </p>
+                    <p
+                      className={`font-bold text-base leading-snug ${
+                        tier.highlight ? "text-white" : "text-primary-container"
+                      }`}
+                    >
+                      {tier.role}
+                    </p>
+                    <p
+                      className={`text-2xl font-bold tracking-tight mt-1.5 ${
+                        tier.highlight ? "text-secondary-container" : "text-secondary"
+                      }`}
+                    >
+                      {tier.range}
+                    </p>
+                    <p
+                      className={`text-xs mt-2.5 leading-relaxed ${
+                        tier.highlight ? "text-white/55" : "text-on-surface-variant"
+                      }`}
+                    >
+                      {tier.skills}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-3 text-[11px] text-on-surface-variant">
+                * India market estimates based on publicly available data from AmbitionBox and Glassdoor. Actual packages vary by company, city and individual performance.
+              </p>
+            </div>
+
+            <CtaBand
+              title="The window to enter data is right now."
+              sub="Most analysts compete on the same degree. A real portfolio changes the equation."
+            />
           </div>
         </section>
 
