@@ -1,5 +1,5 @@
 // ============================================================
-// Data Analyst programme — page content
+// Data Analytics and Product Management — page content
 //
 // Everything editable lives here so the page component stays layout only.
 // The BATCH block is the one thing you must keep current.
@@ -27,7 +27,7 @@ export const PRICE = { now: 2999, was: 4999 };
 
 /** Headline numbers. Keep these defensible — they are advertising claims. */
 export const STATS = [
-  { value: "900+", label: "Students taught" },
+  { value: "1,000+", label: "Students taught" },
   { value: "16", label: "Live sessions" },
   { value: "7", label: "Portfolio projects" },
   { value: "2", label: "Months, start to finish" },
@@ -455,8 +455,12 @@ export const TESTIMONIALS = [
 
 export const FAQS = [
   {
+    q: "What is the refund policy?",
+    a: "Refund requests must be made within 7 calendar days of purchase and meet the conditions in our Terms & Refunds page, so please read them before you enroll.",
+  },
+  {
     q: "Do I need a coding or maths background?",
-    a: "No. Python starts from print(\"hello\") and statistics assumes school level. Half of every batch is non-technical.",
+    a: "No. Python starts from print(\"hello\") and statistics assumes school level.",
   },
   {
     q: "I have a full-time job. Can I manage this?",
@@ -531,8 +535,8 @@ export const COURSES = [
     name: "Data Analytics with GenAI for Placement Bootcamp",
     summary: "Turn raw data into business decisions, from your first spreadsheet to a full capstone.",
     points: ["Excel, SQL, Python and Power BI", "Statistics and data storytelling", "Resume and interview prep"],
-    enrollHref: "#pricing",
-    curriculumHref: "#curriculum",
+    enrollHref: "/courses/data-analytics#enrollment",
+    curriculumHref: "/courses/data-analytics#curriculum",
   },
   {
     tag: "Product & AI",
@@ -581,4 +585,58 @@ export const CAREER_CASE = [
     ],
     note: "Many PM roles ask for prior work experience, so freshers often need to start as an Associate PM or in a related role.",
   },
+];
+
+/** Keep these figures provable: they are advertising claims. */
+export const INSTRUCTOR = {
+  name: "Zeeshan",
+  role: "Founder and instructor, InsightNest",
+  bio: "Zeeshan teaches both InsightNest courses live, so you can ask your questions in class and get answers directly from your instructor.",
+  stats: [
+    { value: "1,000+", label: "Students taught" },
+    { value: "12,000+", label: "Instagram followers" },
+  ],
+};
+
+const SHARED_FAQS = [
+  {
+    q: "What is the refund policy?",
+    a: "Refund requests must be made within 7 calendar days of purchase and meet the conditions in our Terms & Refunds page, so please read them before you enroll.",
+  },
+  {
+    q: "Will I get a job after this?",
+    a: "Nobody can honestly promise a job. You get practical skills, portfolio projects and interview preparation. The applying is yours to do.",
+  },
+  {
+    q: "Are there any additional charges?",
+    a: "No. The ₹2,999 fee is a one-time payment for the course.",
+  },
+];
+
+export const HOME_FAQS = [
+  {
+    q: "Which course should I choose?",
+    a: "Choose Data Analytics if you enjoy working with numbers and want to start with Excel, SQL and Power BI. Choose Product Management if you like solving user problems and want to work with design, tech and business teams.",
+  },
+  {
+    q: "Who teaches the courses?",
+    a: "Zeeshan, the founder of InsightNest, teaches both courses live. He has taught more than 1,000 students.",
+  },
+  {
+    q: "When are the classes?",
+    a: `Live classes run on ${BATCH.timing}, in ${BATCH.language}.`,
+  },
+  ...SHARED_FAQS,
+];
+
+export const PM_FAQS = [
+  {
+    q: "What does the course cover?",
+    a: "Eight modules: product basics, strategy and market research, user research, UX, PRDs and Agile, product analytics, go-to-market, and AI in product management, ending in a capstone.",
+  },
+  {
+    q: "Which tools will I use?",
+    a: "You get hands-on experience with Figma, practical exposure to Jira, and learn to use AI tools such as ChatGPT for product research and documentation.",
+  },
+  ...SHARED_FAQS,
 ];

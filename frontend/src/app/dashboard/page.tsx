@@ -294,7 +294,7 @@ export default function DashboardPage() {
             <div className="flex gap-4">
               <div className="w-2 h-2 mt-2 rounded-full bg-secondary flex-shrink-0"></div>
               <div>
-                <h4 className="font-bold text-sm text-on-surface">Welcome to the Accelerator</h4>
+                <h4 className="font-bold text-sm text-on-surface">Welcome to your course</h4>
                 <p className="text-xs text-on-surface-variant mt-1 line-clamp-2">Ensure your environment is set up before the first live class. Check the syllabus for prerequisites.</p>
                 <span className="text-[10px] font-semibold text-outline mt-2 block">System • Today</span>
               </div>

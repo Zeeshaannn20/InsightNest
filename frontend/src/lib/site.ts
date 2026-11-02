@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 /**
  * One canonical origin for the whole site.
  *
@@ -11,7 +13,7 @@ export const SITE_URL = "https://insightnest.in";
 export const SITE_NAME = "InsightNest";
 
 export const SITE_DESCRIPTION =
-  "Live weekend training in Excel, SQL, Python, Statistics, Power BI and data storytelling. 16 live sessions, 7 portfolio projects and career support.";
+  "Live weekend courses in data analytics and product management with GenAI, taught by Zeeshan. 16 live sessions, 7 portfolio projects and career support.";
 
 export function absoluteUrl(path = "/"): string {
   return new URL(path, SITE_URL).toString();
@@ -25,3 +27,17 @@ export function absoluteUrl(path = "/"): string {
  * dashboard configuration to work.
  */
 export const META_PIXEL_ID = "2303152423863109";
+
+/** Title, description, self-canonical and share tags for one public page. */
+export function pageMeta(title: string, description: string, path: string): Metadata {
+  const fullTitle = `${title} — ${SITE_NAME}`;
+  // A page's own openGraph replaces the parent's, so the shared image is named here.
+  const images = ["/opengraph-image"];
+  return {
+    title,
+    description,
+    alternates: { canonical: path },
+    openGraph: { title: fullTitle, description, url: path, siteName: SITE_NAME, type: "website", locale: "en_IN", images },
+    twitter: { card: "summary_large_image", title: fullTitle, description, images },
+  };
+}

@@ -1,5 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
+import type { Metadata } from "next";
+import { pageMeta } from "@/lib/site";
+
+export const metadata: Metadata = pageMeta(
+  "Terms of Service and Refund Policy",
+  "Read InsightNest's terms of service and refund policy, including the 7-day window for refund requests and the conditions that apply.",
+  "/terms"
+);
 
 export default function TermsAndRefundPage() {
   return (

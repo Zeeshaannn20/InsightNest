@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import MetaPixel from "@/components/MetaPixel";
-import { SITE_URL, SITE_NAME } from "@/lib/site";
+import { SITE_DESCRIPTION, SITE_URL, SITE_NAME } from "@/lib/site";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -11,40 +11,13 @@ const inter = Inter({
   display: "swap",
 });
 
-const title = "Data Analytics & Product Management Courses with GenAI — InsightNest";
-const description =
-  "Two live courses: Data Analytics with GenAI and Product Management with Generative AI. 16 live sessions, 7 portfolio projects and career support, for ₹2,999 each.";
-
 export const metadata: Metadata = {
   // Makes every relative URL in metadata resolve to one canonical origin.
+  // No canonical here: it would be inherited, marking every page without its
+  // own as a copy of the home page. Each public page sets one via pageMeta.
   metadataBase: new URL(SITE_URL),
-  alternates: { canonical: "/" },
-  title,
-  description,
-  keywords: [
-    "data analyst course",
-    "data analytics bootcamp",
-    "live weekend classes",
-    "Excel",
-    "SQL",
-    "Python",
-    "Power BI",
-    "statistics",
-    "data analytics course India",
-  ],
-  openGraph: {
-    title,
-    description,
-    type: "website",
-    siteName: SITE_NAME,
-    url: SITE_URL,
-    locale: "en_IN",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title,
-    description,
-  },
+  title: { default: SITE_NAME, template: `%s — ${SITE_NAME}` },
+  description: SITE_DESCRIPTION,
   icons: "/icon.png",
 };
 

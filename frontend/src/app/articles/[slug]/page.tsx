@@ -46,18 +46,19 @@ async function loadArticle(slug: string): Promise<Article | null> {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const article = await loadArticle(slug);
-  if (!article) return { title: "Article not found — InsightNest" };
+  if (!article) return { title: "Article not found" };
 
   const description = article.excerpt ?? undefined;
   return {
-    title: `${article.title} — InsightNest`,
+    // Long titles drop the brand suffix so search results don't cut them off.
+    title: article.title.length > 46 ? { absolute: article.title } : article.title,
     description,
     alternates: { canonical: `/articles/${article.slug}` },
     openGraph: {
       title: article.title,
       description,
       type: "article",
-      images: article.cover_image_url ? [article.cover_image_url] : undefined,
+      images: [article.cover_image_url ?? "/opengraph-image"],
     },
   };
 }
@@ -102,7 +103,7 @@ export default async function ArticlePage({ params }: Props) {
               Articles
             </Link>
             <Link
-              href="/#pricing"
+              href="/courses/data-analytics"
               className="bg-secondary text-on-secondary px-5 py-2 rounded-full font-semibold hover:bg-secondary/90 transition-all shadow-sm"
             >
               Enroll Now
@@ -159,10 +160,10 @@ export default async function ArticlePage({ params }: Props) {
             8 weekends, built on 7 real projects.
           </p>
           <Link
-            href="/#pricing"
+            href="/courses/data-analytics"
             className="mt-6 inline-block bg-secondary text-on-secondary px-6 py-3 rounded-xl font-bold hover:bg-secondary/90 transition-all shadow-md"
           >
-            See the programme
+            See the course
           </Link>
         </div>
       </article>

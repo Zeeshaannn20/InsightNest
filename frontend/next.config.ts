@@ -4,9 +4,14 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        // The programme page is now the home page. Keep the old URL working
-        // for existing links, ads and search results.
+        // Keep the old URL working for existing links, ads and search results.
         source: "/courses/data-analyst",
+        destination: "/courses/data-analytics",
+        permanent: true,
+      },
+      {
+        // This course is no longer offered.
+        source: "/courses/business-analytics",
         destination: "/",
         permanent: true,
       },

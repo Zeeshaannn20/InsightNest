@@ -4,13 +4,13 @@ import { createClient } from "@/lib/supabase/server";
 import Logo from "@/components/Logo";
 import { BlogJsonLd } from "@/components/JsonLd";
 import { BATCH } from "@/lib/landing-content";
+import { pageMeta } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Articles — InsightNest",
-  description:
-    "Practical writing on data analytics: SQL, Python, Power BI, Excel and the career side of becoming an analyst.",
-  alternates: { canonical: "/articles" },
-};
+export const metadata: Metadata = pageMeta(
+  "Data Analytics Career Guides & Tutorials",
+  "Practical guides to SQL, Python, Power BI, Excel and analyst careers in India, with real examples, interview questions and salary information.",
+  "/articles"
+);
 
 // Published articles change when the admin publishes, not when we deploy.
 export const revalidate = 60;
@@ -121,7 +121,7 @@ export default async function ArticlesPage({ searchParams }: Props) {
               Articles
             </Link>
             <Link
-              href="/#pricing"
+              href="/#courses"
               className="bg-secondary text-on-secondary px-5 py-2 rounded-full font-semibold hover:bg-secondary/90 transition-all shadow-sm"
             >
               Enroll Now
