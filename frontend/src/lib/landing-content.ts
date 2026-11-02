@@ -437,6 +437,7 @@ export const MENTOR_SESSION = {
     "Google Meet link sent instantly on booking",
     "Available 7 days a week",
   ],
+  surpriseBenefit: "Book a session and enroll in any course within 48 hours — unlock a surprise bonus that isn't listed anywhere else.",
 };
 
 // ──────────────────────────────────────────────────────────────

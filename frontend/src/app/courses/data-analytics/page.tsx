@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import CourseEnrollmentSection from "@/components/CourseEnrollmentSection";
-import { CourseHero, FaqList, Instructor, SectionHeading, SiteShell, Testimonials } from "@/components/CourseParts";
+import { CourseHero, FaqList, Instructor, MentorSessionBanner, SectionHeading, SiteShell, Testimonials } from "@/components/CourseParts";
 import { CourseJsonLd, FaqJsonLd } from "@/components/JsonLd";
 import { AUDIENCE_NO, AUDIENCE_YES, BATCH, CAREER_BLOCKS, COMPARISON, FAQS, MAJOR_PROJECTS, MINI_PROJECTS, PRICE, TRACKS } from "@/lib/landing-content";
 import { pageMeta } from "@/lib/site";
@@ -164,6 +164,7 @@ export default function DataAnalyticsCoursePage() {
         </div>
       </section>
 
+      <MentorSessionBanner />
       <CourseEnrollmentSection courseSlug="data-analyst" />
 
       <section id="faq" className="py-16 md:py-20 bg-surface-container-low scroll-mt-20">
