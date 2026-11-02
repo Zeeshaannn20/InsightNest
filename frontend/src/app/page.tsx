@@ -148,6 +148,9 @@ export default function DataAnalystCoursePage() {
       {/* Structured data — how search and AI answer engines read this page */}
       <OrganizationJsonLd />
       <CourseJsonLd
+        name="Data Analytics with GenAI for Placement Bootcamp"
+        description="Learn Excel, SQL, Python, Power BI and statistics live on weekends. Build 7 portfolio projects with career support in 8 weeks, for ₹2,999."
+        path="/courses/data-analytics"
         price={PRICE.now}
         durationWeeks={8}
         topics={TRACKS.map((t) => t.name)}
