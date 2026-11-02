@@ -425,6 +425,21 @@ export const COMPARISON = {
 };
 
 // ──────────────────────────────────────────────────────────────
+// Mentor session booking — update calLink once Cal.com is live
+// ──────────────────────────────────────────────────────────────
+export const MENTOR_SESSION = {
+  calLink: "https://cal.com/abhishek-jain-mosgco/mentor-doubt-session",
+  price: 49,
+  duration: 15,
+  features: [
+    "1:1 live session with a mentor",
+    "Ask anything — course, career or tools",
+    "Google Meet link sent instantly on booking",
+    "Available 7 days a week",
+  ],
+};
+
+// ──────────────────────────────────────────────────────────────
 // Testimonials — only add real students, never fake ones.
 // Leave this array empty until you have real quotes to put in.
 // ──────────────────────────────────────────────────────────────
