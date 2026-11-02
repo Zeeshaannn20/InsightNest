@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Logo from "@/components/Logo";
-import { FaqList, Instructor, MentorSessionBanner, SectionHeading, Testimonials } from "@/components/CourseParts";
+import { FaqList, Instructor, SectionHeading, Testimonials } from "@/components/CourseParts";
 import { OrganizationJsonLd, FaqJsonLd } from "@/components/JsonLd";
 import {
   BATCH,
@@ -362,9 +362,6 @@ export default function HomePage() {
             <Testimonials />
           </div>
         </section>
-
-        {/* -------------------- ₹49 MENTOR SESSION BOOKING ----------------- */}
-        <MentorSessionBanner />
 
         {/* ---------------------- SCREEN 4 · HOW IT WORKS ------------------- */}
         <section className={`bg-surface ${SCREEN}`}>

@@ -33,76 +33,6 @@ export const STATS = [
   { value: "2", label: "Months, start to finish" },
 ];
 
-export const WHY_LEARN = [
-  {
-    skill: "Excel",
-    icon: "table_chart",
-    badge: "Used in 90% of analyst jobs",
-    body: "Still the universal language of business. Every team uses it; few analysts truly master it. Pivot tables, dynamic arrays and dashboards built here are immediately useful on day one.",
-  },
-  {
-    skill: "SQL",
-    icon: "storage",
-    badge: "Most in-demand hard skill",
-    body: "Every data-driven company stores its records in a database. SQL is how you talk to that data — extract, filter, join and aggregate. It is the single skill that opens the most analyst doors.",
-  },
-  {
-    skill: "Python",
-    icon: "code",
-    badge: "Multiplies your output 10×",
-    body: "Automates the repetitive work, handles datasets too big for Excel, and unlocks machine-learning down the line. Analysts who know Python command salaries 30–50% higher than those who don't.",
-  },
-  {
-    skill: "Power BI",
-    icon: "bar_chart",
-    badge: "10M+ business users",
-    body: "Turns cleaned data into shareable dashboards that executives can actually read. Learning to present findings clearly is the bridge between analyst and decision-maker.",
-  },
-  {
-    skill: "Statistics",
-    icon: "functions",
-    badge: "The missing piece",
-    body: "Charts without statistical context mislead. Understanding distributions, significance and bias is what separates a data analyst from someone who just makes charts.",
-  },
-  {
-    skill: "Generative AI",
-    icon: "auto_awesome",
-    badge: "The new productivity layer",
-    body: "From cleaning messy data to explaining SQL errors and generating visualisation code — AI tools are already inside every modern analyst workflow. Learn to use them deliberately.",
-  },
-];
-
-export const SALARY_TIERS = [
-  {
-    level: "Entry level · 0–1 yr",
-    role: "Junior Data Analyst",
-    range: "₹2.5L – ₹4.5L",
-    skills: "Excel, basic SQL, reporting",
-    highlight: false,
-  },
-  {
-    level: "Early career · 1–3 yrs",
-    role: "Data Analyst",
-    range: "₹4.5L – ₹8L",
-    skills: "SQL, Python basics, Power BI",
-    highlight: false,
-  },
-  {
-    level: "Mid-level · 3–5 yrs",
-    role: "Senior Analyst",
-    range: "₹8L – ₹16L",
-    skills: "Full stack: SQL + Python + BI",
-    highlight: true,
-  },
-  {
-    level: "Lead · 5+ yrs",
-    role: "Analytics Lead",
-    range: "₹15L – ₹28L+",
-    skills: "Strategy, mentoring, ML exposure",
-    highlight: false,
-  },
-];
-
 export const PROBLEMS = [
   {
     icon: "visibility_off",
@@ -492,22 +422,6 @@ export const COMPARISON = {
     { label: "Recordings", ours: "Lifetime access", others: ["Limited period", "Limited period", "Usually none", "Yes"] },
     { label: "Loan or EMI needed", ours: "No — one payment", others: ["Usually EMI", "Usually loan", "Sometimes", "No"] },
   ],
-};
-
-// ──────────────────────────────────────────────────────────────
-// Mentor session booking — update calLink once Cal.com is live
-// ──────────────────────────────────────────────────────────────
-export const MENTOR_SESSION = {
-  calLink: "https://cal.com/abhishek-jain-mosgco/mentor-doubt-session",
-  price: 49,
-  duration: 15,
-  features: [
-    "1:1 live session with a mentor",
-    "Ask anything — course, career or tools",
-    "Google Meet link sent instantly on booking",
-    "Available 7 days a week",
-  ],
-  surpriseBenefit: "Book a session and enroll in any course within 48 hours — unlock a surprise bonus that isn't listed anywhere else.",
 };
 
 // ──────────────────────────────────────────────────────────────

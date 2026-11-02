@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import CourseEnrollmentSection from "@/components/CourseEnrollmentSection";
-import { CourseHero, FaqList, Instructor, MentorSessionBanner, SectionHeading, SiteShell } from "@/components/CourseParts";
+import { CourseHero, FaqList, Instructor, SectionHeading, SiteShell } from "@/components/CourseParts";
 import { CourseJsonLd, FaqJsonLd } from "@/components/JsonLd";
 import { BATCH, PM_FAQS, PM_MODULES, PRICE } from "@/lib/landing-content";
 import { pageMeta } from "@/lib/site";
@@ -52,7 +52,6 @@ export default function ProductManagementCoursePage() {
         </div>
       </section>
 
-      <MentorSessionBanner />
       <CourseEnrollmentSection courseSlug="product-management" />
 
       <section id="faq" className="py-16 md:py-20 bg-surface-container-low scroll-mt-20">

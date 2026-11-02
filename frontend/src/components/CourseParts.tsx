@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
-import CalButton from "@/components/CalButton";
-import { BATCH, INSTRUCTORS, MENTOR_SESSION, PRICE, STATS, TESTIMONIALS } from "@/lib/landing-content";
+import { BATCH, INSTRUCTORS, PRICE, STATS, TESTIMONIALS } from "@/lib/landing-content";
 
 const price = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
@@ -114,99 +113,6 @@ export function CourseHero({ title, sub, note, points }: { title: string; sub: s
           <a href="#curriculum" className="mt-3 block py-2 text-center text-sm font-semibold text-white/85 underline underline-offset-4 hover:text-white">
             See full curriculum
           </a>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/**
- * ₹49 mentor doubt-session banner.
- * Place before the enrollment section on any course page, and after
- * testimonials on the homepage, so users see it at the decision point.
- */
-export function MentorSessionBanner() {
-  return (
-    <section className="relative overflow-hidden bg-primary-container text-white py-14 md:py-20">
-      {/* ambient glow */}
-      <div className="absolute -top-32 -right-24 w-96 h-96 bg-secondary/25 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute -bottom-40 -left-16 w-80 h-80 bg-secondary-container/15 rounded-full blur-[100px] pointer-events-none" />
-
-      <div className="relative max-w-7xl mx-auto px-6">
-        {/* eyebrow */}
-        <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide mb-6">
-          <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-          Available 7 days a week · Instant confirmation
-        </div>
-
-        <div className="grid lg:grid-cols-[1.25fr_1fr] gap-10 items-start">
-          {/* ── Left: copy ── */}
-          <div>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight leading-tight text-balance">
-              Still unsure? Clear every doubt in 15 minutes — for just{" "}
-              <span className="text-secondary-container">₹{MENTOR_SESSION.price}</span>.
-            </h2>
-            <p className="mt-4 text-lg text-white/70 leading-relaxed max-w-xl">
-              Less than a cup of coffee. One session with a mentor who has actually hired and built in this field.
-              Ask about the curriculum, your background, switching careers, or anything else.
-            </p>
-
-            <ul className="mt-6 space-y-3">
-              {MENTOR_SESSION.features.map((f) => (
-                <li key={f} className="flex items-center gap-3 text-white/85 text-sm">
-                  <span className="material-symbols-outlined text-[18px] text-green-400 shrink-0">check_circle</span>
-                  {f}
-                </li>
-              ))}
-            </ul>
-
-            {/* Surprise benefit teaser */}
-            <div className="mt-8 flex items-start gap-3 bg-white/8 border border-white/15 rounded-2xl px-5 py-4">
-              <span className="text-2xl leading-none">🎁</span>
-              <div>
-                <p className="font-bold text-sm text-secondary-container mb-0.5">Surprise benefit inside</p>
-                <p className="text-sm text-white/70 leading-relaxed">{MENTOR_SESSION.surpriseBenefit}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* ── Right: booking card ── */}
-          <div className="bg-white/10 border border-white/15 rounded-3xl p-7 backdrop-blur-md shadow-2xl">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-secondary-container">1:1 Mentor Session</p>
-
-            <div className="mt-4 flex items-end gap-2">
-              <span className="text-6xl font-bold tracking-tight">₹{MENTOR_SESSION.price}</span>
-              <span className="text-white/50 mb-1.5 text-base pb-1">/ {MENTOR_SESSION.duration} min</span>
-            </div>
-            <p className="mt-1 text-sm text-white/45">One session. No commitment. No upsell.</p>
-
-            <div className="mt-5 h-px bg-white/10" />
-
-            <div className="mt-5 space-y-2.5">
-              <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-secondary-container text-[20px]">video_call</span>
-                <span className="text-sm text-white/70">Google Meet · link on booking</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-secondary-container text-[20px]">schedule</span>
-                <span className="text-sm text-white/70">{MENTOR_SESSION.duration} min · pick any slot, any day</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-secondary-container text-[20px]">currency_rupee</span>
-                <span className="text-sm text-white/70">Pay once — ₹{MENTOR_SESSION.price}. That's it.</span>
-              </div>
-            </div>
-
-            <CalButton
-              calLink="abhishek-jain-mosgco/mentor-doubt-session"
-              className="mt-7 w-full text-center bg-secondary text-on-secondary py-4 rounded-xl font-bold text-base hover:bg-secondary/90 transition-all btn-press shadow-lg shadow-secondary/30 cursor-pointer"
-            >
-              Book My Session — ₹{MENTOR_SESSION.price}
-            </CalButton>
-            <p className="mt-3 text-center text-[11px] text-white/35">
-              Powered by Cal.com · Secure checkout
-            </p>
-          </div>
         </div>
       </div>
     </section>
