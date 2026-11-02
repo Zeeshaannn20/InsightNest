@@ -6,16 +6,20 @@ import Logo from "@/components/Logo";
 import CourseEnrollmentSection from "@/components/CourseEnrollmentSection";
 import { OrganizationJsonLd, CourseJsonLd, FaqJsonLd } from "@/components/JsonLd";
 import {
+  AUDIENCE_NO,
+  AUDIENCE_YES,
   BATCH,
   CAREER_BLOCKS,
   CAREER_CASE,
   COURSES,
+  COMPARISON,
   DIFFERENTIATORS,
   FAQS,
   MAJOR_PROJECTS,
   MINI_PROJECTS,
   PRICE,
   STATS,
+  TESTIMONIALS,
   TRACKS,
 } from "@/lib/landing-content";
 
@@ -162,11 +166,11 @@ export default function DataAnalystCoursePage() {
             <a href="#projects" className="text-on-surface hover:text-secondary font-medium transition-colors">Projects</a>
             <a href="#pricing" className="text-on-surface hover:text-secondary font-medium transition-colors">Pricing</a>
             <a href="#faq" className="text-on-surface hover:text-secondary font-medium transition-colors">FAQ</a>
-                        <Link href="/articles" className="text-on-surface hover:text-secondary font-medium transition-colors">Articles</Link>
+                        <Link href="/articles" className="hidden lg:block text-on-surface hover:text-secondary font-medium transition-colors">Articles</Link>
           </div>
           <div className="flex items-center gap-3 md:gap-4">
             <Link href="/login" className="text-on-surface hover:text-secondary font-medium transition-colors hidden md:block">Login</Link>
-            <a href="#courses" className="inline-flex items-center min-h-11 bg-secondary text-on-secondary px-4 md:px-5 py-2 rounded-full font-semibold hover:bg-secondary/90 transition-all btn-press shadow-md text-sm md:text-base">
+            <a href="#courses" className="inline-flex items-center min-h-11 whitespace-nowrap bg-secondary text-on-secondary px-4 md:px-5 py-2 rounded-full font-semibold hover:bg-secondary/90 transition-all btn-press shadow-md text-sm md:text-base">
               Enroll Now
             </a>
 
@@ -393,6 +397,48 @@ export default function DataAnalystCoursePage() {
           </div>
         </section>
 
+        {/* ------------------- SOCIAL PROOF · TESTIMONIALS ------------------ */}
+        <section className="bg-surface-container-low py-16 md:py-20 border-b border-outline-variant/20">
+          <div className="w-full max-w-7xl mx-auto px-6 reveal-on-scroll">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
+              <SectionHeading
+                eyebrow="Student stories"
+                title="Real people. Real switches."
+              />
+              <div className="flex items-center gap-2 shrink-0 mb-10">
+                {[1,2,3,4,5].map((s) => (
+                  <span key={s} className="material-symbols-outlined text-[20px] filled text-amber-400">star</span>
+                ))}
+                <span className="text-sm font-semibold text-on-surface-variant ml-1">{STATS[0].value} students taught</span>
+              </div>
+            </div>
+            <div className="grid md:grid-cols-3 gap-5">
+              {TESTIMONIALS.map((t) => (
+                <div
+                  key={t.name}
+                  className="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant/30 flex flex-col gap-4 hover:shadow-card transition-shadow"
+                >
+                  <div className="flex gap-1">
+                    {[1,2,3,4,5].map((s) => (
+                      <span key={s} className="material-symbols-outlined text-[16px] filled text-amber-400">star</span>
+                    ))}
+                  </div>
+                  <p className="text-sm text-on-surface leading-relaxed flex-1">“{t.quote}”</p>
+                  <div className="flex items-center gap-3 pt-3 border-t border-outline-variant/20">
+                    <div className="w-10 h-10 rounded-full bg-secondary/15 text-secondary flex items-center justify-center font-bold text-sm shrink-0">
+                      {t.avatar}
+                    </div>
+                    <div>
+                      <p className="font-bold text-sm text-primary-container">{t.name}</p>
+                      <p className="text-[11px] text-on-surface-variant leading-snug">{t.role}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* ---------------------- SCREEN 3 · WHAT YOU LEARN ----------------- */}
         <section id="curriculum" className={`bg-surface-container-low border-y border-outline-variant/20 ${SCREEN}`}>
           <div className="w-full max-w-7xl mx-auto px-6 reveal-on-scroll">
@@ -553,6 +599,113 @@ export default function DataAnalystCoursePage() {
               title={`Live classes, projects and career prep. All for ${price(PRICE.now)}.`}
               sub={`That’s ${price(Math.round(PRICE.now / 16))} per live session, less than an hour with a private tutor.`}
               primary="Claim My Seat"
+            />
+          </div>
+        </section>
+
+        {/* ------------------- WHO IS THIS FOR + COMPARISON ----------------- */}
+        <section className={`bg-surface ${SCREEN}`}>
+          <div className="w-full max-w-7xl mx-auto px-6 reveal-on-scroll">
+            <SectionHeading
+              eyebrow="Is this right for you?"
+              title="Built for career-switchers on weekends. Not for everyone."
+            />
+
+            <div className="grid md:grid-cols-2 gap-5 mb-12">
+              {/* Good fit */}
+              <div className="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant/30">
+                <div className="flex items-center gap-2 mb-5">
+                  <span className="w-8 h-8 rounded-xl bg-green-100 text-green-700 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                  </span>
+                  <p className="font-bold text-primary-container">This is for you if</p>
+                </div>
+                <ul className="space-y-3">
+                  {AUDIENCE_YES.map((item) => (
+                    <li key={item} className="flex gap-3 text-sm text-on-surface leading-relaxed">
+                      <span className="material-symbols-outlined text-[18px] text-green-600 shrink-0 mt-0.5">check</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Bad fit */}
+              <div className="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant/30">
+                <div className="flex items-center gap-2 mb-5">
+                  <span className="w-8 h-8 rounded-xl bg-red-100 text-red-700 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-[18px]">cancel</span>
+                  </span>
+                  <p className="font-bold text-primary-container">This is NOT for you if</p>
+                </div>
+                <ul className="space-y-3">
+                  {AUDIENCE_NO.map((item) => (
+                    <li key={item} className="flex gap-3 text-sm text-on-surface leading-relaxed">
+                      <span className="material-symbols-outlined text-[18px] text-red-500 shrink-0 mt-0.5">close</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-6 pt-5 border-t border-outline-variant/20 bg-surface rounded-xl p-4">
+                  <p className="text-sm text-on-surface-variant">
+                    <span className="font-semibold text-primary-container">Still unsure?</span>{" "}
+                    Message us on WhatsApp — we’ll be honest about whether this is the right fit.
+                  </p>
+                  <a
+                    href={BATCH.whatsappLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-secondary hover:underline"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">chat</span>
+                    Chat on WhatsApp
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Comparison table */}
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-secondary mb-5">
+                How we compare
+              </p>
+              <div className="overflow-x-auto rounded-2xl border border-outline-variant/30">
+                <table className="w-full text-sm min-w-[640px]">
+                  <thead>
+                    <tr className="bg-primary-container text-white">
+                      <th className="text-left px-5 py-3.5 font-semibold rounded-tl-2xl">Feature</th>
+                      <th className="px-4 py-3.5 font-bold text-secondary-container">InsightNest</th>
+                      {COMPARISON.columns.map((col, i) => (
+                        <th
+                          key={col}
+                          className={`px-4 py-3.5 font-medium text-white/60 ${i === COMPARISON.columns.length - 1 ? "rounded-tr-2xl" : ""}`}
+                        >
+                          {col}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {COMPARISON.rows.map((row, ri) => (
+                      <tr
+                        key={row.label}
+                        className={ri % 2 === 0 ? "bg-surface-container-lowest" : "bg-surface-container-low"}
+                      >
+                        <td className="px-5 py-3 font-medium text-primary-container">{row.label}</td>
+                        <td className="px-4 py-3 text-center font-semibold text-secondary">{row.ours}</td>
+                        {row.others.map((val, i) => (
+                          <td key={i} className="px-4 py-3 text-center text-on-surface-variant">{val}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <CtaBand
+              title="The most affordable full-stack analytics program in India."
+              sub={`${price(PRICE.now)} for everything listed above. No EMI, no loan, no hidden fee.`}
             />
           </div>
         </section>

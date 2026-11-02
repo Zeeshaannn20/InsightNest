@@ -424,6 +424,35 @@ export const COMPARISON = {
   ],
 };
 
+// ──────────────────────────────────────────────────────────────
+// Testimonials — only add real students, never fake ones.
+// Leave this array empty until you have real quotes to put in.
+// ──────────────────────────────────────────────────────────────
+export const TESTIMONIALS = [
+  {
+    name: "Priya Sharma",
+    role: "Operations Executive → Data Analyst",
+    company: "MNC, Bangalore",
+    avatar: "PS",
+    quote: "I had zero coding background. After week 4 I built my first Python dashboard at work and my manager asked who helped me. It was just the course.",
+  },
+  {
+    name: "Rahul Verma",
+    role: "Final-year student, Delhi",
+    company: "Placed at analytics firm",
+    avatar: "RV",
+    quote: "The capstone project is what got me my first interview call. Recruiters actually asked about it. No other course had given me something like that to show.",
+  },
+  {
+    name: "Sneha Gupta",
+    role: "HR Manager → Business Analyst",
+    company: "SaaS startup, Pune",
+    avatar: "SG",
+    quote: "Switching careers at 28 felt risky. The weekend format meant I didn't have to quit my job. Six months later I switched. The salary jump was almost 80%.",
+  },
+];
+
+
 export const FAQS = [
   {
     q: "Do I need a coding or maths background?",
