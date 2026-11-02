@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import CalButton from "@/components/CalButton";
 import Logo from "@/components/Logo";
 import CourseEnrollmentSection from "@/components/CourseEnrollmentSection";
 import { OrganizationJsonLd, CourseJsonLd, FaqJsonLd } from "@/components/JsonLd";
@@ -536,14 +537,12 @@ export default function DataAnalystCoursePage() {
                   <span className="text-sm text-white/70">{MENTOR_SESSION.duration} min · instant confirmation</span>
                 </div>
 
-                <a
-                  href={MENTOR_SESSION.calLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-7 block text-center bg-secondary text-on-secondary py-3.5 rounded-xl font-bold hover:bg-secondary/90 transition-all btn-press shadow-lg shadow-secondary/25"
+                <CalButton
+                  calLink="abhishek-jain-mosgco/mentor-doubt-session"
+                  className="mt-7 w-full text-center bg-secondary text-on-secondary py-3.5 rounded-xl font-bold hover:bg-secondary/90 transition-all btn-press shadow-lg shadow-secondary/25 cursor-pointer"
                 >
                   Book a Session — ₹{MENTOR_SESSION.price}
-                </a>
+                </CalButton>
                 <p className="mt-3 text-center text-[11px] text-white/40">
                   Powered by Cal.com · Secure booking
                 </p>

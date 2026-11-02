@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
+import CalButton from "@/components/CalButton";
 import { BATCH, INSTRUCTORS, MENTOR_SESSION, PRICE, STATS, TESTIMONIALS } from "@/lib/landing-content";
 
 const price = (n: number) => `₹${n.toLocaleString("en-IN")}`;
@@ -196,14 +197,12 @@ export function MentorSessionBanner() {
               </div>
             </div>
 
-            <a
-              href={MENTOR_SESSION.calLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-7 block text-center bg-secondary text-on-secondary py-4 rounded-xl font-bold text-base hover:bg-secondary/90 transition-all btn-press shadow-lg shadow-secondary/30"
+            <CalButton
+              calLink="abhishek-jain-mosgco/mentor-doubt-session"
+              className="mt-7 w-full text-center bg-secondary text-on-secondary py-4 rounded-xl font-bold text-base hover:bg-secondary/90 transition-all btn-press shadow-lg shadow-secondary/30 cursor-pointer"
             >
               Book My Session — ₹{MENTOR_SESSION.price}
-            </a>
+            </CalButton>
             <p className="mt-3 text-center text-[11px] text-white/35">
               Powered by Cal.com · Secure checkout
             </p>
