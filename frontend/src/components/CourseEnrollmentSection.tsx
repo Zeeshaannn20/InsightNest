@@ -5,6 +5,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import RazorpayButton from "./RazorpayButton";
 import Logo from "./Logo";
+import { BATCH, PRICE } from "@/lib/landing-content";
 
 interface CourseEnrollmentSectionProps {
   courseSlug: string;
@@ -12,8 +13,9 @@ interface CourseEnrollmentSectionProps {
 
 // Fallback data for when Supabase is unavailable or migration hasn't run
 const COURSE_FALLBACKS: Record<string, { title: string; price_paise: number; status: string; duration_weeks: number }> = {
-  "data-analyst": { title: "GenAI Data Analyst Accelerator", price_paise: 299900, status: "open", duration_weeks: 4 },
-  "business-analytics": { title: "Business Analyst Fundamentals", price_paise: 299900, status: "coming_soon", duration_weeks: 4 },
+  "data-analyst": { title: "Data Analytics with GenAI for Placement Bootcamp", price_paise: 299900, status: "open", duration_weeks: 8 },
+  // No course id without the database row, so checkout cannot work: take interest instead.
+  "product-management": { title: "Product Management with Generative AI", price_paise: 299900, status: "coming_soon", duration_weeks: 0 },
 };
 
 export default function CourseEnrollmentSection({ courseSlug }: CourseEnrollmentSectionProps) {
@@ -128,7 +130,7 @@ export default function CourseEnrollmentSection({ courseSlug }: CourseEnrollment
 
   // Formatted price
   const priceDisplay = course.price_paise ? (course.price_paise / 100).toLocaleString('en-IN') : "2,999";
-  const originalPriceDisplay = "5,999";
+  const originalPriceDisplay = PRICE.was.toLocaleString("en-IN");
 
   return (
     <section id="enrollment" className="py-24 bg-surface border-t border-outline-variant/20">
@@ -192,17 +194,17 @@ export default function CourseEnrollmentSection({ courseSlug }: CourseEnrollment
                     <span className="material-symbols-outlined text-base">schedule</span> Class Timings &amp; Live Schedule
                   </h4>
                   <p className="text-xs text-on-surface-variant leading-relaxed">
-                    All lectures are conducted live. Exact class timings and links will be announced by the instructor in the portal prior to each session.
+                    Classes run live on {BATCH.timing}. Links are shared in your student portal before each session.
                   </p>
                 </div>
               )}
 
               <div className="bg-green-500/5 rounded-2xl p-5 border border-green-500/20 text-left">
                 <h4 className="font-bold text-green-700 text-sm mb-1.5 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-base">workspace_premium</span> Official Certification Included
+                  <span className="material-symbols-outlined text-base">workspace_premium</span> Certificate of Completion
                 </h4>
                 <p className="text-xs text-on-surface-variant leading-relaxed">
-                  Earn a verified, industry-recognized certificate upon successful completion of the course to showcase your new skills on LinkedIn and your resume.
+                  Earn a certificate of completion when you finish the course, and show your new skills on LinkedIn and your resume.
                 </p>
               </div>
             </div>

@@ -16,12 +16,12 @@ export default function PrivacyPage() {
           </div>
           <div className="hidden md:flex items-center gap-8">
             <Link href="/#courses" className="text-on-surface hover:text-secondary font-medium transition-colors">Syllabus</Link>
-            <Link href="/#pricing" className="text-on-surface hover:text-secondary font-medium transition-colors">Unlock Dashboard / Buy</Link>
+            <Link href="/#courses" className="text-on-surface hover:text-secondary font-medium transition-colors">Unlock Dashboard / Buy</Link>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/dashboard" className="text-on-surface hover:text-secondary font-medium transition-colors hidden md:block">Dashboard</Link>
             <Link href="/login" className="text-on-surface hover:text-secondary font-medium transition-colors hidden md:block">Login</Link>
-            <Link href="/#pricing" className="bg-secondary text-on-secondary px-5 py-2 rounded-full font-semibold hover:bg-secondary/90 transition-all btn-press shadow-md">Apply Now</Link>
+            <Link href="/#courses" className="bg-secondary text-on-secondary px-5 py-2 rounded-full font-semibold hover:bg-secondary/90 transition-all btn-press shadow-md">Apply Now</Link>
           </div>
         </div>
       </nav>
@@ -121,22 +121,19 @@ export default function PrivacyPage() {
                 <Logo variant="img2" className="h-14 w-auto" />
               </Link>
             </div>
-            <p className="text-sm">Empowering next-gen analysts with AI-powered education and career transformation.</p>
+            <p className="text-sm">Live training in data analytics and product management.</p>
           </div>
           <div>
-            <h4 className="text-on-surface font-bold mb-4">Bootcamp</h4>
+            <h4 className="text-on-surface font-bold mb-4">Courses</h4>
             <ul className="space-y-3 text-sm">
-              <li><Link href="/#courses" className="hover:text-secondary transition-colors">Curriculum</Link></li>
-              <li><Link href="/#pricing" className="hover:text-secondary transition-colors">Projects</Link></li>
-              <li><Link href="/#pricing" className="hover:text-secondary transition-colors">Mentors</Link></li>
+              <li><Link href="/courses/data-analytics" className="hover:text-secondary transition-colors">Data Analytics</Link></li>
+              <li><Link href="/courses/product-management" className="hover:text-secondary transition-colors">Product Management</Link></li>
             </ul>
           </div>
           <div>
             <h4 className="text-on-surface font-bold mb-4">Resources</h4>
             <ul className="space-y-3 text-sm">
-              <li><a href="#" className="hover:text-secondary transition-colors">Blog</a></li>
-              <li><a href="#" className="hover:text-secondary transition-colors">Career Guide</a></li>
-              <li><a href="#" className="hover:text-secondary transition-colors">Success Stories</a></li>
+              <li><Link href="/articles" className="hover:text-secondary transition-colors">Articles</Link></li>
             </ul>
           </div>
           <div>
@@ -149,7 +146,7 @@ export default function PrivacyPage() {
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-6 mt-16 pt-8 border-t border-outline-variant/30 flex flex-col md:flex-row items-center justify-between gap-4 text-sm">
-          <p>© 2026 InsightNest AI. All rights reserved.</p>
+          <p>© 2026 InsightNest. All rights reserved.</p>
           <div className="flex gap-4">
             <a href="#" className="hover:text-secondary transition-colors"><span className="material-symbols-outlined">share</span></a>
           </div>

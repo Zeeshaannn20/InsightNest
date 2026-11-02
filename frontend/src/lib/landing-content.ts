@@ -1,5 +1,5 @@
 // ============================================================
-// Data Analyst programme — page content
+// Data Analytics and Product Management — page content
 //
 // Everything editable lives here so the page component stays layout only.
 // The BATCH block is the one thing you must keep current.
@@ -27,7 +27,7 @@ export const PRICE = { now: 2999, was: 4999 };
 
 /** Headline numbers. Keep these defensible — they are advertising claims. */
 export const STATS = [
-  { value: "487+", label: "Students taught" },
+  { value: "1,000+", label: "Students taught" },
   { value: "16", label: "Live sessions" },
   { value: "7", label: "Portfolio projects" },
   { value: "2", label: "Months, start to finish" },
@@ -452,74 +452,15 @@ export const TESTIMONIALS = [
   },
 ];
 
-// ──────────────────────────────────────────────────────────────
-// "Why these skills" + salary section content
-// Salary ranges: India market estimates from AmbitionBox & Glassdoor.
-// Update these periodically; never claim them as guarantees.
-// ──────────────────────────────────────────────────────────────
-
-export const WHY_LEARN = [
-  {
-    icon: "table_chart",
-    skill: "Excel & SQL",
-    badge: "Required in 7 out of 10 analyst job listings",
-    body: "Every company stores data in tables. SQL queries it. Excel presents it. These two tools appear in more Indian job listings than any other analytics skill — and most candidates can't use either beyond the basics.",
-  },
-  {
-    icon: "code_blocks",
-    skill: "Python",
-    badge: "The jump from ₹4 LPA to ₹8 LPA",
-    body: "Python automates in seconds what Excel takes hours to do manually. It's the single skill hiring managers look for when moving a candidate from junior to mid-level — and the one most self-taught analysts never fully learn.",
-  },
-  {
-    icon: "dashboard",
-    skill: "Power BI",
-    badge: "Used across 97% of Fortune 500 companies",
-    body: "Managers don't read spreadsheets. They read dashboards. Power BI is the most in-demand BI tool in India right now, and proficiency in it turns a back-room analyst into someone who shapes business decisions.",
-  },
-  {
-    icon: "smart_toy",
-    skill: "GenAI for Analytics",
-    badge: "The skill gap that still hasn't closed",
-    body: "Most analysts don't use AI tools in their daily workflow. Pairing your data skills with GenAI makes you dramatically faster — and puts you ahead of every candidate who learned the same stack without it.",
-  },
-];
-
-export const SALARY_TIERS = [
-  {
-    level: "Fresher · 0–1 yr",
-    role: "Junior Data Analyst",
-    range: "₹3–6 LPA",
-    skills: "Excel · SQL basics",
-    highlight: false,
-  },
-  {
-    level: "1–3 years",
-    role: "Data Analyst",
-    range: "₹6–12 LPA",
-    skills: "Python · Power BI · Advanced SQL",
-    highlight: true,
-  },
-  {
-    level: "3–6 years",
-    role: "Senior Data Analyst",
-    range: "₹12–22 LPA",
-    skills: "Full stack · Storytelling · Stakeholder mgmt",
-    highlight: false,
-  },
-  {
-    level: "5+ years",
-    role: "Analytics Lead / Manager",
-    range: "₹18–35 LPA",
-    skills: "Strategy · Team ownership · Cross-functional",
-    highlight: false,
-  },
-];
 
 export const FAQS = [
   {
+    q: "What is the refund policy?",
+    a: "Refund requests must be made within 7 calendar days of purchase and meet the conditions in our Terms & Refunds page, so please read them before you enroll.",
+  },
+  {
     q: "Do I need a coding or maths background?",
-    a: "No. Python starts from print(\"hello\") and statistics assumes school level. Half of every batch is non-technical.",
+    a: "No. Python starts from print(\"hello\") and statistics assumes school level.",
   },
   {
     q: "I have a full-time job. Can I manage this?",
@@ -549,4 +490,153 @@ export const FAQS = [
     q: "Are there any additional charges?",
     a: "None. ₹2,999 covers the entire program, all materials, all recordings and all career sessions.",
   },
+];
+
+export const PM_MODULES = [
+  {
+    title: "Introduction to Product Management",
+    body: "Understand the role of a Product Manager and the complete product lifecycle. Learn the difference between Product, Project and Program Management. Explore B2B, B2C, SaaS and marketplace business models. Analyze how companies like Airbnb, Uber and Spotify build successful products.",
+  },
+  {
+    title: "Product Strategy & Market Research",
+    body: "Learn how to identify market opportunities and evaluate business potential. Master TAM, SAM, SOM, competitor analysis and market positioning. Explore product vision, business models and monetization strategies. Apply RICE, ICE and MoSCoW frameworks to prioritize product ideas.",
+  },
+  {
+    title: "User Research & Problem Discovery",
+    body: "Understand customer behaviour, needs, motivations and pain points. Learn user interviews, surveys, customer personas and Jobs To Be Done. Apply empathy mapping and customer journey mapping to identify problems. Translate customer insights into actionable product opportunities.",
+  },
+  {
+    title: "Product Design & UX Fundamentals",
+    body: "Learn the fundamentals of UI/UX and human-centred product design. Understand user flows, wireframing, information architecture and prototyping. Get hands-on experience with Figma to visualize product ideas. Learn usability testing and validate product experiences before development.",
+  },
+  {
+    title: "PRD, Agile & Product Execution",
+    body: "Learn to translate product ideas into structured Product Requirement Documents (PRDs). Master user stories, acceptance criteria, product roadmaps and feature prioritization. Understand Agile, Scrum, sprint planning and backlog management. Gain practical exposure to Jira and cross-functional product execution.",
+  },
+  {
+    title: "Product Analytics & Metrics",
+    body: "Learn to measure product performance using data-driven decision-making. Understand North Star Metrics, AARRR, DAU, MAU, CAC, LTV and churn. Explore conversion funnels, retention, cohort analysis and A/B testing. Use product analytics concepts to identify opportunities for product improvement.",
+  },
+  {
+    title: "Growth, GTM & Product Launch",
+    body: "Learn how to position, price and successfully launch a product in the market. Understand ICP, STP, Product-Led Growth and customer acquisition strategies. Explore onboarding, activation, retention and growth loops. Develop a practical Go-To-Market strategy for a real-world product.",
+  },
+  {
+    title: "AI in Product Management & Capstone",
+    body: "Discover how AI tools like ChatGPT can accelerate product research, documentation and decision-making. Use AI for competitor analysis, PRDs, user stories and product ideation. Apply your learning to develop an end-to-end product strategy. Present a capstone covering research, prototype, roadmap, metrics and launch strategy.",
+  },
+];
+
+/** The two courses, shown side by side on the first screen. */
+export const COURSES = [
+  {
+    tag: "Data & AI",
+    icon: "query_stats",
+    name: "Data Analytics with GenAI for Placement Bootcamp",
+    summary: "Turn raw data into business decisions, from your first spreadsheet to a full capstone.",
+    points: ["Excel, SQL, Python and Power BI", "Statistics and data storytelling", "Resume and interview prep"],
+    enrollHref: "/courses/data-analytics#enrollment",
+    curriculumHref: "/courses/data-analytics#curriculum",
+  },
+  {
+    tag: "Product & AI",
+    icon: "rocket_launch",
+    name: "Product Management with Generative AI",
+    summary: "Learn to decide what gets built and why, from user research to a product launch.",
+    points: ["Strategy and user research", "PRDs, Agile, Figma and Jira", "Metrics, launch and AI for PMs"],
+    enrollHref: "/courses/product-management#enrollment",
+    curriculumHref: "/courses/product-management#curriculum",
+  },
+];
+
+/**
+ * Why each skill is worth learning, and what the market pays.
+ * Pay figures are approximate ranges from 2026 salary guides (checked Nov 2026):
+ * weekday.works, guvi.in, masaischool.com, citing Glassdoor. Refresh them when
+ * they age, and never present them as InsightNest student outcomes.
+ */
+export const CAREER_CASE = [
+  {
+    field: "Data Analytics",
+    icon: "query_stats",
+    why: [
+      "Companies in every sector need people who can turn numbers into decisions.",
+      "AI and big data lead the fastest-growing skills in the World Economic Forum’s Future of Jobs Report 2025.",
+      "You can start from a non-technical background, beginning with Excel and SQL.",
+    ],
+    pay: [
+      { level: "Freshers", range: "₹3–6 LPA" },
+      { level: "National average", range: "About ₹6.5 LPA" },
+      { level: "Senior analysts", range: "₹12–20 LPA" },
+    ],
+  },
+  {
+    field: "Product Management",
+    icon: "rocket_launch",
+    why: [
+      "Product managers decide what gets built and bring design, engineering and business together.",
+      "Experience in sales, operations, marketing or design carries over well into product work.",
+      "AI now speeds up research, documentation and PRDs, so PMs who use it well can move faster.",
+    ],
+    pay: [
+      { level: "Associate PM", range: "₹8–22 LPA" },
+      { level: "Average PM", range: "About ₹22–25 LPA" },
+      { level: "Senior PM", range: "₹35–60 LPA" },
+    ],
+    note: "Many PM roles ask for prior work experience, so freshers often need to start as an Associate PM or in a related role.",
+  },
+];
+
+/** Keep these figures provable: they are advertising claims. */
+export const INSTRUCTOR = {
+  name: "Zeeshan",
+  role: "Founder and instructor, InsightNest",
+  bio: "Zeeshan teaches both InsightNest courses live, so you can ask your questions in class and get answers directly from your instructor.",
+  stats: [
+    { value: "1,000+", label: "Students taught" },
+    { value: "12,000+", label: "Instagram followers" },
+  ],
+};
+
+const SHARED_FAQS = [
+  {
+    q: "What is the refund policy?",
+    a: "Refund requests must be made within 7 calendar days of purchase and meet the conditions in our Terms & Refunds page, so please read them before you enroll.",
+  },
+  {
+    q: "Will I get a job after this?",
+    a: "Nobody can honestly promise a job. You get practical skills, portfolio projects and interview preparation. The applying is yours to do.",
+  },
+  {
+    q: "Are there any additional charges?",
+    a: "No. The ₹2,999 fee is a one-time payment for the course.",
+  },
+];
+
+export const HOME_FAQS = [
+  {
+    q: "Which course should I choose?",
+    a: "Choose Data Analytics if you enjoy working with numbers and want to start with Excel, SQL and Power BI. Choose Product Management if you like solving user problems and want to work with design, tech and business teams.",
+  },
+  {
+    q: "Who teaches the courses?",
+    a: "Zeeshan, the founder of InsightNest, teaches both courses live. He has taught more than 1,000 students.",
+  },
+  {
+    q: "When are the classes?",
+    a: `Live classes run on ${BATCH.timing}, in ${BATCH.language}.`,
+  },
+  ...SHARED_FAQS,
+];
+
+export const PM_FAQS = [
+  {
+    q: "What does the course cover?",
+    a: "Eight modules: product basics, strategy and market research, user research, UX, PRDs and Agile, product analytics, go-to-market, and AI in product management, ending in a capstone.",
+  },
+  {
+    q: "Which tools will I use?",
+    a: "You get hands-on experience with Figma, practical exposure to Jira, and learn to use AI tools such as ChatGPT for product research and documentation.",
+  },
+  ...SHARED_FAQS,
 ];

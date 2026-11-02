@@ -31,6 +31,7 @@ export function OrganizationJsonLd() {
         email: "support@insightnest.in",
         telephone: "+91-63667-35759",
         areaServed: "IN",
+        founder: { "@type": "Person", name: "Zeeshan" },
         sameAs: [] as string[],
       }}
     />
@@ -38,12 +39,18 @@ export function OrganizationJsonLd() {
 }
 
 export function CourseJsonLd({
+  name,
+  description,
+  path,
   price,
   startDate,
   offerEnds,
   durationWeeks,
   topics,
 }: {
+  name: string;
+  description: string;
+  path: string;
   price: number;
   /** Omitted while enrolment is rolling and no cohort date is announced. */
   startDate?: string;
@@ -57,10 +64,10 @@ export function CourseJsonLd({
       data={{
         "@context": "https://schema.org",
         "@type": "Course",
-        "@id": `${SITE_URL}/#course`,
-        name: "Complete Data Analytics Program",
-        description: SITE_DESCRIPTION,
-        url: SITE_URL,
+        "@id": `${absoluteUrl(path)}#course`,
+        name,
+        description,
+        url: absoluteUrl(path),
         provider: { "@type": "EducationalOrganization", name: SITE_NAME, url: SITE_URL },
         inLanguage: ["en", "hi"],
         teaches: topics,
@@ -73,12 +80,13 @@ export function CourseJsonLd({
           // Lets a search or answer engine say when enrolment closes rather
           // than presenting the offer as open ended.
           ...(offerEnds ? { availabilityEnds: offerEnds } : {}),
-          url: `${SITE_URL}/#pricing`,
+          url: `${absoluteUrl(path)}#enrollment`,
           category: "Paid",
         },
         hasCourseInstance: {
           "@type": "CourseInstance",
           courseMode: "Online",
+          instructor: { "@type": "Person", name: "Zeeshan" },
           courseWorkload: `PT${durationWeeks * 10}H`,
           // Advertising a date that has already passed reads worse in a search
           // result than no date at all, so emit the field only when set.
