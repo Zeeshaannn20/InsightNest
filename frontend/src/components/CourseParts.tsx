@@ -37,10 +37,7 @@ export function FaqList({ faqs }: { faqs: { q: string; a: string }[] }) {
 
 export function Instructor() {
   return (
-    <div className="flex flex-col md:flex-row md:items-center gap-6 bg-surface-container-lowest border border-outline-variant/30 rounded-3xl p-6 md:p-10">
-      <div className="w-20 h-20 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
-        <span className="material-symbols-outlined text-[40px]" aria-hidden="true">school</span>
-      </div>
+    <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-3xl p-6 md:p-10">
       <div>
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-secondary">Your instructors</p>
         <h2 className="mt-2 text-3xl font-bold tracking-tight text-primary-container text-balance">{INSTRUCTORS.title}</h2>
