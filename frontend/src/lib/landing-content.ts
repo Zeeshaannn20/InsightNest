@@ -587,15 +587,9 @@ export const CAREER_CASE = [
   },
 ];
 
-/** Keep these figures provable: they are advertising claims. */
-export const INSTRUCTOR = {
-  name: "Zeeshan",
-  role: "Founder and instructor, InsightNest",
-  bio: "Zeeshan teaches both InsightNest courses live, so you can ask your questions in class and get answers directly from your instructor.",
-  stats: [
-    { value: "1,000+", label: "Students taught" },
-    { value: "12,000+", label: "Instagram followers" },
-  ],
+export const INSTRUCTORS = {
+  title: "Learn from top-class instructors from the industry",
+  body: "They will teach you and guide you throughout your career with InsightNest.",
 };
 
 const SHARED_FAQS = [
@@ -620,7 +614,7 @@ export const HOME_FAQS = [
   },
   {
     q: "Who teaches the courses?",
-    a: "Zeeshan, the founder of InsightNest, teaches both courses live. He has taught more than 1,000 students.",
+    a: "Top-class instructors from the industry teach both courses live, and guide you throughout your career with InsightNest.",
   },
   {
     q: "When are the classes?",

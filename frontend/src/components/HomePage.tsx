@@ -111,7 +111,7 @@ export default function HomePage() {
           <div className="hidden md:flex items-center gap-8">
             <Link href="/courses/data-analytics" className="text-on-surface hover:text-secondary font-medium transition-colors">Data Analytics</Link>
             <Link href="/courses/product-management" className="whitespace-nowrap text-on-surface hover:text-secondary font-medium transition-colors">Product Management</Link>
-            <a href="#instructor" className="text-on-surface hover:text-secondary font-medium transition-colors">Instructor</a>
+            <a href="#instructor" className="text-on-surface hover:text-secondary font-medium transition-colors">Instructors</a>
             <a href="#faq" className="text-on-surface hover:text-secondary font-medium transition-colors">FAQ</a>
                         <Link href="/articles" className="hidden lg:block text-on-surface hover:text-secondary font-medium transition-colors">Articles</Link>
           </div>
@@ -142,7 +142,7 @@ export default function HomePage() {
             <div className="px-6 py-3 flex flex-col">
               {[
                 { href: "#courses", label: "Courses" },
-                { href: "#instructor", label: "Instructor" },
+                { href: "#instructor", label: "Instructors" },
                 { href: "#faq", label: "FAQ" },
               ].map((item) => (
                 <a
@@ -206,7 +206,7 @@ export default function HomePage() {
                   Live Data Analytics and Product Management Courses with GenAI
                 </h1>
                 <p className="hidden md:block mt-4 text-lg text-white/75 leading-relaxed max-w-2xl">
-                  Taught live by Zeeshan on weekends. Build a real portfolio and get career support for {price(PRICE.now)} per course.
+                  Taught live on weekends by top-class industry instructors. Build a real portfolio and get career support for {price(PRICE.now)} per course.
                 </p>
               </div>
 

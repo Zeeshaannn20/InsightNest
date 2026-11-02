@@ -86,7 +86,6 @@ export function CourseJsonLd({
         hasCourseInstance: {
           "@type": "CourseInstance",
           courseMode: "Online",
-          instructor: { "@type": "Person", name: "Zeeshan" },
           courseWorkload: `PT${durationWeeks * 10}H`,
           // Advertising a date that has already passed reads worse in a search
           // result than no date at all, so emit the field only when set.

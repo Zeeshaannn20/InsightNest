@@ -27,7 +27,7 @@ export default function DataAnalyticsCoursePage() {
 
       <CourseHero
         title={NAME}
-        sub="Excel, SQL, Python, Statistics, Power BI and Data Storytelling. Taught live by Zeeshan and built on 7 real projects."
+        sub="Excel, SQL, Python, Statistics, Power BI and Data Storytelling. Taught live by top-class industry instructors and built on 7 real projects."
         note="Placement preparation covers your resume, LinkedIn, job applications and mock interviews. We do not guarantee a job."
         points={["16 live sessions over 8 weeks", "7 portfolio projects", "Lifetime recordings", "Career support included"]}
       />

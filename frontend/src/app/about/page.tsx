@@ -5,8 +5,8 @@ import { COURSES } from "@/lib/landing-content";
 import { pageMeta } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta(
-  "About InsightNest and Instructor Zeeshan",
-  "InsightNest offers live weekend courses in data analytics and product management, taught by Zeeshan, who has taught more than 1,000 students.",
+  "About InsightNest and Our Instructors",
+  "InsightNest offers live weekend courses in data analytics and product management, taught by top-class instructors from the industry.",
   "/about"
 );
 

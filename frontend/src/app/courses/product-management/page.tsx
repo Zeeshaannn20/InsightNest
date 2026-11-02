@@ -27,7 +27,7 @@ export default function ProductManagementCoursePage() {
 
       <CourseHero
         title={NAME}
-        sub="Go from market research and user discovery to PRDs, product metrics and launch. Taught live by Zeeshan, using AI to build and present an end-to-end capstone."
+        sub="Go from market research and user discovery to PRDs, product metrics and launch. Taught live by top-class industry instructors, using AI to build and present an end-to-end capstone."
         points={[`${PM_MODULES.length} modules`, "Hands-on with Figma and Jira", "AI for product work", "End-to-end capstone"]}
       />
 

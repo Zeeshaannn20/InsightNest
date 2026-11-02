@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
-import { BATCH, INSTRUCTOR, PRICE, STATS, TESTIMONIALS } from "@/lib/landing-content";
+import { BATCH, INSTRUCTORS, PRICE, STATS, TESTIMONIALS } from "@/lib/landing-content";
 
 const price = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
@@ -37,24 +37,14 @@ export function FaqList({ faqs }: { faqs: { q: string; a: string }[] }) {
 
 export function Instructor() {
   return (
-    <div className="grid md:grid-cols-[auto_1fr] gap-8 items-center bg-surface-container-lowest border border-outline-variant/30 rounded-3xl p-6 md:p-10">
-      {/* ponytail: initial stands in until a real photo is supplied. */}
-      <div className="w-28 h-28 md:w-36 md:h-36 rounded-full bg-primary-container text-white flex items-center justify-center text-5xl font-bold" aria-hidden="true">
-        {INSTRUCTOR.name[0]}
+    <div className="flex flex-col md:flex-row md:items-center gap-6 bg-surface-container-lowest border border-outline-variant/30 rounded-3xl p-6 md:p-10">
+      <div className="w-20 h-20 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
+        <span className="material-symbols-outlined text-[40px]" aria-hidden="true">school</span>
       </div>
       <div>
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-secondary">Your instructor</p>
-        <h2 className="mt-2 text-3xl font-bold tracking-tight text-primary-container">{INSTRUCTOR.name}</h2>
-        <p className="mt-1 text-sm font-semibold text-on-surface-variant">{INSTRUCTOR.role}</p>
-        <p className="mt-3 max-w-2xl text-on-surface-variant leading-relaxed">{INSTRUCTOR.bio}</p>
-        <dl className="mt-5 flex flex-wrap gap-x-10 gap-y-3">
-          {INSTRUCTOR.stats.map((s) => (
-            <div key={s.label}>
-              <dd className="text-2xl font-bold tracking-tight text-primary-container tabular-nums">{s.value}</dd>
-              <dt className="text-sm text-on-surface-variant">{s.label}</dt>
-            </div>
-          ))}
-        </dl>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-secondary">Your instructors</p>
+        <h2 className="mt-2 text-3xl font-bold tracking-tight text-primary-container text-balance">{INSTRUCTORS.title}</h2>
+        <p className="mt-3 max-w-2xl text-on-surface-variant leading-relaxed">{INSTRUCTORS.body}</p>
       </div>
     </div>
   );

@@ -13,7 +13,7 @@ export const SITE_URL = "https://insightnest.in";
 export const SITE_NAME = "InsightNest";
 
 export const SITE_DESCRIPTION =
-  "Live weekend courses in data analytics and product management with GenAI, taught by Zeeshan. 16 live sessions, 7 portfolio projects and career support.";
+  "Live weekend courses in data analytics and product management with GenAI, taught by industry instructors. 16 live sessions, 7 portfolio projects and career support.";
 
 export function absoluteUrl(path = "/"): string {
   return new URL(path, SITE_URL).toString();
