@@ -73,6 +73,9 @@ export async function POST(request: Request) {
         source: "manual",
         status: "active",
         enrolled_at: new Date().toISOString(),
+        // The row is written as service role, so the acting admin is recorded
+        // here or not at all.
+        granted_by: auth.user.id,
       },
       { onConflict: "student_id, course_id" }
     );

@@ -257,7 +257,10 @@ router.post("/grant-access", async (req: Request, res: Response) => {
         course_id: courseId,
         source: "manual",
         status: "active",
-        enrolled_at: new Date().toISOString()
+        enrolled_at: new Date().toISOString(),
+        // The row is written as service role, so the acting admin is recorded
+        // here or not at all. authenticateUser put them on the request.
+        granted_by: (req as any).user.id
       }, {
         onConflict: 'student_id, course_id'
       })
